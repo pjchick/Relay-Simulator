@@ -1,0 +1,11 @@
+# Python dependencies for Relay Simulator
+
+# Core dependencies
+# (Python 3.8+ required)
+
+# No external dependencies required for core engine
+# tkinter is included with Python
+
+# Development/Testing dependencies (optional)
+pytest>=7.0.0
+pytest-cov>=3.0.0

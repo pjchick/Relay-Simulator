@@ -1,0 +1,17 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "author": "",
+    "created": "",
+    "modified": "",
+    "description": ""
+  },
+  "pages": {
+    "31a45013": {
+      "page_id": "31a45013",
+      "name": "Test Page",
+      "components": {},
+      "wires": {}
+    }
+  }
+}
