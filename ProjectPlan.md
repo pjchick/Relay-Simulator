@@ -391,144 +391,194 @@ Development of a multi-threaded relay logic simulation engine with terminal inte
 
 ## PHASE 3: COMPONENT IMPLEMENTATIONS
 
-### 3.1 Toggle Switch Component
-- [ ] Define ToggleSwitch class (extends Component)
-  - [ ] Pin configuration: 2 pins or 1 pin with 2 tabs?
-  - [ ] State: ON/OFF (boolean)
+The properties panel will have consistant sections for easier navigation
+
+Ive added the section name before the property to add.
+
+General > ID means the ID field will be in the General section etc
+
+### 3.1 Switch Component
+- [*] Define Switch class (extends Component)
+  - [*] Pin configuration: 1 pin 4 tags at 3,6,9 and 12 o'clock positions
+  - [*] Circular 40px diameter
+  - [*] State: ON/OFF (boolean)
   
-- [ ] Implement ComponentLogic()
-  - [ ] If ON: Set output pin to HIGH
-  - [ ] If OFF: Set output pin to FLOAT
-  - [ ] Mark VNET dirty if state changed
+- [*] Implement ComponentLogic()
+  - [*] If ON: Set output pin to HIGH
+  - [*] If OFF: Set output pin to FLOAT
+  - [*] Mark VNET dirty if state changed
   
-- [ ] Implement HandleInteraction()
-  - [ ] Toggle ON ↔ OFF
-  - [ ] Update pin state
+- [*] Implement HandleInteraction()
+  - [*] Toggle: ON ↔ OFF
+  - [*] Pushbutton Mode: Pressed = ON Released = OFF
+  - [*] Update pin state
   
-- [ ] Implement SimStart()
-  - [ ] Default to OFF state
-  - [ ] Set initial pin states
+- [*] Implement SimStart()
+  - [*] Default to OFF state
+  - [*] Set initial pin states
   
-- [ ] Implement SimStop()
-  - [ ] Clear state (optional)
+- [*] Implement SimStop()
+  - [*] Clear state (optional)
   
-- [ ] Add visual properties
-  - [ ] Position
-  - [ ] Label (optional)
+- [*] Add visual properties
+  - [*] General > ID (readonly)
+  - [*] General >Label (optional)
+  - [*] General >Label position (Top, bottom left or right)
+  - [*] Format > Mode Pushbutton or Toggle
+  - [*] Format > Color
+                    Drop down combo box with basic colors.
+                    If Red is selected set the On color to Bright red and the Off color to a dull red.
 
 **Tests:**
-- [ ] Test switch creation
-- [ ] Test toggle interaction
-- [ ] Test pin state updates
-- [ ] Test VNET dirty marking
-- [ ] Test SimStart initialization
+- [*] Test switch creation
+- [*] Test toggle interaction in both Modes
+- [*] Test pin state updates
+- [*] Test VNET dirty marking
+- [*] Test SimStart initialization
 
 ---
 
-### 3.2 Indicator (LED) Component
-- [ ] Define Indicator class (extends Component)
-  - [ ] Pin configuration: 1 pin, 4 tabs (12, 3, 6, 9 o'clock)
-  - [ ] Visual state: ON/OFF (derived from pin state)
+### 3.2 Indicator (LED) Component [*]
+- [*] Define Indicator class (extends Component)
+  - [*] Pin configuration: 1 pin, 4 tabs (12, 3, 6, 9 o'clock)
+  - [*] Visual state: ON/OFF (derived from pin state)
   
-- [ ] Implement ComponentLogic()
-  - [ ] Read pin state (passive component)
-  - [ ] No state changes (read-only)
+- [*] Implement ComponentLogic()
+  - [*] Read pin state (passive component)
+  - [*] No state changes (read-only)
   
-- [ ] Implement HandleInteraction()
-  - [ ] No interaction (passive component)
+- [*] Implement HandleInteraction()
+  - [*] No interaction (passive component)
   
-- [ ] Implement SimStart()
-  - [ ] Initialize pin to FLOAT
-  - [ ] Position tabs at clock positions
+- [*] Implement SimStart()
+  - [*] Initialize pin to FLOAT
+  - [*] Position tabs at clock positions
   
-- [ ] Implement SimStop()
-  - [ ] No cleanup needed
+- [*] Implement SimStop()
+  - [*] No cleanup needed
   
-- [ ] Add visual properties
-  - [ ] Position
-  - [ ] Color (optional)
-  - [ ] Label (optional)
+- [*] Add visual properties
+  - [*] General > ID (readonly)
+  - [*] General >Label (optional)
+  - [*] General >Label position (Top, bottom left or right)
+  - [*] Format > Color
+                    Drop down combo box with basic colors.
+                    If Red is selected set the On color to Bright red and the Off color to a dull red.
 
 **Tests:**
-- [ ] Test indicator creation
-- [ ] Test pin state reading
-- [ ] Test 4 tabs on 1 pin
-- [ ] Test visual state (HIGH → ON)
+- [*] Test indicator creation
+- [*] Test pin state reading
+- [*] Test 4 tabs on 1 pin
+- [*] Test visual state (HIGH → ON)
 
 ---
 
-### 3.3 DPDT Relay Component
-- [ ] **FIRST: Define exact pin configuration**
-  - [ ] Coil: 2 pins (COIL+ and COIL-)
-  - [ ] Pole 1: COM1, NO1, NC1 (3 pins)
-  - [ ] Pole 2: COM2, NO2, NC2 (3 pins)
-  - [ ] Total: 8 pins
+### 3.3 DPDT Relay Component [*]
+- [*] **FIRST: Define exact pin configuration**
+  - [*] Coil: 1 pins (COIL)
+  - [*] Pole 1: COM1, NO1, NC1 (3 pins)
+  - [*] Pole 2: COM2, NO2, NC2 (3 pins)
+  - [*] Total: 7 pins
   
-- [ ] Define DPDTRelay class (extends Component)
-  - [ ] Pin references for all 8 pins
-  - [ ] State: Energized/De-energized (boolean)
-  - [ ] Bridge IDs for both poles
-  - [ ] Coil threshold: HIGH = energized
+- [*] Define DPDTRelay class (extends Component)
+  - [*] Pin references for all 7 pins
+  - [*] State: Energized/De-energized (boolean)
+  - [*] Bridge IDs for both poles
+  - [*] Coil threshold: HIGH = energized
   
-- [ ] Implement ComponentLogic()
-  - [ ] Read coil pin states
-  - [ ] If coil HIGH → Energize
-  - [ ] If coil FLOAT → De-energize
-  - [ ] If state changed:
-    - [ ] Move bridges (see below)
-    - [ ] Mark affected VNETs dirty
+- [*] Implement ComponentLogic()
+  - [*] Read coil pin states
+  - [*] If coil HIGH → Start internal 10ms timer 
+  - [*] If coil FLOAT → Start internal 10ms timer
+  - [*] Once timer completes then energise or de-energize coil.
+  - [*] Timer is non blocking
+  - [*] If timer completes:
+    - [*] Move bridges (see below)
+    - [*] Mark affected VNETs dirty
   
-- [ ] Implement Bridge Management
-  - [ ] Create 2 bridges at SimStart
-  - [ ] De-energized: COM1→NC1, COM2→NC2
-  - [ ] Energized: COM1→NO1, COM2→NO2
-  - [ ] Remove from old VNETs, add to new VNETs
+- [*] Implement Bridge Management
+  - [*] Create 2 bridges at SimStart
+  - [*] De-energized: COM1→NC1, COM2→NC2
+  - [*] Energized: COM1→NO1, COM2→NO2
+  - [*] Remove from old VNETs, add to new VNETs
   
-- [ ] Implement HandleInteraction()
-  - [ ] Manual override? (optional feature)
+- [*] Implement SimStart()
+  - [*] Create bridges for both poles
+  - [*] Connect COM→NC (de-energized state)
+  - [*] Initialize coil to FLOAT
   
-- [ ] Implement SimStart()
-  - [ ] Create bridges for both poles
-  - [ ] Connect COM→NC (de-energized state)
-  - [ ] Initialize coil to FLOAT
+- [*] Implement SimStop()
+  - [*] Bridges removed by engine (or explicitly here?)
   
-- [ ] Implement SimStop()
-  - [ ] Bridges removed by engine (or explicitly here?)
-  
-- [ ] Add visual properties
-  - [ ] Position
-  - [ ] Orientation
-  - [ ] Label (optional)
+- [*] Add visual properties
+  - [*] General > ID (readonly)
+  - [*] General > Label (optional)
+  - [*] General > Label position (Top, bottom left or right)
+  - [*] Format > Color
+                    Drop down combo box with basic colors.
+                    If Red is selected set the On color to Bright red and the Off color to a dull red.
+  - [*] Format > Rotation 0, 90, 180,270 degrees
+  - [*] Format > Flip Horizontal
+  - [*] Format > Flip Vertical
 
 **Tests:**
-- [ ] Test relay creation
-- [ ] Test coil energization
-- [ ] Test bridge switching (NC→NO)
-- [ ] Test dual-pole independence
-- [ ] Test VNET dirty marking
-- [ ] Test bridge cleanup
+- [*] Test relay creation
+- [*] Test coil energization
+- [*] Test Timer and delayed switching
+- [*] Test bridge switching (NC→NO)
+- [*] Test dual-pole independence
+- [*] Test VNET dirty marking
+- [*] Test bridge cleanup
+
+---
+### 3.3.5 VCC [*]
+- [*] Define Indicator class (extends Component)
+  - [*] Pin configuration: 1 pin, 1 tab
+  - [*] Visual state: Always ON
+  
+- [*] Implement ComponentLogic()
+  - None
+  
+- [*] Implement HandleInteraction()
+  - None
+  
+- [*] Implement SimStart()
+  - [*] Initialize pin to HIGH
+
+  
+- [*] Implement SimStop()
+  - [*] Set pin to HIGH
+  - [*] No cleanup needed
+  
+- [*] Add visual properties
+  - [*] General > ID (readonly)
+
+**Tests:**
+- [*] Test goes HIGH on Sim Start
+- [*] Test goes FLOAT on Sim Stop
 
 ---
 
-### 3.4 Component Factory/Registry
-- [ ] Create ComponentFactory class
-  - [ ] Register component types
-  - [ ] Create component by type string
-  - [ ] List available component types
+### 3.4 Component Factory/Registry [*]
+- [*] Create ComponentFactory class
+  - [*] Register component types
+  - [*] Create component by type string
+  - [*] List available component types
   
-- [ ] Register all components
-  - [ ] ToggleSwitch
-  - [ ] Indicator
-  - [ ] DPDTRelay
+- [*] Register all components
+  - [*] ToggleSwitch
+  - [*] Indicator
+  - [*] DPDTRelay
+  - [*] VCC
   
-- [ ] Support deserialization
-  - [ ] Create component from file data
-  - [ ] Restore all properties
+- [*] Support deserialization
+  - [*] Create component from file data
+  - [*] Restore all properties
 
 **Tests:**
-- [ ] Test component creation by type
-- [ ] Test component registration
-- [ ] Test deserialization
+- [*] Test component creation by type
+- [*] Test component registration
+- [*] Test deserialization
 
 ---
 
