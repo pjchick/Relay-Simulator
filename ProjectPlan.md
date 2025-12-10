@@ -236,157 +236,156 @@ Development of a multi-threaded relay logic simulation engine with terminal inte
 ## PHASE 2: WIRE & VNET SYSTEM
 
 ### 2.1 Wire Structure Classes
-- [ ] Define Waypoint class
-  - [ ] WaypointId (string)
-  - [ ] Position (X, Y)
+- [*] Define Waypoint class
+  - [*] WaypointId (string)
+  - [*] Position (X, Y)
   
-- [ ] Define Junction class
-  - [ ] JunctionId (string)
-  - [ ] Position (X, Y)
-  - [ ] Collection of child Wires
+- [*] Define Junction class
+  - [*] JunctionId (string)
+  - [*] Position (X, Y)
+  - [*] Collection of child Wires
   
-- [ ] Define Wire class
-  - [ ] WireId (string)
-  - [ ] StartTabId (reference)
-  - [ ] EndTabId (reference, can be null if junction)
-  - [ ] Collection of Waypoints
-  - [ ] Collection of Junctions
-  - [ ] Parent wire (if nested)
+- [*] Define Wire class
+  - [*] WireId (string)
+  - [*] StartTabId (reference)
+  - [*] EndTabId (reference, can be null if junction)
+  - [*] Collection of Waypoints
+  - [*] Collection of Junctions
+  - [*] Parent wire (if nested)
   
-- [ ] Implement wire hierarchy
-  - [ ] Nested wire structure
-  - [ ] Navigate parent/child relationships
+- [*] Implement wire hierarchy
+  - [*] Nested wire structure
+  - [*] Navigate parent/child relationships
   
-- [ ] Add serialization support
+- [*] Add serialization support
 
 **Tests:**
-- [ ] Test wire creation
-- [ ] Test wire hierarchy
-- [ ] Test junction connections
-- [ ] Test junction deletions
-- [ ] Test serialization
+- [*] Test wire creation
+- [*] Test wire hierarchy
+- [*] Test junction connections
+- [*] Test junction deletions
+- [*] Test serialization
 
 ---
 
 ### 2.2 VNET Class
-- [ ] Define VNET class
-  - [ ] VnetId (string, 8 char UUID)
-  - [ ] Collection of TabIds
-  - [ ] Collection of LinkNames
-  - [ ] Collection of BridgeIds
-  - [ ] Current state (PinState)
-  - [ ] Dirty flag (boolean)
-  - [ ] PageId (for single-page VNETs)
+- [*] Define VNET class
+  - [*] VnetId (string, 8 char UUID)
+  - [*] Collection of TabIds
+  - [*] Collection of LinkNames
+  - [*] Collection of BridgeIds
+  - [*] Current state (PinState)
+  - [*] Dirty flag (boolean)
+  - [*] PageId (for single-page VNETs)
   
-- [ ] Implement VNET operations
-  - [ ] Add tab
-  - [ ] Remove tab
-  - [ ] Add link
-  - [ ] Remove link
-  - [ ] Add bridge
-  - [ ] Remove bridge
+- [*] Implement VNET operations
+  - [*] Add tab
+  - [*] Remove tab
+  - [*] Add link
+  - [*] Remove link
+  - [*] Add bridge
+  - [*] Remove bridge
   
-- [ ] Implement state management
-  - [ ] Evaluate VNET state (HIGH OR FLOAT)
-  - [ ] Mark dirty
-  - [ ] Clear dirty
-  - [ ] Check if dirty
+- [*] Implement state management
+  - [*] Evaluate VNET state (HIGH OR FLOAT)
+  - [*] Mark dirty
+  - [*] Clear dirty
+  - [*] Check if dirty
   
-- [ ] Thread-safety
-  - [ ] Add locking for state changes
-  - [ ] Add locking for dirty flag
+- [*] Thread-safety
+  - [*] Add locking for state changes
+  - [*] Add locking for dirty flag
 
 **Tests:**
-- [ ] Test VNET creation
-- [ ] Test tab management
-- [ ] Test state evaluation
-- [ ] Test dirty flag
-- [ ] Test thread-safety
+- [*] Test VNET creation
+- [*] Test tab management
+- [*] Test state evaluation
+- [*] Test dirty flag
+- [*] Test thread-safety
 
 ---
 
 ### 2.3 VNET Builder Algorithm
-- [ ] Implement graph traversal algorithm
-  - [ ] Start from unprocessed tab
-  - [ ] Follow wire to connected tabs
-  - [ ] Handle junctions (multiple branches)
-  - [ ] Mark tabs as processed
-  - [ ] Create VNET with all connected tabs
+- [*] Implement graph traversal algorithm
+  - [*] Follow wire to connected tabs
+  - [*] Handle junctions (multiple branches)
+  - [*] Mark tabs as processed
+  - [*] Create VNET with all connected tabs
   
-- [ ] Handle edge cases
-  - [ ] Disconnected tabs (single-tab VNETs)
-  - [ ] Complex junction networks
-  - [ ] Circular wire paths
+- [*] Handle edge cases
+  - [*] Disconnected tabs (single-tab VNETs)
+  - [*] Complex junction networks
+  - [*] Circular wire paths
   
-- [ ] Optimize for performance
-  - [ ] Efficient data structures
-  - [ ] Avoid redundant processing
+- [*] Optimize for performance
+  - [*] Efficient data structures
+  - [*] Avoid redundant processing
   
-- [ ] Create VnetBuilder class/module
-  - [ ] `BuildVnetsForPage(page)` - Main entry point
-  - [ ] Returns collection of VNETs
+- [*] Create VnetBuilder class/module
+  - [*] `BuildVnetsForPage(page)` - Main entry point
+  - [*] Returns collection of VNETs
 
 **Tests:**
-- [ ] Test simple wire (2 tabs)
-- [ ] Test junction (3+ tabs)
-- [ ] Test complex network
-- [ ] Test disconnected components
-- [ ] Test nested junctions
+- [*] Test simple wire (2 tabs)
+- [*] Test junction (3+ tabs)
+- [*] Test complex network
+- [*] Test disconnected components
+- [*] Test nested junctions
 
 ---
 
 ### 2.4 Link Resolution System
-- [ ] Implement link resolver
-  - [ ] Scan all components for LinkName property
-  - [ ] Build link name → components map
-  - [ ] Find VNETs containing linked component tabs
-  - [ ] Add link name to those VNETs
+- [*] Implement link resolver
+  - [*] Scan all components for LinkName property
+  - [*] Build link name → components map
+  - [*] Find VNETs containing linked component tabs
+  - [*] Add link name to those VNETs
   
-- [ ] Create LinkResolver class
-  - [ ] `ResolveLinks(document, vnets)` - Main entry point
+- [*] Create LinkResolver class
+  - [*] `ResolveLinks(document, vnets)` - Main entry point
   
-- [ ] Handle cross-page links
-  - [ ] Link VNETs from different pages
+- [*] Handle cross-page links
+  - [*] Link VNETs from different pages
   
-- [ ] Validate links
-  - [ ] Warn about unconnected links
-  - [ ] Detect link name conflicts
+- [*] Validate links
+  - [*] Warn about unconnected links
+  - [*] Detect link name conflicts
 
 **Tests:**
-- [ ] Test same-page links
-- [ ] Test cross-page links
-- [ ] Test multiple components same link name
-- [ ] Test unconnected links
+- [*] Test same-page links
+- [*] Test cross-page links
+- [*] Test multiple components same link name
+- [*] Test unconnected links
 
 ---
 
 ### 2.5 Bridge System
-- [ ] Define Bridge class
-  - [ ] BridgeId (string, runtime only)
-  - [ ] VnetId1 (first connected VNET)
-  - [ ] VnetId2 (second connected VNET)
-  - [ ] Owner component (reference)
+- [*] Define Bridge class
+  - [*] BridgeId (string, runtime only)
+  - [*] VnetId1 (first connected VNET)
+  - [*] VnetId2 (second connected VNET)
+  - [*] Owner component (reference)
   
-- [ ] Implement BridgeManager class
-  - [ ] Create bridge between two VNETs
-  - [ ] Remove bridge from VNETs
-  - [ ] Get bridge by ID
-  - [ ] Mark connected VNETs dirty
+- [*] Implement BridgeManager class
+  - [*] Create bridge between two VNETs
+  - [*] Remove bridge from VNETs
+  - [*] Get bridge by ID
+  - [*] Mark connected VNETs dirty
   
-- [ ] Add bridge operations to VNET
-  - [ ] Add bridge reference
-  - [ ] Remove bridge reference
-  - [ ] Get connected VNETs via bridges
+- [*] Add bridge operations to VNET
+  - [*] Add bridge reference
+  - [*] Remove bridge reference
+  - [*] Get connected VNETs via bridges
   
-- [ ] Thread-safety
-  - [ ] Lock during bridge add/remove
+- [*] Thread-safety
+  - [*] Lock during bridge add/remove
 
 **Tests:**
-- [ ] Test bridge creation
-- [ ] Test bridge removal
-- [ ] Test VNET dirty marking
-- [ ] Test thread-safety
-- [ ] Test multiple bridges on same VNET
+- [*] Test bridge creation
+- [*] Test bridge removal
+- [*] Test VNET dirty marking
+- [*] Test thread-safety
+- [*] Test multiple bridges on same VNET
 
 ---
 
