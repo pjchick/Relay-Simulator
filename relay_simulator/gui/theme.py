@@ -88,6 +88,32 @@ class VSCodeTheme:
     TOOLBOX_WIDTH = 200             # Toolbox panel width
     PROPERTIES_WIDTH = 250          # Properties panel width
     
+    # Component Rendering
+    COMPONENT_OUTLINE = '#505050'   # Component outline color
+    COMPONENT_FILL = '#2d2d2d'      # Component fill color
+    COMPONENT_SELECTED = ACCENT_BLUE  # Selected component highlight
+    COMPONENT_TEXT = FG_PRIMARY     # Component label text
+    
+    # Component-specific colors
+    SWITCH_ON = '#ff0000'           # Switch ON color (red)
+    SWITCH_OFF = '#800000'          # Switch OFF color (dark red)
+    INDICATOR_ON = '#00ff00'        # Indicator ON color (green)
+    INDICATOR_OFF = '#004000'       # Indicator OFF color (dark green)
+    RELAY_COIL = '#c0c0c0'          # Relay coil color (silver)
+    RELAY_CONTACT = '#ffa500'       # Relay contact color (orange)
+    VCC_COLOR = '#ff0000'           # VCC symbol color (red)
+    
+    # Wire colors
+    WIRE_UNPOWERED = '#505050'      # Unpowered wire (gray)
+    WIRE_POWERED = '#00ff00'        # Powered wire (green)
+    WIRE_SELECTED = ACCENT_BLUE     # Selected wire
+    WIRE_WIDTH = 2                  # Wire line width
+    
+    # Tab/Pin rendering
+    TAB_SIZE = 6                    # Tab indicator size (pixels)
+    TAB_COLOR = '#808080'           # Tab color (gray)
+    TAB_HOVER = ACCENT_BLUE         # Tab hover color
+    
     @staticmethod
     def configure_styles(root: tk.Tk) -> None:
         """

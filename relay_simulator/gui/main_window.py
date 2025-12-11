@@ -15,6 +15,9 @@ from gui.menu_bar import MenuBar
 from gui.settings import Settings
 from gui.settings_dialog import show_settings_dialog
 from gui.file_tabs import FileTabBar
+from gui.page_tabs import PageTabBar
+from gui.canvas import DesignCanvas
+from gui.toolbox import ToolboxPanel
 from core.document import Document
 from fileio.document_loader import DocumentLoader
 
@@ -162,6 +165,16 @@ class MainWindow:
             tab_id = self.file_tabs.add_tab(filename, filepath, document)
             self.file_tabs.set_active_tab(tab_id)
             
+            # Restore canvas state from first page
+            pages = document.get_all_pages()
+            if pages:
+                active_page = pages[0]
+                self.design_canvas.restore_canvas_state(
+                    active_page.canvas_x,
+                    active_page.canvas_y,
+                    active_page.canvas_zoom
+                )
+            
             # Add to recent documents
             self.settings.add_recent_document(filepath)
             self.menu_bar.add_recent_document(filepath)
@@ -196,6 +209,17 @@ class MainWindow:
             return
         
         try:
+            # Save current canvas state to document's active page
+            if active_tab.document:
+                active_page_id = self.page_tabs.get_active_page_id()
+                if active_page_id:
+                    active_page = active_tab.document.get_page(active_page_id)
+                    if active_page:
+                        canvas_x, canvas_y, zoom = self.design_canvas.save_canvas_state()
+                        active_page.canvas_x = canvas_x
+                        active_page.canvas_y = canvas_y
+                        active_page.canvas_zoom = zoom
+            
             # Save document
             self.document_loader.save_to_file(active_tab.document, active_tab.filepath)
             
@@ -236,7 +260,18 @@ class MainWindow:
             return
         
         try:
-            # Save document
+            # Save current canvas state to document's active page
+            if active_tab.document:
+                active_page_id = self.page_tabs.get_active_page_id()
+                if active_page_id:
+                    active_page = active_tab.document.get_page(active_page_id)
+                    if active_page:
+                        canvas_x, canvas_y, zoom = self.design_canvas.save_canvas_state()
+                        active_page.canvas_x = canvas_x
+                        active_page.canvas_y = canvas_y
+                        active_page.canvas_zoom = zoom
+            
+            # Save document to new filepath
             self.document_loader.save_to_file(active_tab.document, filepath)
             
             # Update tab with new filepath
@@ -305,18 +340,20 @@ class MainWindow:
         
     def _menu_zoom_in(self) -> None:
         """Handle View > Zoom In."""
-        # TODO: Implement in Phase 10.1
-        self.set_status("Zoom In (not yet implemented)")
+        self.design_canvas.zoom_in()
+        zoom_pct = int(self.design_canvas.get_zoom_level() * 100)
+        self.set_status(f"Zoom: {zoom_pct}%")
         
     def _menu_zoom_out(self) -> None:
         """Handle View > Zoom Out."""
-        # TODO: Implement in Phase 10.1
-        self.set_status("Zoom Out (not yet implemented)")
+        self.design_canvas.zoom_out()
+        zoom_pct = int(self.design_canvas.get_zoom_level() * 100)
+        self.set_status(f"Zoom: {zoom_pct}%")
         
     def _menu_reset_zoom(self) -> None:
         """Handle View > Reset Zoom."""
-        # TODO: Implement in Phase 10.1
-        self.set_status("Reset Zoom (not yet implemented)")
+        self.design_canvas.reset_zoom()
+        self.set_status("Zoom: 100%")
         
     def _create_widgets(self) -> None:
         """Create the main UI components."""
@@ -352,10 +389,13 @@ class MainWindow:
         self.file_tabs.on_tab_close = self._on_tab_close
         self.file_tabs.on_tab_modified = self._on_tab_modified
         
-        # Create initial untitled document
-        initial_doc = Document()
-        initial_doc.create_page("Page 1")
-        self.file_tabs.add_untitled_tab(initial_doc)
+        # Page tab bar (for multi-page navigation within a document)
+        self.page_tabs = PageTabBar(self.main_frame)
+        self.page_tabs.on_page_switch = self._on_page_switch
+        self.page_tabs.on_page_added = self._on_page_added
+        self.page_tabs.on_page_deleted = self._on_page_deleted
+        self.page_tabs.on_page_renamed = self._on_page_renamed
+        self.page_tabs.pack(side=tk.TOP, fill=tk.X)
         
         # Content area (for canvas, toolbars, etc.)
         self.content_frame = tk.Frame(
@@ -364,16 +404,43 @@ class MainWindow:
         )
         self.content_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         
-        # Add a centered label to show window is working
-        welcome_label = tk.Label(
+        # Component toolbox (left sidebar)
+        self.toolbox = ToolboxPanel(
             self.content_frame,
-            text="Relay Simulator III\n\nPhase 9.1: File Tab System",
-            font=VSCodeTheme.get_font('large', bold=True),
-            bg=VSCodeTheme.BG_PRIMARY,
-            fg=VSCodeTheme.FG_PRIMARY,
-            justify=tk.CENTER
+            on_component_select=self._on_component_selected
         )
-        welcome_label.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+        self.toolbox.pack(side=tk.LEFT, fill=tk.Y, padx=(0, 1))
+        
+        # Create design canvas
+        canvas_width = self.settings.get('default_canvas_width', 3000)
+        canvas_height = self.settings.get('default_canvas_height', 3000)
+        grid_size = self.settings.get_grid_size()
+        
+        self.design_canvas = DesignCanvas(
+            self.content_frame,
+            width=canvas_width,
+            height=canvas_height,
+            grid_size=grid_size
+        )
+        self.design_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+        # Track component placement mode
+        self.placement_component = None  # Component type being placed
+        self.placement_rotation = 0  # Rotation for placement (0, 90, 180, 270)
+        
+        # Track wire drawing mode
+        self.wire_mode = False  # True when wire tool is active
+        self.wire_start_tab = None  # Tab ID where wire starts
+        self.wire_preview_line = None  # Canvas item for wire preview
+        
+        # Bind canvas click for component placement and wire drawing
+        self.design_canvas.canvas.bind('<Button-1>', self._on_canvas_click)
+        self.design_canvas.canvas.bind('<Motion>', self._on_canvas_motion)
+        
+        # Create initial untitled document (after canvas is created)
+        initial_doc = Document()
+        initial_doc.create_page("Page 1")
+        self.file_tabs.add_untitled_tab(initial_doc)
         
     def _on_closing(self) -> None:
         """
@@ -449,17 +516,47 @@ class MainWindow:
     
     def _on_tab_switch(self, tab_id: str) -> None:
         """
-        Handle tab switch event.
+        Handle file tab switch event.
         
         Args:
             tab_id: ID of newly active tab
         """
         tab = self.file_tabs.get_tab(tab_id)
-        if tab:
+        if tab and tab.document:
+            # Save canvas state to previous document's active page
+            old_tab = self.file_tabs.get_tab(self._last_active_tab_id) if hasattr(self, '_last_active_tab_id') and self._last_active_tab_id else None
+            if old_tab and old_tab.document and self.page_tabs.get_active_page_id():
+                active_page = old_tab.document.get_page(self.page_tabs.get_active_page_id())
+                if active_page:
+                    canvas_x, canvas_y, zoom = self.design_canvas.save_canvas_state()
+                    active_page.canvas_x = canvas_x
+                    active_page.canvas_y = canvas_y
+                    active_page.canvas_zoom = zoom
+            
+            # Update page tabs for new document
+            self.page_tabs.set_document(tab.document)
+            
+            # Restore canvas state from new document's active page
+            active_page_id = self.page_tabs.get_active_page_id()
+            if active_page_id:
+                active_page = tab.document.get_page(active_page_id)
+                if active_page:
+                    # Set page on canvas (will render components)
+                    self.design_canvas.set_page(active_page)
+                    
+                    # Restore canvas state
+                    self.design_canvas.restore_canvas_state(
+                        active_page.canvas_x,
+                        active_page.canvas_y,
+                        active_page.canvas_zoom
+                    )
+            
             # Update window title
             self._update_window_title()
-            # TODO: Switch canvas to new document/page in Phase 10
             self.set_status(f"Switched to {tab.filename}")
+            
+            # Track last active tab for next switch
+            self._last_active_tab_id = tab_id
     
     def _on_tab_close(self, tab_id: str) -> bool:
         """
@@ -512,6 +609,76 @@ class MainWindow:
         # Update window title and unsaved changes flag
         self._update_window_title()
     
+    # Page tab callbacks
+    
+    def _on_page_switch(self, page_id: str) -> None:
+        """
+        Handle page switch event within current document.
+        
+        Args:
+            page_id: ID of newly active page
+        """
+        tab = self.file_tabs.get_active_tab()
+        if not tab or not tab.document:
+            return
+            
+        # Get the page
+        page = tab.document.get_page(page_id)
+        if not page:
+            return
+            
+        # Set page on canvas (will render components)
+        self.design_canvas.set_page(page)
+        
+        # Restore canvas state for this page
+        self.design_canvas.restore_canvas_state(
+            page.canvas_x,
+            page.canvas_y,
+            page.canvas_zoom
+        )
+        
+        self.set_status(f"Switched to page: {page.name}")
+    
+    def _on_page_added(self, page_id: str) -> None:
+        """
+        Handle page added event.
+        
+        Args:
+            page_id: ID of newly added page
+        """
+        tab = self.file_tabs.get_active_tab()
+        if tab:
+            # Mark document as modified
+            self.file_tabs.set_tab_modified(tab.tab_id, True)
+            self.set_status("New page added")
+    
+    def _on_page_deleted(self, page_id: str) -> None:
+        """
+        Handle page deleted event.
+        
+        Args:
+            page_id: ID of deleted page
+        """
+        tab = self.file_tabs.get_active_tab()
+        if tab:
+            # Mark document as modified
+            self.file_tabs.set_tab_modified(tab.tab_id, True)
+            self.set_status("Page deleted")
+    
+    def _on_page_renamed(self, page_id: str, new_name: str) -> None:
+        """
+        Handle page renamed event.
+        
+        Args:
+            page_id: ID of renamed page
+            new_name: New name of the page
+        """
+        tab = self.file_tabs.get_active_tab()
+        if tab:
+            # Mark document as modified
+            self.file_tabs.set_tab_modified(tab.tab_id, True)
+            self.set_status(f"Page renamed to: {new_name}")
+    
     def _update_window_title(self) -> None:
         """Update window title with active document name and modified indicator."""
         active_tab = self.file_tabs.get_active_tab()
@@ -528,3 +695,312 @@ class MainWindow:
         else:
             self.root.title("Relay Simulator III")
             self.has_unsaved_changes = False
+    
+    # === Component Placement ===
+    
+    def _on_component_selected(self, component_type: Optional[str]) -> None:
+        """
+        Handle component/tool selection from toolbox.
+        
+        Args:
+            component_type: Type selected (None = Select, 'Wire' = Wire tool, or component type)
+        """
+        # Reset modes
+        self.placement_component = None
+        self.wire_mode = False
+        self.placement_rotation = 0
+        self._clear_wire_preview()
+        
+        if component_type == 'Wire':
+            # Wire drawing mode
+            self.wire_mode = True
+            self.set_status("Click on a tab to start drawing a wire")
+            self.design_canvas.canvas.config(cursor="crosshair")
+        elif component_type:
+            # Component placement mode
+            self.placement_component = component_type
+            self.set_status(f"Click on canvas to place {component_type}. Press R to rotate.")
+            self.design_canvas.canvas.config(cursor="crosshair")
+        else:
+            # Select mode
+            self.set_status("Select tool active")
+            self.design_canvas.canvas.config(cursor="")
+    
+    def _on_canvas_click(self, event) -> None:
+        """
+        Handle canvas click for component placement and wire drawing.
+        
+        Args:
+            event: Click event
+        """
+        # Handle wire drawing mode
+        if self.wire_mode:
+            self._handle_wire_click(event)
+            return
+        
+        # Handle component placement mode
+        if not self.placement_component:
+            return
+        
+        # Get active page
+        tab = self.file_tabs.get_active_tab()
+        if not tab or not tab.document:
+            return
+        
+        active_page_id = self.page_tabs.get_active_page_id()
+        if not active_page_id:
+            return
+        
+        page = tab.document.get_page(active_page_id)
+        if not page:
+            return
+        
+        # Convert screen coordinates to canvas coordinates
+        canvas_x = self.design_canvas.canvas.canvasx(event.x)
+        canvas_y = self.design_canvas.canvas.canvasy(event.y)
+        
+        # Snap to grid
+        grid_size = self.settings.get_grid_size()
+        snap_size = grid_size // 2  # Snap to half-grid (10px for 20px grid)
+        snapped_x = round(canvas_x / snap_size) * snap_size
+        snapped_y = round(canvas_y / snap_size) * snap_size
+        
+        # Create component
+        component_id = tab.document.id_manager.generate_id()
+        
+        # Import component classes
+        from components.switch import Switch
+        from components.indicator import Indicator
+        from components.dpdt_relay import DPDTRelay
+        from components.vcc import VCC
+        
+        # Create component instance based on type
+        component = None
+        if self.placement_component == 'Switch':
+            component = Switch(component_id, page.page_id)
+        elif self.placement_component == 'Indicator':
+            component = Indicator(component_id, page.page_id)
+        elif self.placement_component == 'DPDTRelay':
+            component = DPDTRelay(component_id, page.page_id)
+        elif self.placement_component == 'VCC':
+            component = VCC(component_id, page.page_id)
+        
+        if component:
+            # Set position and rotation
+            component.position = (snapped_x, snapped_y)
+            component.rotation = self.placement_rotation
+            
+            # Add to page
+            page.add_component(component)
+            
+            # Mark document as modified
+            self.file_tabs.set_tab_modified(tab.tab_id, True)
+            
+            # Re-render components on canvas
+            self.design_canvas.set_page(page)
+            
+            # Return to select tool
+            self.toolbox.select_tool()
+            
+            self.set_status(f"{self.placement_component} placed at ({int(snapped_x)}, {int(snapped_y)})")
+    
+    # === Wire Drawing ===
+    
+    def _on_canvas_motion(self, event) -> None:
+        """
+        Handle mouse motion for wire preview.
+        
+        Args:
+            event: Motion event
+        """
+        if not self.wire_mode or not self.wire_start_tab:
+            return
+        
+        # Get canvas coordinates
+        canvas_x = self.design_canvas.canvas.canvasx(event.x)
+        canvas_y = self.design_canvas.canvas.canvasy(event.y)
+        
+        # Update wire preview line
+        if self.wire_preview_line:
+            self.design_canvas.canvas.delete(self.wire_preview_line)
+        
+        # Get start position from tab
+        start_pos = self._get_tab_canvas_position(self.wire_start_tab)
+        if start_pos:
+            self.wire_preview_line = self.design_canvas.canvas.create_line(
+                start_pos[0], start_pos[1],
+                canvas_x, canvas_y,
+                fill=VSCodeTheme.WIRE_SELECTED,
+                width=2,
+                dash=(5, 5)  # Dashed line for preview
+            )
+    
+    def _handle_wire_click(self, event) -> None:
+        """
+        Handle click in wire drawing mode.
+        
+        Args:
+            event: Click event
+        """
+        # Get canvas coordinates
+        canvas_x = self.design_canvas.canvas.canvasx(event.x)
+        canvas_y = self.design_canvas.canvas.canvasy(event.y)
+        
+        # Find tab at click location
+        tab_id = self._find_tab_at_position(canvas_x, canvas_y)
+        
+        if not tab_id:
+            # Clicked on empty canvas - cancel wire
+            if self.wire_start_tab:
+                self._clear_wire_preview()
+                self.wire_start_tab = None
+                self.set_status("Wire cancelled. Click on a tab to start a new wire.")
+            return
+        
+        if not self.wire_start_tab:
+            # First click - start wire
+            self.wire_start_tab = tab_id
+            self.set_status(f"Wire started. Click on another tab to complete the wire.")
+        else:
+            # Second click - complete wire
+            if tab_id == self.wire_start_tab:
+                self.set_status("Cannot connect a tab to itself. Click on a different tab.")
+                return
+            
+            self._create_wire(self.wire_start_tab, tab_id)
+            self._clear_wire_preview()
+            self.wire_start_tab = None
+            self.set_status("Wire created. Click on a tab to start another wire.")
+    
+    def _find_tab_at_position(self, x: float, y: float) -> Optional[str]:
+        """
+        Find tab at the given canvas position.
+        
+        Args:
+            x: Canvas X coordinate
+            y: Canvas Y coordinate
+            
+        Returns:
+            Tab ID if found, None otherwise
+        """
+        tab = self.file_tabs.get_active_tab()
+        if not tab or not tab.document:
+            return None
+        
+        active_page_id = self.page_tabs.get_active_page_id()
+        if not active_page_id:
+            return None
+        
+        page = tab.document.get_page(active_page_id)
+        if not page:
+            return None
+        
+        # Check all components and their tabs
+        for component in page.components.values():
+            comp_x, comp_y = component.position
+            for pin in component.pins.values():
+                for tab_obj in pin.tabs.values():
+                    tab_dx, tab_dy = tab_obj.relative_position
+                    tab_x = comp_x + tab_dx
+                    tab_y = comp_y + tab_dy
+                    
+                    # Check if click is within tab area (use TAB_SIZE for hit detection)
+                    hit_radius = VSCodeTheme.TAB_SIZE * 3  # More generous click area
+                    if abs(x - tab_x) <= hit_radius and abs(y - tab_y) <= hit_radius:
+                        return tab_obj.tab_id
+        
+        return None
+    
+    def _get_tab_canvas_position(self, tab_id: str) -> Optional[Tuple[float, float]]:
+        """
+        Get canvas position of a tab.
+        
+        Args:
+            tab_id: Tab ID
+            
+        Returns:
+            (x, y) position or None if not found
+        """
+        tab = self.file_tabs.get_active_tab()
+        if not tab or not tab.document:
+            return None
+        
+        active_page_id = self.page_tabs.get_active_page_id()
+        if not active_page_id:
+            return None
+        
+        page = tab.document.get_page(active_page_id)
+        if not page:
+            return None
+        
+        # Parse tab_id to find component
+        # Format: {component_id}.{pin_name}.{tab_name}
+        # Example: 7ab1d562.pin1.tab3
+        parts = tab_id.split('.')
+        if len(parts) < 3:
+            return None
+        
+        component_id = parts[0]
+        component = page.components.get(component_id)
+        if not component:
+            return None
+        
+        pin_name = parts[1]
+        pin_id = f"{component_id}.{pin_name}"
+        pin = component.pins.get(pin_id)
+        if not pin:
+            return None
+        
+        tab_obj = pin.tabs.get(tab_id)
+        if not tab_obj:
+            return None
+        
+        comp_x, comp_y = component.position
+        tab_dx, tab_dy = tab_obj.relative_position
+        return (comp_x + tab_dx, comp_y + tab_dy)
+    
+    def _create_wire(self, start_tab_id: str, end_tab_id: str) -> None:
+        """
+        Create a wire between two tabs.
+        
+        Args:
+            start_tab_id: Starting tab ID
+            end_tab_id: Ending tab ID
+        """
+        tab = self.file_tabs.get_active_tab()
+        if not tab or not tab.document:
+            return
+        
+        active_page_id = self.page_tabs.get_active_page_id()
+        if not active_page_id:
+            return
+        
+        page = tab.document.get_page(active_page_id)
+        if not page:
+            return
+        
+        # Import Wire class
+        from core.wire import Wire
+        
+        # Generate wire ID
+        wire_id = tab.document.id_manager.generate_id()
+        
+        # Create wire
+        wire = Wire(wire_id, start_tab_id, end_tab_id)
+        
+        # Add to page
+        page.add_wire(wire)
+        
+        # Mark document as modified
+        self.file_tabs.set_tab_modified(tab.tab_id, True)
+        
+        # Re-render page (including new wire)
+        self.design_canvas.set_page(page)
+        print("Canvas re-rendered")  # Debug
+    
+    def _clear_wire_preview(self) -> None:
+        """Clear wire preview line from canvas."""
+        if self.wire_preview_line:
+            self.design_canvas.canvas.delete(self.wire_preview_line)
+            self.wire_preview_line = None
+

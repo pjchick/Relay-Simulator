@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0",
+  "pages": [
+    {
+      "page_id": "4fd4f3b5",
+      "name": "Page 1",
+      "canvas_x": 0.0,
+      "canvas_y": 0.0,
+      "canvas_zoom": 1.0
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "author": "",
+    "created": "",
+    "modified": "",
+    "description": ""
+  }
+}

@@ -27,6 +27,11 @@ class Page:
         self.name = name
         self.components: Dict[str, 'Component'] = {}
         self.wires: Dict[str, 'Wire'] = {}  # Will be implemented later
+        
+        # Canvas state (persisted to .rsim)
+        self.canvas_x: float = 0.0
+        self.canvas_y: float = 0.0
+        self.canvas_zoom: float = 1.0
     
     # === Component Management ===
     
@@ -128,7 +133,10 @@ class Page:
         """
         result = {
             'page_id': self.page_id,
-            'name': self.name
+            'name': self.name,
+            'canvas_x': self.canvas_x,
+            'canvas_y': self.canvas_y,
+            'canvas_zoom': self.canvas_zoom
         }
         
         # Optional fields (only include if not empty)
@@ -158,6 +166,11 @@ class Page:
             page_id=data['page_id'],
             name=data.get('name', 'Untitled')
         )
+        
+        # Restore canvas state (with defaults for older files)
+        page.canvas_x = data.get('canvas_x', 0.0)
+        page.canvas_y = data.get('canvas_y', 0.0)
+        page.canvas_zoom = data.get('canvas_zoom', 1.0)
         
         # Deserialize components (if factory provided)
         if component_factory and 'components' in data:
