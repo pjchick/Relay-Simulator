@@ -173,9 +173,10 @@ class VCC(Component):
         """
         vcc = cls(data["component_id"], data.get("page_id", "page001"))
         
-        # Restore position and rotation
+        # Restore position (schema uses {x, y} object)
         if "position" in data:
-            vcc.position = tuple(data["position"])
+            pos = data["position"]
+            vcc.position = (pos['x'], pos['y'])
         if "rotation" in data:
             vcc.rotation = data["rotation"]
         if "link_name" in data:

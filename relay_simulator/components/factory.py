@@ -79,18 +79,19 @@ class ComponentFactory:
         Uses the component's from_dict() class method for deserialization.
         
         Args:
-            data: Serialized component data (must include 'type' field)
+            data: Serialized component data (must include 'component_type' field)
             
         Returns:
             Component instance restored from data
             
         Raises:
-            ValueError: If 'type' field missing or type not registered
+            ValueError: If 'component_type' field missing or type not registered
         """
-        if 'type' not in data:
-            raise ValueError("Component data missing 'type' field")
+        # Schema uses 'component_type' field (not 'type')
+        if 'component_type' not in data:
+            raise ValueError("Component data missing 'component_type' field")
         
-        type_name = data['type']
+        type_name = data['component_type']
         
         if type_name not in self._registry:
             raise ValueError(f"Unknown component type: '{type_name}'")

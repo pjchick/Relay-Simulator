@@ -217,20 +217,30 @@ class Component(ABC):
     
     def to_dict(self) -> Dict[str, Any]:
         """
-        Serialize component to dict for saving to .rsim file.
+        Serialize component to dict for saving to .rsim file (matches schema).
         
         Returns:
             dict: Component data
         """
-        return {
+        result = {
             'component_id': self.component_id,
-            'type': self.component_type,
-            'position': self.position,
-            'rotation': self.rotation,
-            'properties': self.properties,
-            'link_name': self.link_name,
-            'pins': {pin_id: pin.to_dict() for pin_id, pin in self.pins.items()}
+            'component_type': self.component_type,
+            'position': {
+                'x': self.position[0],
+                'y': self.position[1]
+            },
+            'pins': [pin.to_dict() for pin in self.pins.values()]
         }
+        
+        # Optional fields (only include if not default)
+        if self.rotation != 0:
+            result['rotation'] = self.rotation
+        if self.link_name is not None:
+            result['link_name'] = self.link_name
+        if self.properties:
+            result['properties'] = self.properties.copy()
+        
+        return result
     
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'Component':

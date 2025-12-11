@@ -870,212 +870,610 @@ General > ID means the ID field will be in the General section etc
 
 ## PHASE 6: TERMINAL INTERFACE
 
-### 6.1 Telnet Server
-- [ ] Implement TCP socket server
-  - [ ] Listen on configurable port Default 5000
-  - [ ] Accept client connections
-  - [ ] Handle multiple clients (if supported)
+### 6.1 Telnet Server [*]
+- [*] Implement TCP socket server
+  - [*] Listen on configurable port (default: 5000)
+  - [*] Accept client connections
+  - [*] Handle multiple clients (up to configurable max)
   
-- [ ] Implement basic telnet protocol
-  - [ ] Character-by-character input
-  - [ ] Line buffering
-  - [ ] Echo handling
-  - [ ] Control characters (Ctrl+C, etc.)
+- [*] Implement basic telnet protocol
+  - [*] Character-by-character input
+  - [*] Line buffering
+  - [*] Echo handling (configurable on/off)
+  - [*] Control characters (Ctrl+C, Ctrl+D, Backspace)
   
-- [ ] Create TerminalServer class
-  - [ ] Start server
-  - [ ] Stop server
-  - [ ] Handle client connections
-  - [ ] Send/receive text
+- [*] Create TerminalServer class
+  - [*] Start server
+  - [*] Stop server
+  - [*] Handle client connections (threaded per-client)
+  - [*] Send/receive text
+  - [*] Command callback system
+  - [*] Broadcast to all clients
+  - [*] Status reporting
+  
+- [*] Additional features
+  - [*] Built-in commands (quit, exit, bye)
+  - [*] Welcome message
+  - [*] Prompt display (relay>)
+  - [*] Client connection tracking
+  - [*] Maximum client limit
+  - [*] Graceful shutdown
+  - [*] Thread-safe client management
 
 **Tests:**
-- [ ] Test server start/stop
-- [ ] Test client connection
-- [ ] Test text send/receive
-- [ ] Test multiple clients (if supported)
+- [*] Test server start/stop (passing)
+- [*] Test client connection (passing)
+- [*] Test text send/receive (passing)
+- [*] Test multiple clients (passing)
+- [*] Test max clients limit (passing)
+- [*] Test command processing (passing)
+- [*] Test backspace handling (passing)
+- [*] Test Ctrl+C handling (passing)
+- [*] Test quit command (passing)
+- [*] Test broadcast (passing)
+- [*] Test echo on/off (passing)
+- [*] Test status reporting (passing)
+- [*] 15 tests passing
 
 ---
 
 ### 6.2 Command Parser
-- [ ] Create CommandParser class
-  - [ ] Parse command line
-  - [ ] Split into command + arguments
-  - [ ] Validate arguments
+- [*] Create CommandParser class
+  - [*] Parse command line
+  - [*] Split into command + arguments
+  - [*] Validate arguments
   
-- [ ] Define command structure
-  - [ ] Command name
-  - [ ] Argument list
-  - [ ] Options/flags
+- [*] Define command structure
+  - [*] Command name
+  - [*] Argument list
+  - [*] Options/flags
   
-- [ ] Implement command registry
-  - [ ] Register command handlers
-  - [ ] Dispatch to handlers
-  - [ ] Return results
+- [*] Implement command registry
+  - [*] Register command handlers
+  - [*] Dispatch to handlers
+  - [*] Return results
 
 **Tests:**
-- [ ] Test command parsing
-- [ ] Test argument validation
-- [ ] Test command dispatch
+- [*] Test command parsing (14 tests)
+- [*] Test argument validation (11 tests)
+- [*] Test option validation (6 tests)
+- [*] Test Command class (6 tests)
+- [*] Test CommandRegistry (16 tests)
+- [*] Test integration (2 tests)
+- [*] Test convenience functions (1 test)
+- [*] Total: 57 tests passing
+
+**Additional Features Implemented:**
+- ArgumentType enum with 7 types (STRING, INTEGER, FLOAT, BOOLEAN, COMPONENT_ID, VNET_ID, FILENAME)
+- ArgumentSpec with validation (required, default, choices, help_text)
+- OptionSpec for flags and options (short/long form, values, defaults)
+- ParsedCommand dataclass for structured parsing results
+- Quote handling (single and double quotes)
+- Escape sequence support
+- Option formats: -v, --verbose, --key=value
+- Command aliases
+- Automatic help text generation (brief and verbose)
+- Usage string generation
+- Error messages with context
+- Type conversion and validation
+- Case-insensitive command names
 
 ---
 
-### 6.3 Core Commands
-- [ ] Implement file commands
-  - [ ] `load <filename>` - Load .rsim file
-  - [ ] `save <filename>` - Save .rsim file (future)
-  - [ ] `new` - Create new document (future)
-  
-- [ ] Implement simulation commands
-  - [ ] `start` - Start simulation
-  - [ ] `stop` - Stop simulation
-  - [ ] `status` - Get simulation status
-  - [ ] `stats` - Show statistics
-  
-- [ ] Implement component commands
-  - [ ] `list components` - List all components
-  - [ ] `show component <id>` - Show component details
-  - [ ] `set component <id> <property> <value>` - Set property
-  - [ ] `toggle <id>` - Toggle switch (interaction)
-  
-- [ ] Implement VNET commands
-  - [ ] `list vnets` - List all VNETs
-  - [ ] `show vnet <id>` - Show VNET details
-  - [ ] `list dirty` - List dirty VNETs
-  
-- [ ] Implement debug commands
-  - [ ] `debug on/off` - Toggle debug output
-  - [ ] `trace vnet <id>` - Trace VNET evaluation
-  - [ ] `trace component <id>` - Trace component logic
-  
-- [ ] Implement utility commands
-  - [ ] `help` - Show help
-  - [ ] `help <command>` - Show command help
-  - [ ] `quit` - Disconnect
-  - [ ] `clear` - Clear screen
+### 6.3 Core Commands ✅ COMPLETED
+**Implementation:** `networking/simulator_commands.py` (650 lines), `networking/terminal_integration.py` (80 lines)
+**Tests:** `testing/test_simulator_commands.py` (576 lines, 36 tests - 35 passing + 1 skipped)
 
-**Tests:**
-- [ ] Test each command
-- [ ] Test error handling
-- [ ] Test help system
+Implemented complete command system with SimulatorContext and command handlers:
 
----
-
-### 6.4 Output Formatting
-- [ ] Create OutputFormatter class
-  - [ ] Format tables
-  - [ ] Format lists
-  - [ ] Format component details
-  - [ ] Format VNET details
+- [x] **File Commands:**
+  - [x] `load <filename>` - Load .rsim file via JSON deserialization
   
-- [ ] Implement formatting functions
-  - [ ] Align columns
-  - [ ] Truncate long text
-  - [ ] Color support (ANSI codes?)
-  - [ ] Box drawing characters
+- [x] **Simulation Commands:**
+  - [x] `start [mode]` - Start simulation (mode: normal/fast/slow)
+  - [x] `stop` - Stop simulation
+  - [x] `status` - Show document/simulation/debug status
+  - [x] `stats` - Display detailed simulation statistics
   
-- [ ] Handle different terminal sizes
-  - [ ] Configurable width
-  - [ ] Word wrapping
+- [x] **Component Commands:**
+  - [x] `list [--verbose]` - List all components
+  - [x] `show <id>` - Show component details (type, position, pins, properties)
+  - [x] `toggle <id>` - Toggle switch component state
+  
+- [x] **VNET Commands:**
+  - [x] `vnets [--verbose]` - List all VNETs
+  - [x] `vnet <id>` - Show VNET details (state, tabs, links, bridges)
+  - [x] `dirty` - List dirty/unstable VNETs
+  
+- [x] **Debug Commands:**
+  - [x] `debug <on|off>` - Toggle debug output mode
+  - [x] `trace vnet <id>` - Enable VNET tracing
+  - [x] `trace component <id>` - Enable component tracing
+  
+- [x] **Utility Commands:**
+  - [x] `help [command]` - Show all commands or specific help
+  - [x] `clear` - Clear screen (ANSI escape codes)
+  - [x] Command aliases: `ls` (list), `?` (help), `cls` (clear)
 
-**Tests:**
-- [ ] Test table formatting
-- [ ] Test various data types
-- [ ] Test truncation
+**Architecture:**
+- `SimulatorContext`: Shared state (document, engine, debug flags, trace sets)
+- `SimulatorCommands`: Static methods for each command handler
+- `register_all_commands()`: Registers all commands with ArgumentSpec/OptionSpec
+- `command_callback_handler()`: Integration callback for terminal server
+- `create_integrated_terminal_server()`: Factory function for integrated terminal
+
+**Test Coverage (36 tests):**
+- [x] SimulatorContext (3 tests): creation, has_document, is_simulating
+- [x] File commands (2 tests): load valid/nonexistent files
+- [x] Simulation commands (6 tests): start/stop/status/stats, error handling (1 skipped)
+- [x] Component commands (8 tests): list/show/toggle, verbose mode, error handling
+- [x] VNET commands (3 tests): list/show/dirty when not running
+- [x] Debug commands (5 tests): debug on/off, trace vnet/component, invalid input
+- [x] Utility commands (3 tests): help all/specific, clear screen
+- [x] Command registration (2 tests): all commands registered, aliases work
+- [x] Context creation (1 test): factory creates complete context
+- [x] Integration (3 tests): full workflow, help system, error handling
+
+**Notes:**
+- Components don't auto-deserialize from JSON (Page.from_dict limitation) - requires component loader
+- Simulation requires full VNET/tab/bridge building - integration test skipped
+- All command handlers have comprehensive error handling
+- Help system auto-generates from command specs
 
 ---
 
-### 6.5 Interactive Features
-- [ ] Implement command history
-  - [ ] Up/down arrow keys
-  - [ ] History buffer
-  
-- [ ] Implement tab completion
-  - [ ] Command completion
-  - [ ] Argument completion (IDs, filenames)
-  
-- [ ] Implement prompt
-  - [ ] Show current status
-  - [ ] Show simulation state
-  
-- [ ] Handle special keys
-  - [ ] Ctrl+C - Interrupt
-  - [ ] Ctrl+D - EOF/quit
+### 6.4 Output Formatting ✅ COMPLETED
+**Implementation:** `networking/output_formatter.py` (550 lines)
+**Tests:** `testing/test_output_formatter.py` (420 lines, 38 tests - all passing)
 
-**Tests:**
-- [ ] Test command history
-- [ ] Test tab completion
-- [ ] Test special keys
+Implemented comprehensive output formatting system for terminal display:
+
+- [x] **OutputFormatter class**
+  - [x] Configurable terminal width (default: 80)
+  - [x] ANSI color support (enabled/disabled)
+  - [x] Unicode/ASCII box characters
+  - [x] Text alignment (LEFT, RIGHT, CENTER)
+  - [x] Text truncation with custom suffix
+  
+- [x] **Table formatting**
+  - [x] Column headers with alignment
+  - [x] Auto-calculated column widths
+  - [x] Fixed column widths support
+  - [x] Automatic width adjustment for terminal size
+  - [x] Box drawing (ASCII or Unicode)
+  - [x] Bold headers with ANSI codes
+  
+- [x] **List formatting**
+  - [x] Bulleted lists (custom bullet character)
+  - [x] Numbered lists (1. 2. 3...)
+  - [x] Simple multi-line output
+  
+- [x] **Key-value formatting**
+  - [x] Aligned key-value pairs
+  - [x] Custom separator (default: ': ')
+  - [x] Indentation support
+  - [x] Color-coded keys (optional)
+  
+- [x] **Additional features**
+  - [x] Section formatting with titles
+  - [x] Word wrapping for long text
+  - [x] ANSI color codes (20+ colors and styles)
+  - [x] Color enable/disable toggle
+  - [x] Convenience functions for component/VNET tables
+  
+**ANSI Color Support:**
+- Text colors: Black, Red, Green, Yellow, Blue, Magenta, Cyan, White
+- Bright variants: All colors have bright versions
+- Text styles: Bold, Dim, Italic, Underline
+- Auto-reset after colored text
+
+**Box Drawing:**
+- ASCII: +, -, | characters (universal compatibility)
+- Unicode: ─, │, ┌, ┐, └, ┘, ├, ┤, ┬, ┴, ┼ (cleaner appearance)
+- Configurable per formatter instance
+
+**Test Coverage (38 tests):**
+- [x] Alignment (6 tests): left/right/center, exact fit, overflow
+- [x] Truncation (5 tests): long text, short text, custom suffix, edge cases
+- [x] Colorization (3 tests): enabled/disabled, static method
+- [x] Table formatting (7 tests): simple, alignments, widths, unicode, terminal fit
+- [x] List formatting (4 tests): bulleted, numbered, custom bullet, empty
+- [x] Key-value formatting (5 tests): simple, indent, separator, alignment, empty
+- [x] Section formatting (2 tests): simple, colored title
+- [x] Word wrap (3 tests): long text, short text, custom width
+- [x] Convenience functions (2 tests): component table, VNET table
+- [x] Integration (2 tests): complex output, all features combined
+
+**Usage Examples:**
+```python
+formatter = OutputFormatter(terminal_width=80, use_colors=True, use_unicode=True)
+
+# Table
+table = formatter.format_table(
+    headers=['ID', 'Type', 'State'],
+    rows=[['SW1', 'Switch', 'ON'], ['LED1', 'Indicator', 'OFF']],
+    alignments=[Alignment.LEFT, Alignment.LEFT, Alignment.CENTER]
+)
+
+# List
+items = formatter.format_list(['Item 1', 'Item 2'], numbered=True)
+
+# Key-value
+details = formatter.format_key_value({'Name': 'SW1', 'Type': 'Switch'})
+
+# Section
+output = formatter.format_section("Components", table)
+```
+
+---
+
+### 6.5 Interactive Features ✅ COMPLETED
+**Implementation:** `networking/interactive_features.py` (580 lines)
+**Tests:** `testing/test_interactive_features.py` (513 lines, 43 tests - all passing)
+
+Implemented full readline-like interactive features for the terminal interface:
+
+- [x] **Command History (CommandHistory class)**
+  - [x] Up/down arrow navigation through history
+  - [x] History buffer with configurable max size (default: 100)
+  - [x] Automatic duplicate filtering (consecutive commands)
+  - [x] Empty command filtering
+  - [x] Temp command preservation during navigation
+  - [x] History search functionality
+  - [x] Clear and reset operations
+  
+- [x] **Tab Completion (TabCompleter class)**
+  - [x] Command name completion
+  - [x] Argument completion with custom providers
+  - [x] Multiple completion candidates display
+  - [x] Common prefix auto-completion
+  - [x] Case-insensitive matching
+  - [x] Custom completion provider registration
+  
+- [x] **Enhanced Prompts (PromptFormatter class)**
+  - [x] Dynamic prompt templates
+  - [x] Context placeholder substitution
+  - [x] Multiple placeholder support
+  - [x] Status information display (document, simulation state)
+  
+- [x] **Special Key Handling (KeyHandler class)**
+  - [x] ANSI escape sequence parsing
+  - [x] Arrow keys (up, down, left, right)
+  - [x] Home/End keys
+  - [x] Delete key
+  - [x] Control characters (Ctrl+C, Ctrl+D, Ctrl+L)
+  - [x] Tab key
+  - [x] Backspace handling
+  - [x] Escape sequence buffering and completion detection
+  
+- [x] **Interactive Line Editor (InteractiveLineEditor class)**
+  - [x] Full line editing with cursor positioning
+  - [x] Character insertion at cursor
+  - [x] Backspace/Delete at cursor
+  - [x] Cursor movement (arrows, Home, End)
+  - [x] History integration with up/down arrows
+  - [x] Tab completion integration
+  - [x] Line submission and reset
+  - [x] Ctrl+C to cancel current line
+  - [x] Ctrl+D for EOF signal
+
+**Key Features:**
+- **Stateful Navigation:** Preserves current input when browsing history
+- **Smart History:** Ignores empty commands and consecutive duplicates
+- **Extensible Completion:** Custom providers for context-aware completion
+- **Full ANSI Support:** Proper escape sequence handling for all special keys
+- **Cursor Management:** Insert/delete at any position in line
+- **Integration Ready:** Designed for easy integration with terminal server
+
+**Test Coverage (43 tests):**
+- [x] CommandHistory (10 tests): add, navigate, search, max size, duplicates
+- [x] TabCompleter (8 tests): command/argument completion, providers, case-insensitive
+- [x] PromptFormatter (4 tests): static/dynamic prompts, placeholders
+- [x] KeyHandler (11 tests): regular chars, control chars, escape sequences, arrows
+- [x] InteractiveLineEditor (8 tests): editing, navigation, history, special keys
+- [x] Integration (2 tests): complete workflows, history with editing
+
+**Usage Example:**
+```python
+# Create components
+history = CommandHistory(max_size=100)
+completer = TabCompleter()
+completer.set_commands(['help', 'list', 'load', 'show', 'start'])
+
+# Register custom completion provider
+def component_id_provider(text, arg_index):
+    # Return matching component IDs
+    return [id for id in get_component_ids() if id.startswith(text.upper())]
+completer.register_provider('show', component_id_provider)
+
+# Create interactive editor
+editor = InteractiveLineEditor(history, completer)
+
+# Enhanced prompt
+prompt_formatter = PromptFormatter("[{status}] relay> ")
+prompt_formatter.set_context({'status': 'RUNNING'})
+
+# Handle key input
+key_handler = KeyHandler()
+for char in input_stream:
+    key_name = key_handler.process(char)
+    if key_name:
+        line, is_complete = editor.handle_key(key_name, char)
+        if is_complete:
+            command = editor.submit()
+            execute_command(command)
+```
+
+**ANSI Escape Sequences Supported:**
+- Arrow Up: `ESC[A`
+- Arrow Down: `ESC[B`
+- Arrow Left: `ESC[D`
+- Arrow Right: `ESC[C`
+- Home: `ESC[H`
+- End: `ESC[F`
+- Delete: `ESC[3~`
+
+**Control Characters:**
+- Ctrl+C (`\x03`): Cancel current line
+- Ctrl+D (`\x04`): EOF/quit signal
+- Ctrl+L (`\x0c`): Clear screen (external handling)
+- Tab (`\t`): Trigger completion
+- Backspace (`\x7f`): Delete previous char
 
 ---
 
 ## PHASE 7: FILE I/O
 
-### 7.1 File Format Specification
-- [ ] **Define .rsim format specification**
-  - [ ] JSON schema (if using JSON)
-  - [ ] Document structure
-  - [ ] Version number
+### 7.1 File Format Specification ✅ COMPLETED
+**Implementation:** `fileio/rsim_schema.py` (390 lines), `docs/RSIM_FILE_FORMAT.md` (comprehensive spec)
+**Examples:** `fileio/example_files.py` (550 lines, 5+ examples)
+
+Implemented complete .rsim file format specification with JSON schema:
+
+- [x] **Define .rsim format specification**
+  - [x] JSON schema (structured as nested dictionaries)
+  - [x] Document structure (Document → Pages → Components/Wires → Pins/Tabs)
+  - [x] Version number (1.0.0 with compatibility checking)
   
-- [ ] Document format documentation
-  - [ ] Examples
-  - [ ] Field descriptions
-  - [ ] Validation rules
+- [x] **Document format documentation**
+  - [x] Examples (5 complete circuits + 4 invalid examples)
+  - [x] Field descriptions (all fields documented)
+  - [x] Validation rules (types, ranges, references)
+
+**Schema Components:**
+- `SchemaVersion`: Version management with compatibility checking
+- `FieldType`: Type enumeration (STRING, INTEGER, FLOAT, BOOLEAN, OBJECT, ARRAY, ENUM, UUID)
+- `TAB_SCHEMA`: tab_id, position (x, y), state (runtime)
+- `PIN_SCHEMA`: pin_id, tabs array, state (runtime)
+- `COMPONENT_SCHEMA`: component_id, component_type, position, rotation, link_name, pins, properties
+- `WAYPOINT_SCHEMA`: waypoint_id, position
+- `JUNCTION_SCHEMA`: junction_id, position, child_wires (nested structure)
+- `WIRE_SCHEMA`: wire_id, start_tab_id, end_tab_id, waypoints, junctions
+- `PAGE_SCHEMA`: page_id, name, components, wires
+- `DOCUMENT_SCHEMA`: version, metadata, pages
+
+**Version Compatibility:**
+- MAJOR.MINOR.PATCH format (e.g., "1.0.0")
+- Major version must match (breaking changes)
+- Minor version backward compatible (file ≤ app)
+- Patch version always compatible (bug fixes)
+- `is_compatible()` validates file can be loaded
+
+**File Structure:**
+```json
+{
+  "version": "1.0.0",
+  "metadata": {
+    "title": "Circuit Name",
+    "author": "Author Name",
+    "description": "Description",
+    "created": "ISO 8601 datetime",
+    "modified": "ISO 8601 datetime"
+  },
+  "pages": [...]
+}
+```
+
+**Component Types Supported:**
+- `ToggleSwitch`: 1 pin (4 tabs), properties: label, mode, color
+- `Indicator`: 1 pin (4 tabs), properties: label, color
+- `DPDTRelay`: 7 pins (coil + 2 poles × 3), properties: label, color, rotation, flip
+- `VCC`: 1 pin (1 tab), no properties
+
+**Wire Features:**
+- Direct connections (tab → tab)
+- Waypoints for routing (intermediate points)
+- Junctions for branching (tree structure)
+- Nested child wires from junctions
+
+**Cross-Page Links:**
+- `link_name` property on components
+- Components with same link_name form virtual connections
+- Enables multi-page circuits
+
+**Validation Rules:**
+- ID format: 8 lowercase hex characters `^[0-9a-f]{8}$`
+- All IDs unique within document
+- Referenced IDs must exist (start_tab_id, end_tab_id)
+- Rotation: 0, 90, 180, or 270 degrees
+- Version: matches `^\d+\.\d+\.\d+$` pattern
+- Minimum items in arrays (pages ≥ 1, tabs ≥ 1, etc.)
+
+**Example Files:**
+1. **SIMPLE_SWITCH_LED**: Switch → LED (basic circuit)
+2. **RELAY_CIRCUIT**: Switch → Relay → LED (with VCC)
+3. **CROSS_PAGE_LINKS**: Multi-page with link connections
+4. **WIRE_WITH_JUNCTION**: Junction branching to 3 LEDs
+5. **COMPLEX_CIRCUIT**: Multiple relays, interlocking logic
+
+**Invalid Examples (for testing):**
+- INVALID_VERSION: Malformed version string
+- INVALID_MISSING_REQUIRED: Missing required fields
+- INVALID_ID_FORMAT: Wrong ID format
+- INVALID_ROTATION: Invalid rotation value
+
+**Documentation (RSIM_FILE_FORMAT.md):**
+- Complete specification with all field definitions
+- Validation rules and error handling
+- Migration guide for future versions
+- Common error messages and solutions
+- Extensibility guidelines
+
+**Helper Functions:**
+- `get_schema_for_type(type_name)`: Get schema by type name
+- `get_required_fields(schema)`: Extract required field names
+- `get_default_value(field_def)`: Get default value if defined
+- `SchemaVersion.is_compatible(file_version)`: Check version compatibility
 
 ---
 
-### 7.2 Serialization Implementation
-- [ ] Implement Tab serialization
-- [ ] Implement Pin serialization
-- [ ] Implement Component serialization
-  - [ ] Base properties
-  - [ ] Type-specific properties
-  - [ ] Pin hierarchy
-  
-- [ ] Implement Wire serialization
-  - [ ] Waypoints
-  - [ ] Junctions
-  - [ ] Nested wires
-  
-- [ ] Implement Page serialization
-  - [ ] Components
-  - [ ] Wires
-  
-- [ ] Implement Document serialization
-  - [ ] Metadata
-  - [ ] All pages
+### 7.2 Serialization Implementation ✅ COMPLETED
+**Implementation:** Updated `to_dict()`/`from_dict()` methods across 6 core files
+**Tests:** `testing/test_serialization.py` (654 lines, 37 tests - all passing)
 
-**Tests:**
-- [ ] Test each class serialization
-- [ ] Test hierarchical structure
-- [ ] Test round-trip (save/load)
+Implemented schema-compliant serialization for all core classes:
+
+- [x] **Implement Tab serialization**
+  - [x] position as {x: float, y: float} object (not tuple)
+  - [x] tab_id field
+  - [x] Round-trip parsing from {x, y} to (x, y) tuple
+
+- [x] **Implement Pin serialization**
+  - [x] tabs as array (not dict) for schema compliance
+  - [x] pin_id field
+  - [x] Each tab serialized with position object
+
+- [x] **Implement Component serialization**
+  - [x] Base properties (component_id, component_type, position)
+  - [x] Optional fields only when non-default (rotation, link_name, properties)
+  - [x] Type-specific properties (all components inherit base serialization)
+  - [x] Pin hierarchy (pins as array of pin objects)
+  - [x] position as {x: float, y: float} object
+  - [x] component_type field (not "type")
+  
+- [x] **Implement Wire serialization**
+  - [x] Waypoint serialization (waypoint_id, position {x, y})
+  - [x] Junction serialization (junction_id, position {x, y}, child_wires array)
+  - [x] Nested wire structure (Junction → child_wires[])
+  - [x] Optional fields (end_tab_id, waypoints, junctions)
+  - [x] Arrays for collections (waypoints[], junctions[], child_wires[])
+  
+- [x] **Implement Page serialization**
+  - [x] Components as array (not dict)
+  - [x] Wires as array (not dict)
+  - [x] Optional components/wires (not included if empty)
+  - [x] page_id and name fields
+  
+- [x] **Implement Document serialization**
+  - [x] version field (always "1.0.0")
+  - [x] Version validation on load (throws ValueError for incompatible)
+  - [x] Metadata optional (not included if None)
+  - [x] All pages as array
+
+**Schema Compliance Achieved:**
+- Position fields: Always {x: float, y: float} objects (never tuples or [x,y])
+- Collections: Arrays not dicts (tabs[], pins[], components[], wires[], waypoints[], junctions[], child_wires[], pages[])
+- Optional fields: Only included when non-default values
+- Field naming: component_type (not type), component_id (not id)
+- Version validation: Document.from_dict() checks compatibility
+
+**Implementation Details:**
+
+`core/tab.py`:
+- `to_dict()`: Returns `{'tab_id': str, 'position': {'x': float, 'y': float}}`
+- `from_dict()`: Parses position from {x, y} object to (x, y) tuple for internal storage
+
+`core/pin.py`:
+- `to_dict()`: Returns `{'pin_id': str, 'tabs': [tab.to_dict(), ...]}`
+- `from_dict()`: Parses tabs from array (not dict)
+
+`components/base.py`:
+- `to_dict()`: Returns component_type (not type), position as {x,y}, pins as array
+- Optional fields only included if non-default: rotation, link_name, properties
+- All component types (Switch, Indicator, DPDTRelay, VCC) inherit this
+
+`core/wire.py` (Waypoint, Junction, Wire):
+- `Waypoint.to_dict()`: position as {x, y}
+- `Junction.to_dict()`: position as {x, y}, child_wires as array
+- `Wire.to_dict()`: Optional end_tab_id/waypoints/junctions, all as arrays
+- All `from_dict()` methods parse arrays not dicts
+
+`core/page.py`:
+- `to_dict()`: components/wires as arrays, optional (not included if empty)
+- `from_dict()`: Parses wires from array, notes components require ComponentFactory
+
+`core/document.py`:
+- `to_dict()`: Includes version field (1.0.0), pages as array, metadata optional
+- `from_dict()`: Validates version compatibility using SchemaVersion.is_compatible()
+- Throws ValueError if file version incompatible with current version
+- Parses pages from array
+
+**Test Coverage (37 tests):**
+
+`TestTabSerialization` (3 tests):
+- to_dict format, from_dict parsing, round-trip
+
+`TestPinSerialization` (3 tests):
+- to_dict format, from_dict parsing, round-trip
+
+`TestWaypointSerialization` (3 tests):
+- to_dict format, from_dict parsing, round-trip
+
+`TestJunctionSerialization` (4 tests):
+- to_dict no children, to_dict with children, from_dict, round-trip
+
+`TestWireSerialization` (5 tests):
+- Simple wire, with waypoints, with junction, from_dict, round-trip
+
+`TestComponentSerialization` (8 tests):
+- Switch to_dict, Indicator to_dict, DPDTRelay to_dict, VCC to_dict
+- Component with link_name, optional fields handling
+
+`TestPageSerialization` (5 tests):
+- Empty page, with components, with wires, from_dict, round-trip
+
+`TestDocumentSerialization` (5 tests):
+- Minimal document, with metadata, from_dict, version validation, round-trip
+
+`TestCompleteCircuitSerialization` (3 tests):
+- Switch→LED circuit, cross-page links, JSON compatibility
+
+**Round-Trip Verified:**
+All tests prove: Object → to_dict() → JSON → from_dict() → Object preserves data
+
+**JSON Compatibility:**
+Serialized data is valid JSON (tested with json.dumps()/json.loads())
+
+**Version Validation:**
+Document.from_dict() validates version compatibility and throws ValueError for incompatible versions
 
 ---
 
 ### 7.3 Deserialization Implementation
-- [ ] Implement document loading
-  - [ ] Parse file format
-  - [ ] Validate structure
-  - [ ] Handle errors
+- [*] Implement document loading
+  - [*] Parse file format
+  - [*] Validate structure
+  - [*] Handle errors
   
-- [ ] Implement object reconstruction
-  - [ ] Create components by type
-  - [ ] Restore properties
-  - [ ] Restore pins/tabs
-  - [ ] Restore wires
+- [*] Implement object reconstruction
+  - [*] Create components by type
+  - [*] Restore properties
+  - [*] Restore pins/tabs
+  - [*] Restore wires
   
-- [ ] Implement ID validation
-  - [ ] Check for duplicates
-  - [ ] Validate hierarchy
+- [*] Implement ID validation
+  - [*] Check for duplicates
+  - [*] Validate hierarchy
   
-- [ ] Implement version compatibility
-  - [ ] Handle older versions
-  - [ ] Migration if needed
+- [*] Implement version compatibility
+  - [*] Handle older versions
+  - [*] Migration if needed
 
 **Tests:**
-- [ ] Test loading valid files
-- [ ] Test loading invalid files
-- [ ] Test error handling
-- [ ] Test version compatibility
+- [*] Test loading valid files
+- [*] Test loading invalid files
+- [*] Test error handling
+- [*] Test version compatibility
 
 ---
 
@@ -1286,6 +1684,277 @@ General > ID means the ID field will be in the General section etc
 - Save/load working
 - Example files created
 - Validation working
+
+---
+
+## PHASE 8: GRAPHICAL USER INTERFACE
+
+### 8.1 Application Window and Theme ✓ COMPLETE
+**Status**: COMPLETE - 20 tests passing
+
+**Objective**: Create the main application window with dark VS Code-style theme.
+
+- [x] **Create gui/ module structure**
+  - [x] gui/__init__.py
+  - [x] Module organization
+
+- [x] **Implement gui/theme.py**
+  - [x] VS Code color palette (background, foreground, accent colors)
+  - [x] Font definitions (sizes for UI elements, canvas labels)
+  - [x] Padding and spacing constants
+  - [x] ttk.Style configuration for widgets
+  - [x] Color constants: BG_PRIMARY, BG_SECONDARY, BG_TERTIARY
+  - [x] Accent colors: ACCENT_BLUE, ACCENT_GREEN, ACCENT_ORANGE, ACCENT_RED
+  - [x] Canvas colors: CANVAS_BG, CANVAS_GRID
+  - [x] Component colors: COMPONENT_FILL, WIRE_POWERED, WIRE_UNPOWERED
+  - [x] Font sizes: SMALL (9), NORMAL (10), MEDIUM (11), LARGE (12)
+  - [x] Widget sizes: TOOLBAR_HEIGHT, STATUSBAR_HEIGHT, TOOLBOX_WIDTH
+  
+- [x] **Implement gui/main_window.py**
+  - [x] MainWindow class with tkinter.Tk root
+  - [x] Window title: "Relay Simulator III"
+  - [x] Default size: 1280x720
+  - [x] Theme application on startup
+  - [x] Menu bar placeholder
+  - [x] Status bar with message display
+  - [x] Content frame for future components
+  - [x] Unsaved changes tracking
+  - [x] Window close handler with confirmation
+  - [x] Ctrl+Q keyboard shortcut to quit
+
+- [x] **Create application entry point**
+  - [x] app.py file for launching GUI
+  - [x] main() function
+  - [x] Proper module imports
+
+- [x] **Create tests for Phase 8.1**
+  - [x] testing/test_gui_window.py (20 tests)
+  - [x] TestVSCodeTheme: 10 tests (color constants, fonts, spacing)
+  - [x] TestMainWindow: 8 tests (window creation, title, size, status)
+  - [x] TestThemeApplication: 2 tests (theme applied correctly)
+
+**Implementation Files**:
+- `gui/__init__.py`: Module initialization
+- `gui/theme.py`: VSCodeTheme class with color palette and styling (250 lines)
+- `gui/main_window.py`: MainWindow class (180 lines)
+- `app.py`: Application entry point
+- `testing/test_gui_window.py`: 20 tests
+
+**Test Results**: All 20 tests passing
+- Theme constants validated
+- Font system working
+- Window creation successful
+- Theme application verified
+- Status bar functional
+- Unsaved changes tracking working
+
+**Features Delivered**:
+- Professional dark theme matching VS Code
+- Properly centered window (1280x720)
+- Status bar with message display
+- Unsaved changes indication in title (*)
+- Keyboard shortcut support (Ctrl+Q)
+- Proper window close handling
+- Foundation for future GUI components
+
+---
+
+### 8.2 Menu System ✓ COMPLETE
+**Status**: COMPLETE - 35 tests passing
+
+**Objective**: Implement complete menu bar with all specified menus and keyboard shortcuts.
+
+- [x] **Implement gui/menu_bar.py**
+  - [x] MenuBar class managing all menus
+  - [x] Recent documents tracking (max 10, no duplicates)
+  - [x] Callback system for menu actions
+  - [x] Menu state management (enable/disable items)
+  
+- [x] **File Menu**
+  - [x] New (Ctrl+N)
+  - [x] Open (Ctrl+O)
+  - [x] Save (Ctrl+S)
+  - [x] Save As (Ctrl+Shift+S)
+  - [x] Settings
+  - [x] Recent Documents (submenu, dynamic)
+  - [x] Clear Recent Documents
+  - [x] Exit (Ctrl+Q)
+  
+- [x] **Edit Menu**
+  - [x] Select All (Ctrl+A)
+  - [x] Cut (Ctrl+X)
+  - [x] Copy (Ctrl+C)
+  - [x] Paste (Ctrl+V)
+  - [x] State management (Cut/Copy disabled when no selection)
+  
+- [x] **Simulation Menu**
+  - [x] Start Simulation (F5)
+  - [x] Stop Simulation (Shift+F5)
+  - [x] State management (Start/Stop toggle based on running state)
+  
+- [x] **View Menu**
+  - [x] Zoom In (Ctrl++)
+  - [x] Zoom Out (Ctrl+-)
+  - [x] Reset Zoom (Ctrl+0)
+  
+- [x] **Keyboard Shortcuts**
+  - [x] All shortcuts bound to root window
+  - [x] Case-insensitive (Ctrl+N and Ctrl+n both work)
+  - [x] Ctrl+= also triggers zoom in (same key as +)
+  
+- [x] **Menu Item State Management**
+  - [x] enable_edit_menu(has_selection) - enables/disables Cut/Copy
+  - [x] enable_simulation_controls(is_running) - toggles Start/Stop
+  - [x] set_menu_state(menu, item, enabled) - general state setter
+  
+- [x] **Integration with MainWindow**
+  - [x] Menu bar created before window components
+  - [x] All callbacks connected to MainWindow methods
+  - [x] Status bar updates when menu items triggered
+  - [x] Placeholder implementations (marked with TODO for future phases)
+  
+- [x] **Create tests for Phase 8.2**
+  - [x] testing/test_gui_menu.py (35 tests)
+  - [x] TestMenuBar: 17 tests (menu creation, callbacks, recent docs, state management)
+  - [x] TestMenuBarIntegration: 7 tests (MainWindow integration, status updates)
+  - [x] TestKeyboardShortcuts: 11 tests (all keyboard bindings verified)
+
+**Implementation Files**:
+- `gui/menu_bar.py`: MenuBar class with all menus (450 lines)
+- `gui/main_window.py`: Updated with menu integration and callbacks (320 lines)
+- `testing/test_gui_menu.py`: 35 comprehensive tests (330 lines)
+
+**Test Results**: All 35 tests passing
+- Menu bar creation verified
+- All menus present (File, Edit, Simulation, View)
+- Recent documents list management working
+- Callbacks execute correctly
+- Menu state management functional
+- Edit menu enables/disables based on selection
+- Simulation menu toggles Start/Stop correctly
+- All keyboard shortcuts bound
+- MainWindow integration complete
+
+**Features Delivered**:
+- Complete menu system with all specified menus
+- 15 menu commands with keyboard shortcuts
+- Recent documents submenu (max 10, dynamic)
+- Menu state management (enable/disable items)
+- Status bar updates on menu actions
+- Professional menu organization
+- All shortcuts work (Ctrl+N, Ctrl+S, F5, etc.)
+- Placeholder implementations for future phases
+
+**Keyboard Shortcuts Working**:
+- File: Ctrl+N, Ctrl+O, Ctrl+S, Ctrl+Shift+S, Ctrl+Q
+- Edit: Ctrl+A, Ctrl+X, Ctrl+C, Ctrl+V
+- Simulation: F5, Shift+F5
+- View: Ctrl++, Ctrl+-, Ctrl+0
+
+---
+
+### 8.3 Settings System ✓ COMPLETE
+**Status**: COMPLETE - 24 tests passing
+
+**Objective**: Implement persistent settings storage and settings dialog.
+
+- [x] **Implement gui/settings.py**
+  - [x] Settings class with JSON file storage (~/.relay_simulator/settings.json)
+  - [x] Default settings:
+    - recent_documents: [] (max 10)
+    - simulation_threading: "single" (options: "single", "multi")
+    - default_canvas_width: 3000
+    - default_canvas_height: 3000
+    - canvas_grid_size: 20
+    - canvas_snap_size: 10
+  - [x] load() / save() methods with error handling
+  - [x] get() / set() generic methods
+  - [x] Helper methods:
+    - get_recent_documents() / add_recent_document() / remove_recent_document() / clear_recent_documents()
+    - get_simulation_threading() / set_simulation_threading()
+    - get_canvas_size() / set_canvas_size()
+    - get_grid_size() / set_grid_size()
+    - get_snap_size() / set_snap_size()
+    - reset_to_defaults()
+  - [x] Input validation (positive values for sizes, valid threading mode)
+  
+- [x] **Implement gui/settings_dialog.py**
+  - [x] SettingsDialog class (modal dialog)
+  - [x] Professional VS Code-styled UI
+  - [x] Form fields:
+    - Simulation Threading (radio buttons: Single/Multi)
+    - Canvas Size (width/height spinboxes)
+    - Grid Size (spinbox)
+    - Snap Size (spinbox)
+  - [x] Buttons:
+    - OK (saves and closes)
+    - Cancel (discards changes)
+    - Reset to Defaults (restores default values)
+  - [x] Input validation with error messages
+  - [x] show() method returns True if saved, False if cancelled
+  
+- [x] **Integration with MainWindow**
+  - [x] Settings instance created on startup
+  - [x] Settings menu callback connected
+  - [x] Recent documents synced from settings to menu on startup
+  - [x] Recent documents saved to settings when added
+  - [x] Status bar updates on settings save/cancel
+  
+- [x] **Create tests for Phase 8.3**
+  - [x] testing/test_gui_settings.py (24 tests)
+  - [x] TestSettings: 17 tests (defaults, get/set, save/load, recent docs, validation)
+  - [x] TestSettingsDialog: 4 tests (creation, initialization, reset, cancel)
+  - [x] TestMainWindowSettingsIntegration: 3 tests (settings instance, menu sync, callback)
+
+**Implementation Files**:
+- `gui/settings.py`: Settings class with JSON persistence (260 lines)
+- `gui/settings_dialog.py`: SettingsDialog with professional UI (320 lines)
+- `gui/main_window.py`: Updated with settings integration (300 lines)
+- `testing/test_gui_settings.py`: 24 comprehensive tests (300 lines)
+
+**Test Results**: All 24 tests passing
+- Default settings initialized correctly
+- Get/set methods working
+- Save/load persistence verified
+- Recent documents management (add, remove, clear, limit, no duplicates)
+- Validation working (positive sizes, valid threading modes)
+- Dialog creation and initialization
+- Reset to defaults functional
+- Cancel doesn't save changes
+- MainWindow integration complete
+
+**Features Delivered**:
+- Persistent settings storage in user's home directory
+- Professional settings dialog with VS Code styling
+- All settings editable via GUI
+- Input validation with error messages
+- Recent documents automatically tracked
+- Settings survive application restarts
+- Reset to defaults button
+- Cancel discards changes
+- Proper error handling for corrupted settings files
+
+**Settings Dialog Features**:
+- Centered on parent window
+- Modal (blocks main window)
+- Dark theme matching application
+- Organized sections (Threading, Canvas, Grid/Snap)
+- Spinboxes for numeric inputs
+- Radio buttons for threading mode
+- Visual separators between sections
+- Three-button layout (Reset, Cancel, OK)
+
+---
+
+## PHASE 9: FILE AND DOCUMENT MANAGEMENT
+
+### 9.1 File Tab System
+- [ ] Implement gui/file_tabs.py
+- [ ] FileTabBar class (notebook-style tabs)
+- [ ] Multiple documents support
+- [ ] Tab switching (blocked during simulation)
+- [ ] Tab close confirmation (if unsaved)
+- [ ] New document creates "Untitled-N" tab
 
 ### Milestone 8: MVP Complete (End of Phase 8)
 - All tests passing

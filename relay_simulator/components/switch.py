@@ -247,8 +247,9 @@ class Switch(Component):
         # Create switch
         switch = cls(data['component_id'], data.get('page_id', 'page001'))
         
-        # Restore position and properties
-        switch.position = tuple(data.get('position', (0, 0)))
+        # Restore position (schema uses {x, y} object)
+        pos = data.get('position', {'x': 0, 'y': 0})
+        switch.position = (pos['x'], pos['y'])
         switch.rotation = data.get('rotation', 0)
         switch.link_name = data.get('link_name')
         
@@ -262,7 +263,7 @@ class Switch(Component):
                 switch.properties['on_color'] = cls.COLOR_PRESETS[color]['on']
                 switch.properties['off_color'] = cls.COLOR_PRESETS[color]['off']
         
-        # Restore pins and tabs
+        # Restore pins and tabs (schema uses arrays)
         if 'pins' in data:
             # Clear default pins
             switch.pins.clear()
@@ -271,14 +272,16 @@ class Switch(Component):
             from core.pin import Pin
             from core.tab import Tab
             
-            for pin_id, pin_data in data['pins'].items():
-                pin = Pin(pin_id, switch)
+            for pin_data in data['pins']:
+                pin = Pin(pin_data['pin_id'], switch)
                 
-                # Restore tabs
+                # Restore tabs (array in schema)
                 if 'tabs' in pin_data:
-                    for tab_id, tab_data in pin_data['tabs'].items():
-                        position = tuple(tab_data.get('position', (0, 0)))
-                        tab = Tab(tab_id, pin, position)
+                    for tab_data in pin_data['tabs']:
+                        # Position is {x, y} in schema
+                        pos = tab_data.get('position', {'x': 0, 'y': 0})
+                        position = (pos['x'], pos['y'])
+                        tab = Tab(tab_data['tab_id'], pin, position)
                         pin.add_tab(tab)
                 
                 switch.add_pin(pin)

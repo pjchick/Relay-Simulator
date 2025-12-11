@@ -77,20 +77,23 @@ class Tab:
     
     def to_dict(self) -> dict:
         """
-        Serialize tab to dict.
+        Serialize tab to dict (matches .rsim schema).
         
         Returns:
             dict: Tab data
         """
         return {
             'tab_id': self.tab_id,
-            'relative_position': self.relative_position
+            'position': {
+                'x': self.relative_position[0],
+                'y': self.relative_position[1]
+            }
         }
     
     @staticmethod
     def from_dict(data: dict, parent_pin: 'Pin') -> 'Tab':
         """
-        Deserialize tab from dict.
+        Deserialize tab from dict (matches .rsim schema).
         
         Args:
             data: Tab data dict
@@ -99,10 +102,11 @@ class Tab:
         Returns:
             Tab: Reconstructed tab
         """
+        position = data['position']
         return Tab(
             tab_id=data['tab_id'],
             parent_pin=parent_pin,
-            relative_position=tuple(data['relative_position'])
+            relative_position=(position['x'], position['y'])
         )
     
     def __repr__(self):

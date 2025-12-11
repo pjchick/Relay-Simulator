@@ -202,36 +202,52 @@ class Document:
     
     def to_dict(self) -> dict:
         """
-        Serialize document to dict for saving.
+        Serialize document to dict for saving (matches .rsim schema).
         
         Returns:
             dict: Document data
         """
-        return {
-            'metadata': self.metadata,
-            'pages': {
-                page_id: page.to_dict() 
-                for page_id, page in self.pages.items()
-            }
+        from fileio.rsim_schema import SchemaVersion
+        
+        result = {
+            'version': SchemaVersion.to_string(),
+            'pages': [page.to_dict() for page in self.pages.values()]
         }
+        
+        # Optional metadata (only include if not empty)
+        if self.metadata:
+            result['metadata'] = self.metadata.copy()
+        
+        return result
     
     @staticmethod
-    def from_dict(data: dict) -> 'Document':
+    def from_dict(data: dict, component_factory=None) -> 'Document':
         """
-        Deserialize document from dict.
+        Deserialize document from dict (matches .rsim schema).
         
         Args:
             data: Document data dict
+            component_factory: ComponentFactory instance for creating components
             
         Returns:
-            Document: Reconstructed document
+            Document: Reconstructed document with all pages, components, and wires
         """
+        from fileio.rsim_schema import SchemaVersion
+        
+        # Validate version compatibility
+        file_version = data.get('version', '1.0.0')
+        if not SchemaVersion.is_compatible(file_version):
+            raise ValueError(
+                f"Incompatible file version {file_version}. "
+                f"Expected version {SchemaVersion.to_string()}."
+            )
+        
         doc = Document()
         doc.metadata = data.get('metadata', {})
         
-        # Load pages
-        for page_data in data.get('pages', {}).values():
-            page = Page.from_dict(page_data)
+        # Load pages (array in schema) with component factory
+        for page_data in data.get('pages', []):
+            page = Page.from_dict(page_data, component_factory)
             doc.add_page(page)
         
         return doc

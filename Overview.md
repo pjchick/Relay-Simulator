@@ -1,16 +1,19 @@
 Relay Logic Simulator
 
-We are going to build a relay logic simulator. This will initally have 4 types of components. A Toggle Switch, an Indicator (LED) and a DPDT Relay.
+We are going to build a relay logic simulator. This will initally have 4 types of components. A Toggle Switch, an Indicator (LED), a DPDT Relay, and VCC (power source).
 
-We are first of all going to concentrate on the Simulation Engine, the we can build the front end later.
+We are first of all going to concentrate on the Simulation Engine, then we can build the front end later.
 
-I want to control the simulator via a telnet type terminal. All debugging will also be via the terminal. THe terminal will be enabled by default for now. I want to use  standard Terminal / Telnet software.
+I want to control the simulator via a telnet type terminal. All debugging will also be via the terminal. The terminal will be enabled by default for now. I want to use standard Terminal / Telnet software.
 
 You will interact with the engine via the terminal interface.
 
-The simulation engine will be multi threaded as each simulation file could contain 100's of components and we want the maximum performance.
+The simulation engine has both **single-threaded** and **multi-threaded** modes. Based on comprehensive performance analysis:
+- **Single-threaded** (default) is 2x faster for circuits <2000 components
+- **Multi-threaded** is beneficial for circuits ≥2000 components
+- **AUTO mode** automatically selects optimal engine based on component count
 
-VNET processing and Component processing should all be multithreaded using a theread pool model.
+VNET processing and Component processing are parallelized in multi-threaded mode using a thread pool model. However, performance profiling revealed threading overhead exceeds benefits for typical circuit sizes. See `THREADING_BOTTLENECK_ANALYSIS.md` for details.
 
 Eventually there will be a front end application where I can design schematics, watch the simulated responses and interact with components.
 

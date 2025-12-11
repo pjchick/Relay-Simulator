@@ -218,8 +218,9 @@ class Indicator(Component):
         # Create indicator
         indicator = cls(data['component_id'], data.get('page_id', 'page001'))
         
-        # Restore position and properties
-        indicator.position = tuple(data.get('position', (0, 0)))
+        # Restore position (schema uses {x, y} object)
+        pos = data.get('position', {'x': 0, 'y': 0})
+        indicator.position = (pos['x'], pos['y'])
         indicator.rotation = data.get('rotation', 0)
         indicator.link_name = data.get('link_name')
         
@@ -233,7 +234,7 @@ class Indicator(Component):
                 indicator.properties['on_color'] = cls.COLOR_PRESETS[color]['on']
                 indicator.properties['off_color'] = cls.COLOR_PRESETS[color]['off']
         
-        # Restore pins and tabs
+        # Restore pins and tabs (schema uses arrays)
         if 'pins' in data:
             # Clear default pins
             indicator.pins.clear()
@@ -242,14 +243,16 @@ class Indicator(Component):
             from core.pin import Pin
             from core.tab import Tab
             
-            for pin_id, pin_data in data['pins'].items():
-                pin = Pin(pin_id, indicator)
+            for pin_data in data['pins']:
+                pin = Pin(pin_data['pin_id'], indicator)
                 
-                # Restore tabs
+                # Restore tabs (array in schema)
                 if 'tabs' in pin_data:
-                    for tab_id, tab_data in pin_data['tabs'].items():
-                        position = tuple(tab_data.get('position', (0, 0)))
-                        tab = Tab(tab_id, pin, position)
+                    for tab_data in pin_data['tabs']:
+                        # Position is {x, y} in schema
+                        pos = tab_data.get('position', {'x': 0, 'y': 0})
+                        position = (pos['x'], pos['y'])
+                        tab = Tab(tab_data['tab_id'], pin, position)
                         pin.add_tab(tab)
                 
                 indicator.add_pin(pin)

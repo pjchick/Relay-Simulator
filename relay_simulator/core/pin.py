@@ -126,20 +126,20 @@ class Pin:
     
     def to_dict(self) -> dict:
         """
-        Serialize pin to dict.
+        Serialize pin to dict (matches .rsim schema).
         
         Returns:
             dict: Pin data
         """
         return {
             'pin_id': self.pin_id,
-            'tabs': {tab_id: tab.to_dict() for tab_id, tab in self.tabs.items()}
+            'tabs': [tab.to_dict() for tab in self.tabs.values()]
         }
     
     @staticmethod
     def from_dict(data: dict, parent_component: 'Component') -> 'Pin':
         """
-        Deserialize pin from dict.
+        Deserialize pin from dict (matches .rsim schema).
         
         Args:
             data: Pin data dict
@@ -153,8 +153,8 @@ class Pin:
             parent_component=parent_component
         )
         
-        # Reconstruct tabs
-        for tab_data in data['tabs'].values():
+        # Reconstruct tabs (tabs is an array in schema)
+        for tab_data in data.get('tabs', []):
             tab = Tab.from_dict(tab_data, pin)
             pin.add_tab(tab)
         

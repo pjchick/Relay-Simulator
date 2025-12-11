@@ -31,20 +31,23 @@ class Waypoint:
     
     def to_dict(self) -> dict:
         """
-        Serialize waypoint to dictionary.
+        Serialize waypoint to dictionary (matches .rsim schema).
         
         Returns:
             Dictionary representation of waypoint
         """
         return {
             'waypoint_id': self.waypoint_id,
-            'position': list(self.position)
+            'position': {
+                'x': self.position[0],
+                'y': self.position[1]
+            }
         }
     
     @classmethod
     def from_dict(cls, data: dict) -> 'Waypoint':
         """
-        Deserialize waypoint from dictionary.
+        Deserialize waypoint from dictionary (matches .rsim schema).
         
         Args:
             data: Dictionary containing waypoint data
@@ -52,9 +55,10 @@ class Waypoint:
         Returns:
             New Waypoint instance
         """
+        position = data['position']
         return cls(
             waypoint_id=data['waypoint_id'],
-            position=tuple(data['position'])
+            position=(position['x'], position['y'])
         )
     
     def __repr__(self):
@@ -136,21 +140,24 @@ class Junction:
     
     def to_dict(self) -> dict:
         """
-        Serialize junction to dictionary.
+        Serialize junction to dictionary (matches .rsim schema).
         
         Returns:
             Dictionary representation of junction
         """
         return {
             'junction_id': self.junction_id,
-            'position': list(self.position),
-            'child_wires': {wire_id: wire.to_dict() for wire_id, wire in self.child_wires.items()}
+            'position': {
+                'x': self.position[0],
+                'y': self.position[1]
+            },
+            'child_wires': [wire.to_dict() for wire in self.child_wires.values()]
         }
     
     @classmethod
     def from_dict(cls, data: dict, parent_wire: Optional['Wire'] = None) -> 'Junction':
         """
-        Deserialize junction from dictionary.
+        Deserialize junction from dictionary (matches .rsim schema).
         
         Args:
             data: Dictionary containing junction data
@@ -159,13 +166,14 @@ class Junction:
         Returns:
             New Junction instance
         """
+        position = data['position']
         junction = cls(
             junction_id=data['junction_id'],
-            position=tuple(data['position'])
+            position=(position['x'], position['y'])
         )
         
-        # Deserialize child wires
-        for wire_data in data.get('child_wires', {}).values():
+        # Deserialize child wires (array in schema)
+        for wire_data in data.get('child_wires', []):
             child_wire = Wire.from_dict(wire_data, parent_junction=junction)
             junction.child_wires[child_wire.wire_id] = child_wire
         
@@ -328,23 +336,32 @@ class Wire:
     
     def to_dict(self) -> dict:
         """
-        Serialize wire to dictionary.
+        Serialize wire to dictionary (matches .rsim schema).
         
         Returns:
             Dictionary representation of wire
         """
-        return {
+        result = {
             'wire_id': self.wire_id,
-            'start_tab_id': self.start_tab_id,
-            'end_tab_id': self.end_tab_id,
-            'waypoints': {wp_id: wp.to_dict() for wp_id, wp in self.waypoints.items()},
-            'junctions': {junc_id: junc.to_dict() for junc_id, junc in self.junctions.items()}
+            'start_tab_id': self.start_tab_id
         }
+        
+        # Optional fields (per schema)
+        if self.end_tab_id is not None:
+            result['end_tab_id'] = self.end_tab_id
+        
+        if self.waypoints:
+            result['waypoints'] = [wp.to_dict() for wp in self.waypoints.values()]
+        
+        if self.junctions:
+            result['junctions'] = [junc.to_dict() for junc in self.junctions.values()]
+        
+        return result
     
     @classmethod
     def from_dict(cls, data: dict, parent_junction: Optional[Junction] = None) -> 'Wire':
         """
-        Deserialize wire from dictionary.
+        Deserialize wire from dictionary (matches .rsim schema).
         
         Args:
             data: Dictionary containing wire data
@@ -361,13 +378,13 @@ class Wire:
         
         wire.parent_junction = parent_junction
         
-        # Deserialize waypoints
-        for wp_data in data.get('waypoints', {}).values():
+        # Deserialize waypoints (array in schema)
+        for wp_data in data.get('waypoints', []):
             waypoint = Waypoint.from_dict(wp_data)
             wire.waypoints[waypoint.waypoint_id] = waypoint
         
-        # Deserialize junctions
-        for junc_data in data.get('junctions', {}).values():
+        # Deserialize junctions (array in schema)
+        for junc_data in data.get('junctions', []):
             junction = Junction.from_dict(junc_data, parent_wire=wire)
             wire.junctions[junction.junction_id] = junction
         

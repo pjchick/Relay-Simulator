@@ -389,9 +389,10 @@ class DPDTRelay(Component):
         """
         relay = cls(data["component_id"], data.get("page_id", "page001"))
         
-        # Restore position and rotation
+        # Restore position (schema uses {x, y} object)
         if "position" in data:
-            relay.position = tuple(data["position"])
+            pos = data["position"]
+            relay.position = (pos['x'], pos['y'])
         if "rotation" in data:
             relay.rotation = data["rotation"]
         if "link_name" in data:

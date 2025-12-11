@@ -121,42 +121,54 @@ class Page:
     
     def to_dict(self) -> dict:
         """
-        Serialize page to dict.
+        Serialize page to dict (matches .rsim schema).
         
         Returns:
             dict: Page data
         """
-        return {
+        result = {
             'page_id': self.page_id,
-            'name': self.name,
-            'components': {
-                comp_id: comp.to_dict() 
-                for comp_id, comp in self.components.items()
-            },
-            'wires': {
-                wire_id: wire.to_dict() 
-                for wire_id, wire in self.wires.items()
-            }
+            'name': self.name
         }
+        
+        # Optional fields (only include if not empty)
+        if self.components:
+            result['components'] = [comp.to_dict() for comp in self.components.values()]
+        
+        if self.wires:
+            result['wires'] = [wire.to_dict() for wire in self.wires.values()]
+        
+        return result
     
     @staticmethod
-    def from_dict(data: dict) -> 'Page':
+    def from_dict(data: dict, component_factory=None) -> 'Page':
         """
-        Deserialize page from dict.
+        Deserialize page from dict (matches .rsim schema).
         
         Args:
             data: Page data dict
+            component_factory: ComponentFactory instance for creating components
             
         Returns:
-            Page: Reconstructed page
+            Page: Reconstructed page with components and wires
         """
+        from core.wire import Wire
+        
         page = Page(
             page_id=data['page_id'],
             name=data.get('name', 'Untitled')
         )
         
-        # Components will be loaded by component loader
-        # (because we need to instantiate correct component types)
+        # Deserialize components (if factory provided)
+        if component_factory and 'components' in data:
+            for comp_data in data['components']:
+                component = component_factory.create_from_dict(comp_data)
+                page.add_component(component)
+        
+        # Deserialize wires
+        for wire_data in data.get('wires', []):
+            wire = Wire.from_dict(wire_data)
+            page.add_wire(wire)
         
         return page
     
