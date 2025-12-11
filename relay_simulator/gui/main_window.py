@@ -18,6 +18,7 @@ from gui.file_tabs import FileTabBar
 from gui.page_tabs import PageTabBar
 from gui.canvas import DesignCanvas
 from gui.toolbox import ToolboxPanel
+from gui.properties_panel import PropertiesPanel
 from core.document import Document
 from fileio.document_loader import DocumentLoader
 
@@ -424,6 +425,13 @@ class MainWindow:
         )
         self.design_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         
+        # Properties panel (right sidebar)
+        self.properties_panel = PropertiesPanel(self.content_frame)
+        self.properties_panel.pack(side=tk.RIGHT, fill=tk.Y, padx=(1, 0))
+        
+        # Bind property change events to update canvas
+        self.content_frame.bind('<<PropertyChanged>>', self._on_property_changed)
+        
         # Track component placement mode
         self.placement_component = None  # Component type being placed
         self.placement_rotation = 0  # Rotation for placement (0, 90, 180, 270)
@@ -739,9 +747,20 @@ class MainWindow:
             return
         
         # Handle component placement mode
-        if not self.placement_component:
+        if self.placement_component:
+            self._handle_component_placement(event)
             return
         
+        # Handle component selection (when not in placement or wire mode)
+        self._handle_component_selection(event)
+    
+    def _handle_component_placement(self, event) -> None:
+        """
+        Handle component placement on canvas.
+        
+        Args:
+            event: Click event
+        """
         # Get active page
         tab = self.file_tabs.get_active_tab()
         if not tab or not tab.document:
@@ -996,7 +1015,79 @@ class MainWindow:
         
         # Re-render page (including new wire)
         self.design_canvas.set_page(page)
-        print("Canvas re-rendered")  # Debug
+    
+    def _on_property_changed(self, event=None) -> None:
+        """
+        Handle property changes from properties panel.
+        
+        Re-renders the current page to reflect property changes.
+        """
+        # Get current page
+        active_tab = self.file_tabs.get_active_tab()
+        if not active_tab or not active_tab.document:
+            return
+        
+        active_page_id = self.page_tabs.get_active_page_id()
+        if not active_page_id:
+            return
+        
+        page = active_tab.document.get_page(active_page_id)
+        if not page:
+            return
+        
+        # Mark document as modified
+        self.file_tabs.set_tab_modified(active_tab.tab_id, True)
+        
+        # Re-render the page
+        self.design_canvas.set_page(page)
+    
+    def _handle_component_selection(self, event) -> None:
+        """
+        Handle clicking on a component to select it.
+        
+        Args:
+            event: Click event
+        """
+        # Get canvas coordinates
+        canvas_x = self.design_canvas.canvas.canvasx(event.x)
+        canvas_y = self.design_canvas.canvas.canvasy(event.y)
+        
+        # Get active page
+        tab = self.file_tabs.get_active_tab()
+        if not tab or not tab.document:
+            self.properties_panel.set_component(None)
+            return
+        
+        active_page_id = self.page_tabs.get_active_page_id()
+        if not active_page_id:
+            self.properties_panel.set_component(None)
+            return
+        
+        page = tab.document.get_page(active_page_id)
+        if not page:
+            self.properties_panel.set_component(None)
+            return
+        
+        # Find component at click position
+        for component in page.components.values():
+            comp_x, comp_y = component.position
+            
+            # Get component bounds (simplified - assumes components are roughly 100x100)
+            # TODO: Get actual component bounds from renderer
+            half_size = 50
+            
+            if (comp_x - half_size <= canvas_x <= comp_x + half_size and
+                comp_y - half_size <= canvas_y <= comp_y + half_size):
+                # Component clicked
+                self.properties_panel.set_component(component)
+                self.set_status(f"Selected {component.__class__.__name__} ({component.component_id})")
+                return
+        
+        # No component clicked - deselect
+        self.properties_panel.set_component(None)
+        self.set_status("Ready")
+
+
     
     def _clear_wire_preview(self) -> None:
         """Clear wire preview line from canvas."""

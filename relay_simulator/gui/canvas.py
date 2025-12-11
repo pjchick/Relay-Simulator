@@ -197,10 +197,13 @@ class DesignCanvas:
         
         # Clamp zoom level
         if new_zoom < self.min_zoom or new_zoom > self.max_zoom:
-            return
+            return "break"  # Stop event propagation
         
         # Apply zoom
         self._apply_zoom(zoom_factor, canvas_x, canvas_y)
+        
+        # Return "break" to stop event propagation
+        return "break"
     
     def _apply_zoom(self, zoom_factor: float, center_x: float, center_y: float) -> None:
         """
