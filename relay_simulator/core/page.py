@@ -27,6 +27,7 @@ class Page:
         self.name = name
         self.components: Dict[str, 'Component'] = {}
         self.wires: Dict[str, 'Wire'] = {}  # Will be implemented later
+        self.junctions: Dict[str, 'Junction'] = {}  # Junction support for wire branching
         
         # Canvas state (persisted to .rsim)
         self.canvas_x: float = 0.0
@@ -122,6 +123,50 @@ class Page:
         """
         return list(self.wires.values())
     
+    # === Junction Management ===
+    
+    def add_junction(self, junction):
+        """
+        Add a junction to this page.
+        
+        Args:
+            junction: Junction instance
+        """
+        self.junctions[junction.junction_id] = junction
+    
+    def remove_junction(self, junction_id: str):
+        """
+        Remove a junction from this page.
+        
+        Args:
+            junction_id: Junction ID to remove
+            
+        Returns:
+            Junction: Removed junction or None
+        """
+        return self.junctions.pop(junction_id, None)
+    
+    def get_junction(self, junction_id: str):
+        """
+        Get junction by ID.
+        
+        Args:
+            junction_id: Junction ID
+            
+        Returns:
+            Junction: Junction instance or None
+        """
+        return self.junctions.get(junction_id)
+    
+    def get_all_junctions(self) -> list:
+        """
+        Get all junctions on this page.
+        
+        Returns:
+            list: List of junctions
+        """
+        return list(self.junctions.values())
+    
     # === Serialization ===
     
     def to_dict(self) -> dict:
@@ -145,6 +190,9 @@ class Page:
         
         if self.wires:
             result['wires'] = [wire.to_dict() for wire in self.wires.values()]
+        
+        if self.junctions:
+            result['junctions'] = [junction.to_dict() for junction in self.junctions.values()]
         
         return result
     
@@ -182,6 +230,12 @@ class Page:
         for wire_data in data.get('wires', []):
             wire = Wire.from_dict(wire_data)
             page.add_wire(wire)
+        
+        # Deserialize junctions
+        from core.wire import Junction
+        for junction_data in data.get('junctions', []):
+            junction = Junction.from_dict(junction_data)
+            page.add_junction(junction)
         
         return page
     

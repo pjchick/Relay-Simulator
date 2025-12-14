@@ -164,14 +164,14 @@ class MenuBar:
         )
         
         # Bind keyboard shortcuts
-        self.parent.bind('<Control-a>', lambda e: self._on_select_all())
-        self.parent.bind('<Control-A>', lambda e: self._on_select_all())
-        self.parent.bind('<Control-x>', lambda e: self._on_cut())
-        self.parent.bind('<Control-X>', lambda e: self._on_cut())
-        self.parent.bind('<Control-c>', lambda e: self._on_copy())
-        self.parent.bind('<Control-C>', lambda e: self._on_copy())
-        self.parent.bind('<Control-v>', lambda e: self._on_paste())
-        self.parent.bind('<Control-V>', lambda e: self._on_paste())
+        self.parent.bind('<Control-a>', lambda e: self._on_select_all() or 'break')
+        self.parent.bind('<Control-A>', lambda e: self._on_select_all() or 'break')
+        self.parent.bind('<Control-x>', lambda e: self._on_cut() or 'break')
+        self.parent.bind('<Control-X>', lambda e: self._on_cut() or 'break')
+        self.parent.bind('<Control-c>', lambda e: self._on_copy() or 'break')
+        self.parent.bind('<Control-C>', lambda e: self._on_copy() or 'break')
+        self.parent.bind('<Control-v>', lambda e: self._on_paste() or 'break')
+        self.parent.bind('<Control-V>', lambda e: self._on_paste() or 'break')
         
     def _create_simulation_menu(self) -> None:
         """Create the Simulation menu."""

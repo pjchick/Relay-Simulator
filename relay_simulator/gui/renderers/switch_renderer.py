@@ -37,10 +37,16 @@ class SwitchRenderer(ComponentRenderer):
         # Determine fill color based on state
         is_on = self.component._is_on
         if self.powered and is_on:
+            # Switch is pressed AND powered - bright red
             fill_color = VSCodeTheme.SWITCH_ON
+        elif self.powered:
+            # Switch NOT pressed but receiving HIGH signal - dull red
+            fill_color = '#804040'  # Dull red (powered but not pressed)
         elif is_on:
+            # Switch pressed but no power - dark red
             fill_color = '#800000'  # Dark red when ON but not powered
         else:
+            # Switch OFF and no power - default off color
             fill_color = VSCodeTheme.SWITCH_OFF
             
         # Outline color (highlight if selected)

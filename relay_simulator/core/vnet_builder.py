@@ -106,16 +106,17 @@ class VnetBuilder:
     
     def _build_connectivity_map(self, page: Page) -> Dict[str, Set[str]]:
         """
-        Build a connectivity map from wires.
+        Build a connectivity map from wires and pin connections.
         
         The connectivity map is a dictionary where:
         - Key: tab_id
-        - Value: Set of tab_ids directly connected by wires
+        - Value: Set of tab_ids directly connected by wires OR same pin
         
         This handles:
         - Simple wires (start_tab → end_tab)
         - Junctions (start_tab → multiple end_tabs)
         - Nested junctions (recursive)
+        - Tabs of the same pin (electrically connected)
         
         Args:
             page: Page containing wires
@@ -125,13 +126,32 @@ class VnetBuilder:
         """
         connectivity: Dict[str, Set[str]] = {}
         
-        # Process all wires on the page
+        # First, add implicit connections for tabs of the same pin
+        # All tabs on the same pin are electrically connected
+        for component in page.get_all_components():
+            for pin in component.get_all_pins().values():
+                # Get all tab IDs for this pin
+                tab_ids = list(pin.tabs.keys())
+                
+                # Connect all tabs to each other (they're on the same pin)
+                for i, tab1 in enumerate(tab_ids):
+                    if tab1 not in connectivity:
+                        connectivity[tab1] = set()
+                    
+                    for j, tab2 in enumerate(tab_ids):
+                        if i != j:
+                            connectivity[tab1].add(tab2)
+        
+        # Create a global visited set to prevent infinite recursion across all wires
+        visited_wires: Set[str] = set()
+        
+        # Then, process all wires on the page
         for wire in page.get_all_wires():
-            self._add_wire_to_connectivity(wire, connectivity)
+            self._add_wire_to_connectivity(wire, connectivity, visited_wires)
         
         return connectivity
     
-    def _add_wire_to_connectivity(self, wire: Wire, connectivity: Dict[str, Set[str]]):
+    def _add_wire_to_connectivity(self, wire: Wire, connectivity: Dict[str, Set[str]], visited: Set[str]):
         """
         Add a wire's connections to the connectivity map.
         
@@ -143,9 +163,10 @@ class VnetBuilder:
         Args:
             wire: Wire to process
             connectivity: Connectivity map to update
+            visited: Set of already-visited wire IDs (prevents infinite recursion)
         """
         # Get all tabs connected by this wire (including through junctions)
-        all_wire_tabs = self._get_all_wire_tabs(wire)
+        all_wire_tabs = self._get_all_wire_tabs(wire, visited)
         
         # Add bidirectional connections between all tabs
         for tab1 in all_wire_tabs:
@@ -156,7 +177,7 @@ class VnetBuilder:
                 if tab1 != tab2:
                     connectivity[tab1].add(tab2)
     
-    def _get_all_wire_tabs(self, wire: Wire) -> Set[str]:
+    def _get_all_wire_tabs(self, wire: Wire, visited: Set[str] = None) -> Set[str]:
         """
         Get all tab IDs connected by a wire, including through junctions.
         
@@ -164,23 +185,33 @@ class VnetBuilder:
         
         Args:
             wire: Wire to analyze
+            visited: Set of already-visited wire IDs to prevent infinite recursion
             
         Returns:
             Set of all tab IDs connected by this wire
         """
+        if visited is None:
+            visited = set()
+        
+        # Prevent infinite recursion on circular wire paths
+        if wire.wire_id in visited:
+            return set()
+        
+        visited.add(wire.wire_id)
+        
         tabs: Set[str] = set()
         
-        # Add start tab
+        # Add start tab (could be tab_id or junction_id)
         tabs.add(wire.start_tab_id)
         
-        # Add end tab if present
+        # Add end tab if present (could be tab_id or junction_id)
         if wire.end_tab_id:
             tabs.add(wire.end_tab_id)
         
         # Recursively add tabs from child wires in junctions
         for junction in wire.get_all_junctions():
             for child_wire in junction.get_all_child_wires():
-                tabs.update(self._get_all_wire_tabs(child_wire))
+                tabs.update(self._get_all_wire_tabs(child_wire, visited))
         
         return tabs
     

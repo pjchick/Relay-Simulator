@@ -30,6 +30,8 @@ from simulation.vnet_evaluator import VnetEvaluator
 from simulation.state_propagator import StatePropagator
 from simulation.dirty_flag_manager import DirtyFlagManager
 from simulation.component_update_coordinator import ComponentUpdateCoordinator
+from simulation.vnet_manager import VnetManager
+from simulation.bridge_manager import BridgeManager
 
 
 class SimulationState(Enum):
@@ -121,6 +123,12 @@ class SimulationEngine:
         self.dirty_manager = DirtyFlagManager(vnets)
         self.coordinator = ComponentUpdateCoordinator(components, tabs)
         
+        # Create managers for component interface
+        from core.id_manager import IDManager
+        self.id_manager = IDManager()  # For generating bridge IDs
+        self.vnet_manager = VnetManager(vnets, tabs, self.dirty_manager)
+        self.bridge_manager = BridgeManager(bridges, self.id_manager)
+        
         # Statistics
         self.statistics = SimulationStatistics()
         self._stats_lock = threading.RLock()
@@ -156,7 +164,7 @@ class SimulationEngine:
             # Call sim_start on all components
             for component in self.components.values():
                 try:
-                    component.sim_start()
+                    component.sim_start(self.vnet_manager, self.bridge_manager)
                 except Exception as e:
                     print(f"Error in sim_start for {component.component_id}: {e}")
                     # Continue with other components
@@ -239,11 +247,15 @@ class SimulationEngine:
                 for vnet in dirty_vnets:
                     # Evaluate new state
                     new_state = self.evaluator.evaluate_vnet_state(vnet)
+                    print(f"DEBUG SimEngine: VNET {vnet.vnet_id} evaluated: old_state={vnet.state}, new_state={new_state}")
                     
                     # Propagate if state changed
                     if new_state != vnet.state:
+                        print(f"DEBUG SimEngine: State changed! Propagating...")
                         propagated = self.propagator.propagate_vnet_state(vnet, new_state)
                         affected_vnets.update(propagated)
+                    else:
+                        print(f"DEBUG SimEngine: State unchanged, no propagation")
                     
                     # Clear this VNET's dirty flag
                     self.dirty_manager.clear_dirty(vnet.vnet_id)
@@ -264,7 +276,7 @@ class SimulationEngine:
                     
                     for component in pending_components:
                         try:
-                            component.simulate_logic()
+                            component.simulate_logic(self.vnet_manager)
                             with self._stats_lock:
                                 self.statistics.components_updated += 1
                         except Exception as e:

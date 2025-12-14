@@ -27,7 +27,7 @@ class WireRenderer:
     - Zoom scaling
     """
     
-    def __init__(self, canvas: tk.Canvas, wire: Wire, page: Page):
+    def __init__(self, canvas: tk.Canvas, wire: Wire, page: Page, hovered_waypoint: Optional[Tuple[str, str]] = None):
         """
         Initialize wire renderer.
         
@@ -35,6 +35,7 @@ class WireRenderer:
             canvas: Tkinter canvas to draw on
             wire: Wire object to render
             page: Page containing the wire (for looking up tab positions)
+            hovered_waypoint: Optional tuple of (waypoint_id, wire_id) for waypoint being hovered
         """
         self.canvas = canvas
         self.wire = wire
@@ -42,6 +43,7 @@ class WireRenderer:
         self.canvas_items = []  # Track created canvas items for cleanup
         self.selected = False
         self.powered = False
+        self.hovered_waypoint = hovered_waypoint
     
     def render(self, zoom: float = 1.0) -> None:
         """
@@ -87,7 +89,7 @@ class WireRenderer:
             self._draw_junction(junction, zoom)
             # Recursively render child wires from this junction
             for child_wire in junction.child_wires.values():
-                child_renderer = WireRenderer(self.canvas, child_wire, self.page)
+                child_renderer = WireRenderer(self.canvas, child_wire, self.page, self.hovered_waypoint)
                 child_renderer.selected = self.selected
                 child_renderer.powered = self.powered
                 child_renderer.render(zoom)
@@ -127,15 +129,20 @@ class WireRenderer:
     
     def _get_tab_position(self, tab_id: str) -> Optional[Tuple[float, float]]:
         """
-        Get absolute position of a tab.
+        Get absolute position of a tab or junction.
         
         Args:
-            tab_id: ID of tab to locate
+            tab_id: ID of tab or junction to locate
             
         Returns:
-            (x, y) position or None if tab not found
+            (x, y) position or None if not found
         """
-        # Parse tab_id to get component_id
+        # First check if this is a junction ID (junctions are stored in page.junctions)
+        junction = self.page.junctions.get(tab_id)
+        if junction:
+            return junction.position
+        
+        # Otherwise parse as tab_id
         # Format: {component_id}.{pin_name}.{tab_name}
         # Example: 7ab1d562.pin1.tab3
         parts = tab_id.split('.')
@@ -169,17 +176,26 @@ class WireRenderer:
     
     def _draw_waypoint(self, waypoint: Waypoint, zoom: float) -> None:
         """
-        Draw a waypoint marker.
+        Draw a waypoint marker (only visible when hovered).
         
         Args:
             waypoint: Waypoint to draw
             zoom: Current zoom level
         """
+        # Only draw waypoint marker if it's being hovered
+        # hovered_waypoint format: (wire_id, waypoint_id)
+        is_hovered = (self.hovered_waypoint and 
+                      self.hovered_waypoint[0] == self.wire.wire_id and 
+                      self.hovered_waypoint[1] == waypoint.waypoint_id)
+        
+        if not is_hovered:
+            return  # Don't draw waypoint marker unless hovered
+        
         x, y = waypoint.position
         size = 4 * zoom  # Waypoint size
         
-        # Draw as small square
-        item = self.canvas.create_rectangle(
+        # Draw as small circle
+        item = self.canvas.create_oval(
             x - size, y - size,
             x + size, y + size,
             fill=VSCodeTheme.WIRE_SELECTED if self.selected else VSCodeTheme.COMPONENT_OUTLINE,
@@ -191,7 +207,7 @@ class WireRenderer:
     
     def _draw_junction(self, junction: Junction, zoom: float) -> None:
         """
-        Draw a junction marker.
+        Draw a junction marker as a circle.
         
         Args:
             junction: Junction to draw
@@ -200,11 +216,19 @@ class WireRenderer:
         x, y = junction.position
         radius = 5 * zoom  # Junction radius
         
+        # Determine junction color: red if powered, gray if unpowered, blue if selected
+        if self.selected:
+            fill_color = VSCodeTheme.WIRE_SELECTED  # Blue when selected
+        elif self.powered:
+            fill_color = '#ff0000'  # Red when powered (HIGH)
+        else:
+            fill_color = VSCodeTheme.WIRE_UNPOWERED  # Gray when unpowered
+        
         # Draw as circle
         item = self.canvas.create_oval(
             x - radius, y - radius,
             x + radius, y + radius,
-            fill=VSCodeTheme.WIRE_SELECTED if self.selected else VSCodeTheme.WIRE_POWERED,
+            fill=fill_color,
             outline=VSCodeTheme.COMPONENT_OUTLINE,
             width=2,
             tags=(f"junction_{junction.junction_id}", "junction")

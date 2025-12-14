@@ -111,13 +111,18 @@ class Switch(Component):
         # Get the pin
         pin = list(self.pins.values())[0]
         
+        print(f"DEBUG Switch.simulate_logic: _is_on={self._is_on}, new_state={new_state}, current pin.state={pin.state}")
+        
         # Update pin state if changed
         if pin.state != new_state:
             pin.set_state(new_state)
+            print(f"DEBUG Switch: Pin state updated to {new_state}")
             
             # Mark all VNETs containing our tabs as dirty
             for tab in pin.tabs.values():
                 vnet_manager.mark_tab_dirty(tab.tab_id)
+        else:
+            print(f"DEBUG Switch: Pin state unchanged")
     
     def sim_start(self, vnet_manager, bridge_manager):
         """
@@ -317,3 +322,19 @@ class Switch(Component):
             is_on: True for ON, False for OFF
         """
         self._is_on = is_on
+    
+    def toggle_switch(self):
+        """
+        Toggle the switch state (ON ↔ OFF).
+        Used in simulation mode for user interaction.
+        """
+        self._is_on = not self._is_on
+    
+    def get_state(self) -> bool:
+        """
+        Get current switch state.
+        
+        Returns:
+            True if ON, False if OFF
+        """
+        return self._is_on

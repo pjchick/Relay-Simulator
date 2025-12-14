@@ -89,14 +89,7 @@ class ToolboxPanel(tk.Frame):
     Component toolbox panel - left sidebar with component palette.
     
     Displays available component types that can be selected for placement.
-    Includes a "Select" tool for normal cursor mode and "Wire" tool for drawing wires.
     """
-    
-    # Tools (special selection modes)
-    TOOLS = [
-        (None, '→ Select Tool'),  # None = select mode
-        ('Wire', '⚡ Wire Tool'),  # Wire drawing mode
-    ]
     
     # Component types with display names
     COMPONENTS = [
@@ -157,23 +150,6 @@ class ToolboxPanel(tk.Frame):
         canvas.create_window((0, 0), window=scrollable_frame, anchor=tk.NW)
         canvas.configure(yscrollcommand=scrollbar.set)
         
-        # Add tool buttons (Select and Wire)
-        for tool_type, display_name in self.TOOLS:
-            button = ComponentButton(
-                scrollable_frame,
-                tool_type,
-                display_name,
-                self._on_component_selected
-            )
-            button.pack(fill=tk.X, padx=VSCodeTheme.PADDING_SMALL, pady=1)
-            self.component_buttons[tool_type] = button
-            if tool_type is None:  # Select tool is default
-                button.set_selected(True)
-        
-        # Separator after tools
-        tool_separator = tk.Frame(scrollable_frame, bg=VSCodeTheme.BG_TERTIARY, height=1)
-        tool_separator.pack(fill=tk.X, padx=VSCodeTheme.PADDING_MEDIUM, pady=VSCodeTheme.PADDING_MEDIUM)
-        
         # Add component buttons
         for component_type, display_name in self.COMPONENTS:
             button = ComponentButton(
@@ -222,6 +198,14 @@ class ToolboxPanel(tk.Frame):
     def select_tool(self):
         """Reset to Select tool (deselect component placement mode)."""
         self._on_component_selected(None)
+    
+    def deselect_all(self):
+        """Deselect all components (return to normal interaction mode)."""
+        for button in self.component_buttons.values():
+            button.set_selected(False)
+        self.selected_component = None
+        if self.on_component_select:
+            self.on_component_select(None)
     
     def get_component_types(self) -> list:
         """

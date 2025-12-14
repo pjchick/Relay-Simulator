@@ -132,22 +132,24 @@ class StatePropagator:
         """
         Propagate state to all tabs in the VNET.
         
-        This updates both the tabs and their parent pins to reflect
-        the new state.
+        NOTE: This does NOT update pin states. Pins drive VNETs, not the
+        other way around. Passive components should read VNET states via
+        tab.state property (which reflects the VNET state).
         
         Args:
             vnet: VNET containing the tabs
             new_state: State to propagate
         """
-        for tab_id in vnet.get_all_tabs():
-            tab = self.all_tabs.get(tab_id)
-            if tab:
-                # Setting tab state will propagate to parent pin
-                # The pin will use set_state() which handles the update
-                if tab.parent_pin:
-                    # Update pin state directly to avoid circular updates
-                    # We're already managing the propagation at the VNET level
-                    tab.parent_pin._state = new_state
+        # VNET state is already updated in _propagate_recursive()
+        # Tabs will automatically reflect this via their state property
+        # which reads from the VNET through the parent pin
+        # 
+        # We don't update pin._state here because:
+        # 1. Active components set their pin states, which drive VNETs
+        # 2. Passive components read VNET states through tab.state
+        # 3. Updating pin._state here would create conflicts when a pin
+        #    has multiple tabs in different VNETs
+        pass
     
     def _find_linked_vnets(self, vnet: VNET) -> list[VNET]:
         """

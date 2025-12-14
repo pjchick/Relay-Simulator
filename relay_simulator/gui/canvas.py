@@ -14,6 +14,7 @@ from gui.renderers.wire_renderer import WireRenderer
 from components.base import Component
 from core.page import Page
 from core.wire import Wire
+from core.state import PinState
 
 
 class DesignCanvas:
@@ -57,7 +58,10 @@ class DesignCanvas:
         # Component renderers
         self.renderers: Dict[str, ComponentRenderer] = {}  # component_id -> renderer
         self.wire_renderers: Dict[str, WireRenderer] = {}  # wire_id -> wire_renderer
+        self.junction_items: List[int] = []  # Canvas items for junctions
         self.current_page: Optional[Page] = None
+        self.hovered_waypoint: Optional[Tuple[str, str]] = None  # (waypoint_id, wire_id)
+        self.simulation_engine = None  # SimulationEngine for powered state visualization
         
         # Create widgets
         self._create_widgets()
@@ -478,14 +482,16 @@ class DesignCanvas:
     
     # === COMPONENT RENDERING ===
     
-    def set_page(self, page: Optional[Page]) -> None:
+    def set_page(self, page: Optional[Page], simulation_engine=None) -> None:
         """
         Set the current page and render its components.
         
         Args:
             page: Page to display, or None to clear
+            simulation_engine: Optional SimulationEngine for powered state
         """
         self.current_page = page
+        self.simulation_engine = simulation_engine
         self.render_components()
     
     def render_components(self) -> None:
@@ -500,13 +506,20 @@ class DesignCanvas:
         for component in self.current_page.components.values():
             try:
                 renderer = RendererFactory.create_renderer(self.canvas, component)
+                
+                # Set powered state if simulation is running
+                if self.simulation_engine:
+                    is_powered = self._is_component_powered(component, self.simulation_engine)
+                    renderer.set_powered(is_powered)
+                    print(f"DEBUG: Component {component.component_type} powered={is_powered}")
+                
                 self.renderers[component.component_id] = renderer
                 renderer.render(self.zoom_level)
             except Exception as e:
                 print(f"Error rendering component {component.component_id}: {e}")
         
-        # Render all wires
-        self.render_wires()
+        # Render all wires with simulation engine for powered state
+        self.render_wires(self.simulation_engine)
     
     def clear_components(self) -> None:
         """Clear all rendered components and wires."""
@@ -557,8 +570,13 @@ class DesignCanvas:
     
     # === WIRE RENDERING ===
     
-    def render_wires(self) -> None:
-        """Render all wires on the current page."""
+    def render_wires(self, simulation_engine=None) -> None:
+        """
+        Render all wires on the current page.
+        
+        Args:
+            simulation_engine: Optional SimulationEngine for powered state
+        """
         # Clear existing wire renderers
         self.clear_wires()
         
@@ -568,17 +586,171 @@ class DesignCanvas:
         # Create renderers for all wires
         for wire in self.current_page.wires.values():
             try:
-                renderer = WireRenderer(self.canvas, wire, self.current_page)
+                renderer = WireRenderer(self.canvas, wire, self.current_page, self.hovered_waypoint)
+                
+                # Set powered state if simulation running
+                if simulation_engine:
+                    powered = self._is_wire_powered(wire, simulation_engine)
+                    renderer.set_powered(powered)
+                
                 self.wire_renderers[wire.wire_id] = renderer
                 renderer.render(self.zoom_level)
             except Exception as e:
                 print(f"Error rendering wire {wire.wire_id}: {e}")
+        
+        # Render page-level junctions
+        self.render_junctions(simulation_engine)
+    
+    def _is_wire_powered(self, wire, simulation_engine, visited_wires=None) -> bool:
+        """
+        Check if a wire is powered based on simulation state.
+        
+        Args:
+            wire: Wire to check
+            simulation_engine: SimulationEngine instance
+            visited_wires: Set of wire IDs already visited (to prevent infinite recursion)
+            
+        Returns:
+            True if wire is powered (HIGH), False otherwise
+        """
+        try:
+            # Initialize visited set if not provided
+            if visited_wires is None:
+                visited_wires = set()
+            
+            # Check if we've already visited this wire
+            if wire.wire_id in visited_wires:
+                return False
+            
+            # Mark this wire as visited
+            visited_wires.add(wire.wire_id)
+            
+            # Check if start_tab_id is actually a junction
+            if self.current_page:
+                junction = self.current_page.get_junction(wire.start_tab_id)
+                if junction:
+                    # Wire starts from a junction - check if junction is powered
+                    # by checking if any wire connected to the junction is powered
+                    is_powered = self._is_junction_powered(junction, simulation_engine, visited_wires)
+                    print(f"DEBUG: Wire {wire.wire_id} from junction {junction.junction_id}, powered={is_powered}")
+                    return is_powered
+            
+            # Get the tab connected to the wire
+            if wire.start_tab_id:
+                tab = simulation_engine.tabs.get(wire.start_tab_id)
+                if tab:
+                    # Get the VNET containing this tab
+                    for vnet in simulation_engine.vnets.values():
+                        if wire.start_tab_id in vnet.tab_ids:
+                            is_high = vnet.state == PinState.HIGH
+                            print(f"DEBUG: Wire {wire.wire_id} VNET state: {vnet.state}, is_high={is_high}")
+                            return is_high
+            return False
+        except Exception as e:
+            print(f"Error checking wire powered state: {e}")
+            return False
     
     def clear_wires(self) -> None:
         """Clear all rendered wires."""
         for wire_renderer in self.wire_renderers.values():
             wire_renderer.clear()
         self.wire_renderers.clear()
+        self.clear_junctions()
+    
+    def render_junctions(self, simulation_engine=None) -> None:
+        """
+        Render all page-level junctions.
+        
+        Args:
+            simulation_engine: Optional SimulationEngine for powered state
+        """
+        # Clear existing junction items
+        self.clear_junctions()
+        
+        if not self.current_page:
+            return
+        
+        # Draw each junction as a circle
+        for junction in self.current_page.junctions.values():
+            x, y = junction.position
+            radius = 5 * self.zoom_level
+            
+            # Determine junction color based on powered state
+            fill_color = '#656565'  # Default: gray (unpowered)
+            
+            if simulation_engine and junction.junction_id:
+                # Check if junction is powered by checking connected wires
+                powered = self._is_junction_powered(junction, simulation_engine)
+                if powered:
+                    fill_color = '#ff0000'  # Red when powered
+            
+            item = self.canvas.create_oval(
+                x - radius, y - radius,
+                x + radius, y + radius,
+                fill=fill_color,
+                outline='#505050',  # VSCodeTheme.COMPONENT_OUTLINE
+                width=2,
+                tags=(f"junction_{junction.junction_id}", "junction")
+            )
+            self.junction_items.append(item)
+    
+    def _is_junction_powered(self, junction, simulation_engine, visited_wires=None) -> bool:
+        """
+        Check if a junction is powered based on connected wires.
+        
+        Args:
+            junction: Junction to check
+            simulation_engine: SimulationEngine instance
+            visited_wires: Set of wire IDs already visited (to prevent infinite recursion)
+            
+        Returns:
+            True if junction is powered (any connected wire is HIGH), False otherwise
+        """
+        try:
+            # Initialize visited set if not provided
+            if visited_wires is None:
+                visited_wires = set()
+            
+            # Find wires connected to this junction
+            for wire in self.current_page.wires.values():
+                if wire.start_tab_id == junction.junction_id or wire.end_tab_id == junction.junction_id:
+                    if self._is_wire_powered(wire, simulation_engine, visited_wires):
+                        return True
+            return False
+        except Exception as e:
+            print(f"Error checking junction powered state: {e}")
+            return False
+    
+    def _is_component_powered(self, component, simulation_engine) -> bool:
+        """
+        Check if a component is powered (has any HIGH pin).
+        
+        Args:
+            component: Component to check
+            simulation_engine: SimulationEngine instance
+            
+        Returns:
+            True if any pin is HIGH, False otherwise
+        """
+        try:
+            # Check all pins on the component
+            for pin in component.get_all_pins().values():
+                for tab in pin.tabs.values():
+                    # Get VNET for this tab
+                    for vnet in simulation_engine.vnets.values():
+                        if tab.tab_id in vnet.tab_ids:
+                            if vnet.state == PinState.HIGH:
+                                return True
+            return False
+        except Exception as e:
+            print(f"Error checking component powered state: {e}")
+            return False
+    
+    def clear_junctions(self) -> None:
+        """Clear all rendered junctions."""
+        for item in self.junction_items:
+            self.canvas.delete(item)
+        self.junction_items.clear()
     
     def update_wire(self, wire_id: str) -> None:
         """

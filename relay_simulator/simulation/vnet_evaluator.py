@@ -102,10 +102,12 @@ class VnetEvaluator:
         
         # 1. Read all tab states in this VNET
         tab_states = self._read_tab_states(vnet)
+        print(f"DEBUG VnetEvaluator: Evaluating VNET {vnet.vnet_id}, tab_states={tab_states}")
         for tab_state in tab_states:
             result_state = combine_states(result_state, tab_state)
             if result_state == PinState.HIGH:
                 # Short-circuit: if we find HIGH, no need to check more
+                print(f"DEBUG VnetEvaluator: Found HIGH, returning HIGH")
                 return PinState.HIGH
         
         # 2. Get states from linked VNETs (cross-page connections)
@@ -122,7 +124,9 @@ class VnetEvaluator:
             if result_state == PinState.HIGH:
                 return PinState.HIGH
         
+        print(f"DEBUG VnetEvaluator: VNET {vnet.vnet_id} final result_state={result_state}")
         return result_state
+
     
     def _read_tab_states(self, vnet: VNET) -> list[PinState]:
         """
@@ -140,7 +144,9 @@ class VnetEvaluator:
             tab = self.all_tabs.get(tab_id)
             if tab:
                 # Tab state reflects its parent pin state
-                states.append(tab.state)
+                tab_state = tab.state
+                print(f"DEBUG VnetEvaluator: VNET {vnet.vnet_id}, tab {tab_id}, state={tab_state}")
+                states.append(tab_state)
         
         return states
     

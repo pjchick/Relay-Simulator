@@ -95,13 +95,15 @@ class Indicator(Component):
         Read pin state for display.
         
         Indicator is PASSIVE - it only reads state, never writes.
-        The pin state is determined by the VNET it's connected to.
+        The pin state ALWAYS stays FLOAT (indicator doesn't drive).
+        The indicator determines its lit state by reading VNET states.
         
         Args:
-            vnet_manager: VnetManager instance (unused for passive component)
+            vnet_manager: VnetManager instance (unused - indicator never drives)
         """
-        # Passive component - just read state, no logic needed
-        # The pin state is automatically updated by the VNET system
+        # Passive component - don't update pin state
+        # Pin state should always be FLOAT (not driving)
+        # Indicator determines if it should light up by checking VNETs in render code
         pass
     
     def sim_start(self, vnet_manager, bridge_manager):
