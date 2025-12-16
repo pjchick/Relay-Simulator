@@ -156,7 +156,7 @@ class DPDTRelay(Component):
             
             return pin
         
-        # Left side pins (x = -30)
+        # Left side pins (x = -30, touching left edge of relay box)
         left_x = -30
         
         # COIL pin (top-left, y = -80)
@@ -167,26 +167,26 @@ class DPDTRelay(Component):
         self._com1_pin = create_pin_with_tab("COM1", left_x, -20)
         self.add_pin(self._com1_pin)
         
-        # COM2 pin (mid-lower-left, y = +50)
+        # COM2 pin (mid-lower-left, y = +60)
         self._com2_pin = create_pin_with_tab("COM2", left_x, 60)
         self.add_pin(self._com2_pin)
         
-        # Right side pins (x = +30)
+        # Right side pins (x = +30, touching right edge of relay box)
         right_x = 30
         
-        # NO1 pin (top-right, y = -50)
+        # NO1 pin (top-right, y = -40)
         self._no1_pin = create_pin_with_tab("NO1", right_x, -40)
         self.add_pin(self._no1_pin)
         
-        # NC1 pin (upper-mid-right, y = +10)
+        # NC1 pin (upper-mid-right, y = 0)
         self._nc1_pin = create_pin_with_tab("NC1", right_x, 0)
         self.add_pin(self._nc1_pin)
         
-        # NO2 pin (lower-mid-right, y = +30)
+        # NO2 pin (lower-mid-right, y = +40)
         self._no2_pin = create_pin_with_tab("NO2", right_x, 40)
         self.add_pin(self._no2_pin)
         
-        # NC2 pin (bottom-right, y = +70)
+        # NC2 pin (bottom-right, y = +80)
         self._nc2_pin = create_pin_with_tab("NC2", right_x, 80)
         self.add_pin(self._nc2_pin)
     
