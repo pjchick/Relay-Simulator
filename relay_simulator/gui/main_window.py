@@ -1803,7 +1803,7 @@ class MainWindow:
                     tab_y = comp_y + tab_dy
                     
                     # Check if click is within tab area (scale hit radius with zoom)
-                    hit_radius = VSCodeTheme.TAB_SIZE * 1.5 * zoom  # Smaller radius for easier component selection
+                    hit_radius = VSCodeTheme.TAB_SIZE * 0.8 * zoom  # Reduced radius for easier component selection
                     if abs(x - tab_x) <= hit_radius and abs(y - tab_y) <= hit_radius:
                         return tab_obj.tab_id
         

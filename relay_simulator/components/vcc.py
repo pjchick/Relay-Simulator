@@ -50,21 +50,7 @@ class VCC(Component):
         self._create_pin_and_tab()
     
     def _create_pin_and_tab(self):
-        """Create the single pin with 1 tab based on pin_position property."""
-        # Determine tab position based on pin_position property
-        pin_position = self.properties.get('pin_position', 'bottom')
-        radius = 15  # Circle radius
-        
-        # Map position to coordinates (on circle edge)
-        position_map = {
-            'top': (0, -radius),     # Top
-            'bottom': (0, radius),   # Bottom (default)
-            'left': (-radius, 0),    # Left
-            'right': (radius, 0),    # Right
-        }
-        
-        tab_offset = position_map.get(pin_position, (0, radius))
-        
+        """Create the single pin with 1 tab at center of circle."""
         # Remove old pin if exists (for property changes)
         if self._output_pin:
             self.remove_pin(self._output_pin.pin_id)
@@ -73,16 +59,12 @@ class VCC(Component):
         pin_id = f"{self.component_id}.pin1"
         self._output_pin = Pin(pin_id, self)
         
-        # Create tab at specified position
+        # Create tab at center (0, 0)
         tab_id = f"{pin_id}.tab1"
-        tab = Tab(tab_id, self._output_pin, tab_offset)
+        tab = Tab(tab_id, self._output_pin, (0, 0))
         self._output_pin.add_tab(tab)
         
         self.add_pin(self._output_pin)
-    
-    def update_pin_position(self):
-        """Update pin/tab position when pin_position property changes."""
-        self._create_pin_and_tab()
     
     def simulate_logic(self, vnet_manager, bridge_manager=None):
         """

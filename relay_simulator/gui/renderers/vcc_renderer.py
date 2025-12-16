@@ -13,13 +13,12 @@ class VCCRenderer(ComponentRenderer):
     Renderer for VCC (power source) components.
     
     Visual appearance:
-    - Circle with + symbol (30px diameter)
-    - Voltage label below
+    - Circle with + symbol (22px diameter)
     - Red color to indicate power source
-    - 4 tabs at clock positions
+    - Tab at center
     """
     
-    DIAMETER = 30  # VCC symbol diameter in pixels
+    DIAMETER = 22  # VCC symbol diameter in pixels
     
     def render(self, zoom: float = 1.0) -> None:
         """
