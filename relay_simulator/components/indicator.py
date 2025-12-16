@@ -90,7 +90,7 @@ class Indicator(Component):
         
         self.add_pin(pin)
     
-    def simulate_logic(self, vnet_manager):
+    def simulate_logic(self, vnet_manager, bridge_manager=None):
         """
         Read pin state for display.
         

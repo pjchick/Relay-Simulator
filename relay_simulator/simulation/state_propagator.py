@@ -58,7 +58,7 @@ class StatePropagator:
         self.all_tabs = all_tabs
         self.all_bridges = all_bridges
     
-    def propagate_vnet_state(self, vnet: VNET, new_state: PinState) -> Set[str]:
+    def propagate_vnet_state(self, vnet: VNET, new_state: PinState, include_bridges: bool = True) -> Set[str]:
         """
         Propagate a new state to a VNET and all connected networks.
         
@@ -81,7 +81,7 @@ class StatePropagator:
         affected_vnets: Set[str] = set()
         
         # Start recursive propagation
-        self._propagate_recursive(vnet, new_state, visited_vnets, affected_vnets)
+        self._propagate_recursive(vnet, new_state, visited_vnets, affected_vnets, include_bridges)
         
         return affected_vnets
     
@@ -90,7 +90,8 @@ class StatePropagator:
         vnet: VNET,
         new_state: PinState,
         visited_vnets: Set[str],
-        affected_vnets: Set[str]
+        affected_vnets: Set[str],
+        include_bridges: bool
     ):
         """
         Recursively propagate state through connected VNETs.
@@ -121,12 +122,14 @@ class StatePropagator:
         # Propagate to linked VNETs (cross-page connections)
         linked_vnets = self._find_linked_vnets(vnet)
         for linked_vnet in linked_vnets:
-            self._propagate_recursive(linked_vnet, new_state, visited_vnets, affected_vnets)
+            self._propagate_recursive(linked_vnet, new_state, visited_vnets, affected_vnets, include_bridges)
         
         # Propagate to bridged VNETs (relay connections)
-        bridged_vnets = self._find_bridged_vnets(vnet)
-        for bridged_vnet in bridged_vnets:
-            self._propagate_recursive(bridged_vnet, new_state, visited_vnets, affected_vnets)
+        # NOTE: Some engine modes resolve bridges separately to avoid oscillation.
+        if include_bridges:
+            bridged_vnets = self._find_bridged_vnets(vnet)
+            for bridged_vnet in bridged_vnets:
+                self._propagate_recursive(bridged_vnet, new_state, visited_vnets, affected_vnets, include_bridges)
     
     def _propagate_to_tabs(self, vnet: VNET, new_state: PinState):
         """

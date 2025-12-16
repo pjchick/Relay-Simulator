@@ -337,9 +337,9 @@ class ThreadedSimulationEngine:
                         propagated = self.propagator.propagate_vnet_state(vnet, new_state)
                         affected_vnets.update(propagated)
                 
-                # Mark affected VNETs dirty
-                if affected_vnets:
-                    self.dirty_manager.mark_multiple_dirty(affected_vnets)
+                # NOTE: We no longer re-mark all propagated VNETs dirty here.
+                # Propagation applies the resolved state; forcing re-evaluation can create oscillation
+                # when certain connectivity (e.g., bridges) is resolved outside the evaluator.
                 
                 # === PARALLEL COMPONENT EXECUTION ===
                 # Start component updates
@@ -377,11 +377,9 @@ class ThreadedSimulationEngine:
                     for comp in pending_components:
                         self.coordinator.mark_update_complete(comp.component_id)
                     
-                    # Check all VNETs for state changes after component updates
-                    for vnet in self.vnets.values():
-                        new_state = self.evaluator.evaluate_vnet_state(vnet)
-                        if new_state != vnet.state:
-                            self.dirty_manager.mark_dirty(vnet.vnet_id)
+                    # No global post-component VNET scan here.
+                    # Components must mark affected VNETs dirty via VnetManager, and bridge changes
+                    # already mark VNETs dirty.
                 
                 # Check for oscillation
                 if iteration >= self.max_iterations:

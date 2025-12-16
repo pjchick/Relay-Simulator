@@ -61,8 +61,11 @@ class VnetEvaluator:
         Evaluate and return the electrical state of a VNET.
         
         This is the main entry point for VNET evaluation. It collects states
-        from all sources (tabs, links, bridges) and combines them using
-        HIGH OR logic.
+        from all sources (tabs and links only - NOT bridges) and combines them 
+        using HIGH OR logic.
+        
+        Bridges are evaluated separately in the simulation engine to prevent
+        circular dependencies.
         
         Args:
             vnet: The VNET to evaluate
@@ -75,14 +78,14 @@ class VnetEvaluator:
             and returns what the state should be. The caller is responsible
             for updating the VNET state if needed.
         """
-        # Track visited VNETs to prevent infinite recursion from circular links/bridges
+        # Track visited VNETs to prevent infinite recursion from circular links
         visited_vnets: Set[str] = set()
         
         return self._evaluate_recursive(vnet, visited_vnets)
     
     def _evaluate_recursive(self, vnet: VNET, visited_vnets: Set[str]) -> PinState:
         """
-        Recursively evaluate VNET state, handling links and bridges.
+        Recursively evaluate VNET state, handling links.
         
         Args:
             vnet: The VNET to evaluate
@@ -102,12 +105,10 @@ class VnetEvaluator:
         
         # 1. Read all tab states in this VNET
         tab_states = self._read_tab_states(vnet)
-        print(f"DEBUG VnetEvaluator: Evaluating VNET {vnet.vnet_id}, tab_states={tab_states}")
         for tab_state in tab_states:
             result_state = combine_states(result_state, tab_state)
             if result_state == PinState.HIGH:
                 # Short-circuit: if we find HIGH, no need to check more
-                print(f"DEBUG VnetEvaluator: Found HIGH, returning HIGH")
                 return PinState.HIGH
         
         # 2. Get states from linked VNETs (cross-page connections)
@@ -117,14 +118,9 @@ class VnetEvaluator:
             if result_state == PinState.HIGH:
                 return PinState.HIGH
         
-        # 3. Get states from bridged VNETs (relay connections)
-        bridged_states = self._read_bridged_vnet_states(vnet, visited_vnets)
-        for bridged_state in bridged_states:
-            result_state = combine_states(result_state, bridged_state)
-            if result_state == PinState.HIGH:
-                return PinState.HIGH
+        # Note: Bridges are NOT evaluated here to prevent circular dependencies
+        # Bridges are evaluated separately after VNETs stabilize
         
-        print(f"DEBUG VnetEvaluator: VNET {vnet.vnet_id} final result_state={result_state}")
         return result_state
 
     
@@ -145,7 +141,6 @@ class VnetEvaluator:
             if tab:
                 # Tab state reflects its parent pin state
                 tab_state = tab.state
-                print(f"DEBUG VnetEvaluator: VNET {vnet.vnet_id}, tab {tab_id}, state={tab_state}")
                 states.append(tab_state)
         
         return states
@@ -193,7 +188,8 @@ class VnetEvaluator:
     def _read_bridged_vnet_states(
         self,
         vnet: VNET,
-        visited_vnets: Set[str]
+        visited_vnets: Set[str],
+        iteration_states: dict
     ) -> list[PinState]:
         """
         Read states from all VNETs connected to this VNET via bridges.
@@ -204,6 +200,7 @@ class VnetEvaluator:
         Args:
             vnet: The VNET to check for bridges
             visited_vnets: Set of already-visited VNETs (prevents cycles)
+            iteration_states: Dict of vnet_id -> PinState for fresh states
             
         Returns:
             List of PinState values from bridged VNETs
@@ -212,6 +209,7 @@ class VnetEvaluator:
         
         # Get all bridge IDs from this VNET
         bridge_ids = vnet.bridge_ids.copy()  # Copy to avoid iteration issues
+        # (debug logging removed)
         
         # For each bridge, get the other connected VNET
         for bridge_id in bridge_ids:
@@ -233,8 +231,18 @@ class VnetEvaluator:
             if not other_vnet:
                 continue
             
-            # Recursively evaluate the bridged VNET
-            bridged_state = self._evaluate_recursive(other_vnet, visited_vnets)
+            # Mark as visited BEFORE reading state to prevent infinite loops
+            visited_vnets.add(other_vnet_id)
+            
+            # Read the other VNET's state - check iteration_states first for fresh state
+            # If the VNET was already evaluated in this iteration, use that state
+            # Otherwise fall back to the stored vnet.state
+            if other_vnet_id in iteration_states:
+                bridged_state = iteration_states[other_vnet_id]
+            else:
+                # Using old state from previous iteration - this might be stale
+                # The other VNET will be evaluated later in this iteration
+                bridged_state = other_vnet.state
             states.append(bridged_state)
         
         return states

@@ -134,18 +134,19 @@ def test_relay_pin_configuration():
     assert relay.get_pin_by_name("NC2") is not None
     print("✓ All 7 pins present: COIL, COM1, NO1, NC1, COM2, NO2, NC2")
     
-    # Check each pin has 4 tabs
+    # Check each pin has 1 tab
     for pin_name in ["COIL", "COM1", "NO1", "NC1", "COM2", "NO2", "NC2"]:
         pin = relay.get_pin_by_name(pin_name)
-        assert len(pin.tabs) == 4
-    print("✓ Each pin has 4 tabs")
+        assert len(pin.tabs) == 1
+    print("✓ Each pin has 1 tab")
     
-    # Check tab positions (should be at clock positions)
+    # Check tab position (should be at pin position)
     coil_pin = relay.get_pin_by_name("COIL")
-    expected_positions = [(0, -20), (20, 0), (0, 20), (-20, 0)]
-    actual_positions = [tab.relative_position for tab in coil_pin.tabs.values()]
-    assert sorted(actual_positions) == sorted(expected_positions)
-    print("✓ Tabs at correct positions: 12, 3, 6, 9 o'clock")
+    tab = list(coil_pin.tabs.values())[0]
+    # Tab position should match the pin offset
+    assert tab.relative_position[0] == -30  # left_x
+    assert tab.relative_position[1] == -80  # coil_y
+    print("✓ Tab at correct position")
     
     print("✓ Relay pin configuration tests passed\n")
 

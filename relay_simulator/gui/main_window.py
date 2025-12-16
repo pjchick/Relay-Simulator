@@ -394,6 +394,9 @@ class MainWindow:
                 self.simulation_engine = None
                 return
             
+            # Set callback for relay timers to trigger simulation restart
+            self.simulation_engine.set_gui_restart_callback(self._on_relay_timer_complete)
+            
         except Exception as e:
             messagebox.showerror("Simulation Error", f"Failed to create simulation:\n{e}")
             self.simulation_engine = None
@@ -492,22 +495,28 @@ class MainWindow:
         
         return vnets, tabs, bridges, components
     
+    def _on_relay_timer_complete(self):
+        """
+        Callback when a relay timer completes and switches contacts.
+        
+        This is called from the relay's timer thread, so we need to schedule
+        the simulation restart on the GUI thread.
+        """
+        # Schedule simulation restart on GUI thread
+        self.root.after(10, self._run_simulation_step)
+    
     def _run_simulation_step(self):
         """
         Run one simulation step and schedule the next.
         This keeps the simulation running in the background.
         """
         if not self.simulation_mode or not self.simulation_engine:
-            print("DEBUG: _run_simulation_step but not in simulation mode")
             return
-        
-        print("DEBUG: Running simulation step...")
         
         # Run one iteration of simulation
         try:
             stats = self.simulation_engine.run()
-            
-            print(f"DEBUG: Simulation complete - stable={stats.stable}, iterations={stats.iterations}")
+            # (debug logging removed)
             
             # Update visual feedback
             self._update_simulation_visuals()
@@ -531,7 +540,6 @@ class MainWindow:
     
     def _update_simulation_visuals(self):
         """Update visual feedback for powered components and wires."""
-        print("DEBUG: _update_simulation_visuals called")
         
         # Get active page
         tab = self.file_tabs.get_active_tab()
@@ -543,7 +551,7 @@ class MainWindow:
                     # Re-render the entire page with simulation engine
                     self._set_canvas_page(page)
         
-        print("DEBUG: Canvas redrawn")
+        # (debug logging removed)
     
     def _handle_switch_toggle(self, canvas_x: float, canvas_y: float):
         """
@@ -553,61 +561,46 @@ class MainWindow:
             canvas_x: Canvas X coordinate of click
             canvas_y: Canvas Y coordinate of click
         """
-        print(f"DEBUG: _handle_switch_toggle called at ({canvas_x}, {canvas_y})")
-        
         # Get active page
         tab = self.file_tabs.get_active_tab()
         if not tab or not tab.document:
-            print("DEBUG: No active tab or document")
             return
         
         active_page_id = self.page_tabs.get_active_page_id()
         if not active_page_id:
-            print("DEBUG: No active page")
             return
         
         page = tab.document.get_page(active_page_id)
         if not page:
-            print("DEBUG: Page not found")
             return
         
         # Find component at click position
         clicked_component = None
-        print(f"DEBUG: Checking {len(page.get_all_components())} components")
         for component in page.get_all_components():
             x, y = component.position
             distance = ((canvas_x - x)**2 + (canvas_y - y)**2)**0.5
-            print(f"DEBUG: Component {component.component_type} at ({x}, {y}), distance={distance:.1f}")
             # Simple bounding box check (assuming components are roughly 40x40)
             if abs(canvas_x - x) <= 20 and abs(canvas_y - y) <= 20:
                 clicked_component = component
-                print(f"DEBUG: MATCHED component {component.component_type}")
                 break
         
         if not clicked_component:
-            print("DEBUG: No component clicked")
             return
         
         # Check if it's a switch component
-        print(f"DEBUG: Clicked component type: '{clicked_component.component_type}'")
         if clicked_component.component_type != "Switch":
-            print(f"DEBUG: Not a Switch, it's a {clicked_component.component_type}")
             return
-        
-        print(f"DEBUG: About to toggle switch, current state: {clicked_component._is_on}")
         
         # Toggle the switch
         try:
             # Switch component has a toggle_switch() method
             if hasattr(clicked_component, 'toggle_switch'):
                 clicked_component.toggle_switch()
-                print(f"DEBUG: Toggled! New state: {clicked_component._is_on}")
                 self.set_status(f"Switch toggled")
                 
                 # Update the component's logic to propagate the state change
                 if self.simulation_engine:
-                    print("DEBUG: Calling simulate_logic")
-                    clicked_component.simulate_logic(self.simulation_engine.vnet_manager)
+                    clicked_component.simulate_logic(self.simulation_engine.vnet_manager, self.simulation_engine.bridge_manager)
                     
                     # Mark all VNETs dirty to force re-evaluation
                     self.simulation_engine.dirty_manager.mark_all_dirty()
@@ -617,11 +610,9 @@ class MainWindow:
                     
                     # Re-run simulation to propagate change
                     self.root.after(10, self._run_simulation_step)
-                    print("DEBUG: Simulation restart scheduled")
                 else:
-                    print("DEBUG: No simulation engine!")
+                    pass
             else:
-                print("DEBUG: No toggle_switch method")
                 self.set_status(f"Component {clicked_component.component_type} is not interactive")
         except Exception as e:
             print(f"Error toggling switch: {e}")
@@ -1234,12 +1225,8 @@ class MainWindow:
         canvas_x = self.design_canvas.canvas.canvasx(event.x)
         canvas_y = self.design_canvas.canvas.canvasy(event.y)
         
-        print(f"DEBUG: Canvas click at screen ({event.x}, {event.y}) -> canvas ({canvas_x}, {canvas_y})")
-        print(f"DEBUG: simulation_mode = {self.simulation_mode}")
-        
         # In simulation mode, only allow switch toggling
         if self.simulation_mode:
-            print("DEBUG: In simulation mode, calling _handle_switch_toggle")
             self._handle_switch_toggle(canvas_x, canvas_y)
             return
         

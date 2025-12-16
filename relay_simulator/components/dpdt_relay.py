@@ -83,6 +83,7 @@ class DPDTRelay(Component):
         self._timer_active = False  # Whether timer is running
         self._timer_thread: Optional[threading.Thread] = None
         self._timer_lock = threading.Lock()
+        self._on_contacts_switched_callback = None  # Callback to trigger simulation restart
         
         # Bridge references (runtime only)
         self._pole1_bridge_id: Optional[str] = None
@@ -112,52 +113,81 @@ class DPDTRelay(Component):
         self._create_pins_and_tabs()
     
     def _create_pins_and_tabs(self):
-        """Create all 7 pins with 4 tabs each at clock positions."""
-        radius = 20  # Distance from center to tab
+        """
+        Create all 7 pins with a single tab each.
         
-        # Helper function to create a pin with 4 tabs
-        def create_pin_with_tabs(pin_name: str) -> Pin:
+        Visual layout matching the design:
+        - Component: 60px wide x 220px tall
+        - Pins arranged vertically along left and right edges
+        
+        Pin positions (relative to component center):
+        Left side (x = -30, at left edge):
+          - COIL: top-left (y = -80)
+          - COM1: mid-upper-left (y = -20)
+          - COM2: mid-lower-left (y = +50)
+        
+        Right side (x = +30, at right edge):
+          - NO1: top-right (y = -50)
+          - NC1: upper-mid-right (y = +10)
+          - NO2: lower-mid-right (y = +30)
+          - NC2: bottom-right (y = +70)
+        """
+        
+        # Helper function to create a pin with a single tab
+        def create_pin_with_tab(pin_name: str, pin_offset_x: int, pin_offset_y: int) -> Pin:
+            """
+            Create a pin with a single tab at the pin position.
+            
+            Args:
+                pin_name: Name of the pin (COIL, COM1, etc.)
+                pin_offset_x: X offset from component center
+                pin_offset_y: Y offset from component center
+            """
             pin_id = f"{self.component_id}.{pin_name}"
             pin = Pin(pin_id, self)
             
-            # Create 4 tabs at clock positions
-            tab_positions = [
-                (0, -radius),   # 12 o'clock (top)
-                (radius, 0),    # 3 o'clock (right)
-                (0, radius),    # 6 o'clock (bottom)
-                (-radius, 0),   # 9 o'clock (left)
-            ]
-            
-            for idx, pos in enumerate(tab_positions):
-                tab_id = f"{pin_id}.tab{idx}"
-                tab = Tab(tab_id, pin, pos)
-                pin.add_tab(tab)
+            # Create single tab at the pin position
+            tab_id = f"{pin_id}.tab0"
+            tab = Tab(tab_id, pin, (pin_offset_x, pin_offset_y))
+            pin.add_tab(tab)
             
             return pin
         
-        # Create all 7 pins
-        self._coil_pin = create_pin_with_tabs("COIL")
+        # Left side pins (x = -30)
+        left_x = -30
+        
+        # COIL pin (top-left, y = -80)
+        self._coil_pin = create_pin_with_tab("COIL", left_x, -80)
         self.add_pin(self._coil_pin)
         
-        self._com1_pin = create_pin_with_tabs("COM1")
+        # COM1 pin (mid-upper-left, y = -20)
+        self._com1_pin = create_pin_with_tab("COM1", left_x, -20)
         self.add_pin(self._com1_pin)
         
-        self._no1_pin = create_pin_with_tabs("NO1")
-        self.add_pin(self._no1_pin)
-        
-        self._nc1_pin = create_pin_with_tabs("NC1")
-        self.add_pin(self._nc1_pin)
-        
-        self._com2_pin = create_pin_with_tabs("COM2")
+        # COM2 pin (mid-lower-left, y = +50)
+        self._com2_pin = create_pin_with_tab("COM2", left_x, 60)
         self.add_pin(self._com2_pin)
         
-        self._no2_pin = create_pin_with_tabs("NO2")
+        # Right side pins (x = +30)
+        right_x = 30
+        
+        # NO1 pin (top-right, y = -50)
+        self._no1_pin = create_pin_with_tab("NO1", right_x, -40)
+        self.add_pin(self._no1_pin)
+        
+        # NC1 pin (upper-mid-right, y = +10)
+        self._nc1_pin = create_pin_with_tab("NC1", right_x, 0)
+        self.add_pin(self._nc1_pin)
+        
+        # NO2 pin (lower-mid-right, y = +30)
+        self._no2_pin = create_pin_with_tab("NO2", right_x, 40)
         self.add_pin(self._no2_pin)
         
-        self._nc2_pin = create_pin_with_tabs("NC2")
+        # NC2 pin (bottom-right, y = +70)
+        self._nc2_pin = create_pin_with_tab("NC2", right_x, 80)
         self.add_pin(self._nc2_pin)
     
-    def simulate_logic(self, vnet_manager, bridge_manager):
+    def simulate_logic(self, vnet_manager, bridge_manager=None):
         """
         Execute relay logic with timer-based switching.
         
@@ -166,23 +196,34 @@ class DPDTRelay(Component):
         
         Args:
             vnet_manager: VnetManager instance for state tracking
-            bridge_manager: BridgeManager instance for bridge operations
+            bridge_manager: BridgeManager instance for bridge operations (required)
         """
+        if bridge_manager is None:
+            return  # Cannot operate without bridge_manager
+
         if not self._coil_pin:
             return
-        
-        # Read current coil state
-        coil_state = self._coil_pin.state
+
+        # Read current coil state from VNET (passive input reads VNET directly)
+        if not self._coil_pin.tabs:
+            print("DPDTRelay: ERROR - coil pin has no tabs!")
+            return
+
+        coil_tab = next(iter(self._coil_pin.tabs.values()))
+        coil_vnet = vnet_manager.get_vnet_for_tab(coil_tab.tab_id)
+        if not coil_vnet:
+            print("DPDTRelay: ERROR - coil tab has no VNET!")
+            return
+
+        coil_state = coil_vnet.state
         target_energized = (coil_state == PinState.HIGH)
-        
-        # Check if state change needed
+
+        # If state change needed, start/update timer
         with self._timer_lock:
             if target_energized != self._target_energized:
-                # State change detected - start timer
                 self._target_energized = target_energized
-                
+
                 if not self._timer_active:
-                    # Start new timer
                     self._timer_active = True
                     self._timer_thread = threading.Thread(
                         target=self._timer_callback,
@@ -195,35 +236,29 @@ class DPDTRelay(Component):
         """
         Timer callback that executes after SWITCHING_DELAY.
         
-        Switches bridges and updates relay state.
+        Switches bridges and updates relay state, then triggers simulation restart.
         
         Args:
             vnet_manager: VnetManager instance
             bridge_manager: BridgeManager instance
         """
-        # Wait for switching delay
         time.sleep(self.SWITCHING_DELAY)
-        
+
         with self._timer_lock:
-            # Check if target state still matches
             if self._target_energized != self._is_energized:
-                # Update energized state first
                 self._is_energized = self._target_energized
-                # Then switch bridges based on new state
                 self._switch_contacts(vnet_manager, bridge_manager)
-            
+
+                if self._on_contacts_switched_callback:
+                    self._on_contacts_switched_callback()
+
             self._timer_active = False
     
+
+    
     def _switch_contacts(self, vnet_manager, bridge_manager):
-        """
-        Switch relay contacts by moving bridges.
+        """Switch relay contacts by moving bridges."""
         
-        Removes old bridges and creates new ones based on energized state.
-        
-        Args:
-            vnet_manager: VnetManager instance
-            bridge_manager: BridgeManager instance
-        """
         # Remove existing bridges
         if self._pole1_bridge_id:
             bridge_manager.remove_bridge(self._pole1_bridge_id)
@@ -264,6 +299,16 @@ class DPDTRelay(Component):
                 self._pole2_bridge_id = bridge_manager.create_bridge(
                     vnet_com2.vnet_id, vnet_nc2.vnet_id, self.component_id
                 )
+    
+    def set_on_contacts_switched_callback(self, callback):
+        """
+        Set callback function to be called when contacts are switched.
+        
+        This allows the relay to trigger a simulation restart after the timer completes.
+        Args:
+            callback: Function to call when contacts switch (no arguments)
+        """
+        self._on_contacts_switched_callback = callback
     
     def sim_start(self, vnet_manager, bridge_manager):
         """

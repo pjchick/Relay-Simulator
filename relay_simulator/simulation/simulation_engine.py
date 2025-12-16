@@ -23,6 +23,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 from core.vnet import VNET
+from core.state import PinState
 from core.tab import Tab
 from core.bridge import Bridge
 from components.base import Component
@@ -127,7 +128,7 @@ class SimulationEngine:
         from core.id_manager import IDManager
         self.id_manager = IDManager()  # For generating bridge IDs
         self.vnet_manager = VnetManager(vnets, tabs, self.dirty_manager)
-        self.bridge_manager = BridgeManager(bridges, self.id_manager)
+        self.bridge_manager = BridgeManager(bridges, self.id_manager, vnets)
         
         # Statistics
         self.statistics = SimulationStatistics()
@@ -136,6 +137,9 @@ class SimulationEngine:
         # Control flags
         self._running = False
         self._stop_requested = False
+        
+        # GUI callback for async updates (e.g., relay timer completion)
+        self._gui_restart_callback = None
     
     def initialize(self) -> bool:
         """
@@ -165,6 +169,10 @@ class SimulationEngine:
             for component in self.components.values():
                 try:
                     component.sim_start(self.vnet_manager, self.bridge_manager)
+                    
+                    # Set callback for DPDT relays to trigger simulation restart when timer completes
+                    if hasattr(component, 'set_on_contacts_switched_callback'):
+                        component.set_on_contacts_switched_callback(self._on_relay_contacts_switched)
                 except Exception as e:
                     print(f"Error in sim_start for {component.component_id}: {e}")
                     # Continue with other components
@@ -186,6 +194,32 @@ class SimulationEngine:
             with self._state_lock:
                 self.state = SimulationState.ERROR
             return False
+    
+    def _on_relay_contacts_switched(self):
+        """
+        Callback for when a relay switches its contacts.
+        
+        Marks all VNETs dirty and requests the GUI to restart simulation.
+        This is called from the relay's timer thread.
+        """
+        self.dirty_manager.mark_all_dirty()
+        
+        # Trigger GUI to restart simulation
+        if self._gui_restart_callback:
+            self._gui_restart_callback()
+        else:
+            pass
+    
+    def set_gui_restart_callback(self, callback):
+        """
+        Set callback to trigger GUI simulation restart.
+        
+        This is called by relays when their timers complete and contacts switch.
+        
+        Args:
+            callback: Function to call to restart simulation (no arguments)
+        """
+        self._gui_restart_callback = callback
     
     def run(self) -> SimulationStatistics:
         """
@@ -213,8 +247,34 @@ class SimulationEngine:
             self._running = True
             self._stop_requested = False
         
+        # (debug logging removed)
+        
         start_time = time.time()
         iteration = 0
+
+        def collect_bridge_group(start_vnet: VNET) -> Set[str]:
+            """Return all VNET IDs connected to start_vnet via active bridges."""
+            group: Set[str] = set()
+            stack = [start_vnet.vnet_id]
+            while stack:
+                current_id = stack.pop()
+                if current_id in group:
+                    continue
+                group.add(current_id)
+
+                current_vnet = self.vnets.get(current_id)
+                if not current_vnet:
+                    continue
+
+                for bridge_id in current_vnet.bridge_ids.copy():
+                    bridge = self.bridges.get(bridge_id)
+                    if not bridge:
+                        continue
+                    other_id = bridge.get_other_vnet(current_id)
+                    if other_id and other_id not in group:
+                        stack.append(other_id)
+
+            return group
         
         try:
             while self._running and not self._stop_requested:
@@ -226,6 +286,8 @@ class SimulationEngine:
                 
                 # Get dirty VNETs
                 dirty_vnets = self.dirty_manager.get_dirty_vnets()
+                
+                # (debug logging removed)
                 
                 # If no dirty VNETs, we've reached stability
                 if not dirty_vnets:
@@ -241,31 +303,48 @@ class SimulationEngine:
                     self._running = False
                     break
                 
-                # Process each dirty VNET
-                affected_vnets: Set[str] = set()
-                
+                # Process dirty VNETs in bridge-connected groups.
+                # This avoids oscillation when the evaluator intentionally ignores bridges.
+                processed: Set[str] = set()
                 for vnet in dirty_vnets:
-                    # Evaluate new state
-                    new_state = self.evaluator.evaluate_vnet_state(vnet)
-                    print(f"DEBUG SimEngine: VNET {vnet.vnet_id} evaluated: old_state={vnet.state}, new_state={new_state}")
-                    
-                    # Propagate if state changed
-                    if new_state != vnet.state:
-                        print(f"DEBUG SimEngine: State changed! Propagating...")
-                        propagated = self.propagator.propagate_vnet_state(vnet, new_state)
-                        affected_vnets.update(propagated)
-                    else:
-                        print(f"DEBUG SimEngine: State unchanged, no propagation")
-                    
-                    # Clear this VNET's dirty flag
-                    self.dirty_manager.clear_dirty(vnet.vnet_id)
-                    
-                    # Queue components connected to this VNET
-                    self.coordinator.queue_components_for_vnet(vnet)
-                
-                # Mark affected VNETs dirty for next iteration
-                if affected_vnets:
-                    self.dirty_manager.mark_multiple_dirty(affected_vnets)
+                    if vnet.vnet_id in processed:
+                        continue
+
+                    group_ids = collect_bridge_group(vnet)
+                    processed.update(group_ids)
+
+                    # Evaluate base (tabs+links) for each VNET in the group, then OR to get group state.
+                    group_state = PinState.FLOAT
+                    for vnet_id in group_ids:
+                        gvnet = self.vnets.get(vnet_id)
+                        if not gvnet:
+                            continue
+                        base_state = self.evaluator.evaluate_vnet_state(gvnet)
+                        if base_state == PinState.HIGH:
+                            group_state = PinState.HIGH
+                            break
+
+                    # Apply group_state to all VNETs in the group.
+                    # Propagate across LINKS only (bridges are already handled by grouping).
+                    for vnet_id in group_ids:
+                        gvnet = self.vnets.get(vnet_id)
+                        if not gvnet:
+                            continue
+
+                        old_state = gvnet.state
+                        if old_state != group_state:
+                            gvnet.state = group_state
+                            propagated = self.propagator.propagate_vnet_state(gvnet, group_state, include_bridges=False)
+                            # Clear dirty for anything propagation touched so we don't re-evaluate it back to base.
+                            for affected_id in propagated:
+                                self.dirty_manager.clear_dirty(affected_id)
+                                affected_vnet = self.vnets.get(affected_id)
+                                if affected_vnet:
+                                    self.coordinator.queue_components_for_vnet(affected_vnet)
+
+                        # Clear dirty and queue components for the group VNET regardless.
+                        self.dirty_manager.clear_dirty(vnet_id)
+                        self.coordinator.queue_components_for_vnet(gvnet)
                 
                 # Start component updates
                 num_pending = self.coordinator.start_updates()
@@ -276,24 +355,21 @@ class SimulationEngine:
                     
                     for component in pending_components:
                         try:
-                            component.simulate_logic(self.vnet_manager)
+                            component.simulate_logic(self.vnet_manager, self.bridge_manager)
                             with self._stats_lock:
                                 self.statistics.components_updated += 1
                         except Exception as e:
                             print(f"Error in simulate_logic for {component.component_id}: {e}")
+                            import traceback
+                            traceback.print_exc()
                         finally:
                             self.coordinator.mark_update_complete(component.component_id)
                     
                     # Wait for all updates to complete
                     self.coordinator.wait_for_completion(timeout=1.0)
-                    
-                    # After components update, check all VNETs for state changes
-                    # Components may have changed pin states, which affects VNET evaluation
-                    for vnet in self.vnets.values():
-                        new_state = self.evaluator.evaluate_vnet_state(vnet)
-                        if new_state != vnet.state:
-                            # State will change, mark dirty for next iteration
-                            self.dirty_manager.mark_dirty(vnet.vnet_id)
+                    # No global post-component VNET scan here.
+                    # Components are responsible for marking affected VNETs dirty via VnetManager,
+                    # and bridge changes (add/remove) already mark VNETs dirty.
                 
                 # Check for oscillation (max iterations)
                 if iteration >= self.max_iterations:

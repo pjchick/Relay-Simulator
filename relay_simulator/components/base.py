@@ -38,7 +38,7 @@ class Component(ABC):
     # === SIMULATION INTERFACE ===
     
     @abstractmethod
-    def simulate_logic(self, vnet_manager):
+    def simulate_logic(self, vnet_manager, bridge_manager=None):
         """
         Calculate new component state based on pin states.
         Update pins if state changes.
@@ -48,6 +48,7 @@ class Component(ABC):
         
         Args:
             vnet_manager: VnetManager instance for marking VNETs dirty
+            bridge_manager: Optional BridgeManager instance for dynamic bridge creation
         """
         pass
     

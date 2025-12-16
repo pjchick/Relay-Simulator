@@ -511,7 +511,6 @@ class DesignCanvas:
                 if self.simulation_engine:
                     is_powered = self._is_component_powered(component, self.simulation_engine)
                     renderer.set_powered(is_powered)
-                    print(f"DEBUG: Component {component.component_type} powered={is_powered}")
                 
                 self.renderers[component.component_id] = renderer
                 renderer.render(self.zoom_level)
@@ -632,7 +631,6 @@ class DesignCanvas:
                     # Wire starts from a junction - check if junction is powered
                     # by checking if any wire connected to the junction is powered
                     is_powered = self._is_junction_powered(junction, simulation_engine, visited_wires)
-                    print(f"DEBUG: Wire {wire.wire_id} from junction {junction.junction_id}, powered={is_powered}")
                     return is_powered
             
             # Get the tab connected to the wire
@@ -643,7 +641,6 @@ class DesignCanvas:
                     for vnet in simulation_engine.vnets.values():
                         if wire.start_tab_id in vnet.tab_ids:
                             is_high = vnet.state == PinState.HIGH
-                            print(f"DEBUG: Wire {wire.wire_id} VNET state: {vnet.state}, is_high={is_high}")
                             return is_high
             return False
         except Exception as e:

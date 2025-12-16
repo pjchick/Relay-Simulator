@@ -62,7 +62,7 @@ class VCC(Component):
         
         self.add_pin(self._output_pin)
     
-    def simulate_logic(self, vnet_manager):
+    def simulate_logic(self, vnet_manager, bridge_manager=None):
         """
         Execute VCC logic.
         
