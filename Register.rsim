@@ -3,7 +3,7 @@
   "pages": [
     {
       "page_id": "881ab474",
-      "name": "Page 1",
+      "name": "A-Register",
       "canvas_x": 0.0,
       "canvas_y": 116.0,
       "canvas_zoom": 1.0,
@@ -213,10 +213,11 @@
               ]
             }
           ],
+          "link_name": "RLA",
           "properties": {
             "mode": "pushbutton",
-            "label": "SW",
-            "label_position": "bottom",
+            "label": "RLA",
+            "label_position": "left",
             "color": "red",
             "on_color": [
               255,
@@ -499,10 +500,11 @@
               ]
             }
           ],
+          "link_name": "RSA",
           "properties": {
             "mode": "pushbutton",
-            "label": "SW",
-            "label_position": "bottom",
+            "label": "RSA",
+            "label_position": "left",
             "color": "red",
             "on_color": [
               255,
@@ -659,70 +661,6 @@
           }
         },
         {
-          "component_id": "64bf0752",
-          "component_type": "Switch",
-          "position": {
-            "x": 560,
-            "y": 180
-          },
-          "pins": [
-            {
-              "pin_id": "64bf0752.pin1",
-              "tabs": [
-                {
-                  "tab_id": "64bf0752.pin1.tab12",
-                  "position": {
-                    "x": 0,
-                    "y": -20
-                  }
-                },
-                {
-                  "tab_id": "64bf0752.pin1.tab3",
-                  "position": {
-                    "x": 20,
-                    "y": 0
-                  }
-                },
-                {
-                  "tab_id": "64bf0752.pin1.tab6",
-                  "position": {
-                    "x": 0,
-                    "y": 20
-                  }
-                },
-                {
-                  "tab_id": "64bf0752.pin1.tab9",
-                  "position": {
-                    "x": -20,
-                    "y": 0
-                  }
-                }
-              ]
-            }
-          ],
-          "properties": {
-            "mode": "toggle",
-            "label": "SW",
-            "label_position": "bottom",
-            "color": "red",
-            "on_color": [
-              255,
-              0,
-              0
-            ],
-            "dull_color": [
-              128,
-              0,
-              0
-            ],
-            "off_color": [
-              64,
-              0,
-              0
-            ]
-          }
-        },
-        {
           "component_id": "e548a1fe",
           "component_type": "VCC",
           "position": {
@@ -749,61 +687,325 @@
           }
         },
         {
-          "component_id": "aa14f1ec",
-          "component_type": "Indicator",
+          "component_id": "e66cbfd1",
+          "component_type": "BUS",
           "position": {
-            "x": 560,
-            "y": 820
+            "x": 1330,
+            "y": 220
           },
           "pins": [
             {
-              "pin_id": "aa14f1ec.pin1",
+              "pin_id": "e66cbfd1.pin0",
               "tabs": [
                 {
-                  "tab_id": "aa14f1ec.pin1.tab12",
+                  "tab_id": "e66cbfd1.pin0.tab",
                   "position": {
                     "x": 0,
-                    "y": -15.0
+                    "y": -770
                   }
-                },
+                }
+              ]
+            },
+            {
+              "pin_id": "e66cbfd1.pin1",
+              "tabs": [
                 {
-                  "tab_id": "aa14f1ec.pin1.tab3",
-                  "position": {
-                    "x": 15.0,
-                    "y": 0
-                  }
-                },
-                {
-                  "tab_id": "aa14f1ec.pin1.tab6",
+                  "tab_id": "e66cbfd1.pin1.tab",
                   "position": {
                     "x": 0,
-                    "y": 15.0
+                    "y": -630
                   }
-                },
+                }
+              ]
+            },
+            {
+              "pin_id": "e66cbfd1.pin2",
+              "tabs": [
                 {
-                  "tab_id": "aa14f1ec.pin1.tab9",
+                  "tab_id": "e66cbfd1.pin2.tab",
                   "position": {
-                    "x": -15.0,
-                    "y": 0
+                    "x": 0,
+                    "y": -490
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "e66cbfd1.pin3",
+              "tabs": [
+                {
+                  "tab_id": "e66cbfd1.pin3.tab",
+                  "position": {
+                    "x": 0,
+                    "y": -350
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "e66cbfd1.pin4",
+              "tabs": [
+                {
+                  "tab_id": "e66cbfd1.pin4.tab",
+                  "position": {
+                    "x": 0,
+                    "y": -210
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "e66cbfd1.pin5",
+              "tabs": [
+                {
+                  "tab_id": "e66cbfd1.pin5.tab",
+                  "position": {
+                    "x": 0,
+                    "y": -70
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "e66cbfd1.pin6",
+              "tabs": [
+                {
+                  "tab_id": "e66cbfd1.pin6.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 70
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "e66cbfd1.pin7",
+              "tabs": [
+                {
+                  "tab_id": "e66cbfd1.pin7.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 210
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "e66cbfd1.pin8",
+              "tabs": [
+                {
+                  "tab_id": "e66cbfd1.pin8.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 350
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "e66cbfd1.pin9",
+              "tabs": [
+                {
+                  "tab_id": "e66cbfd1.pin9.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 490
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "e66cbfd1.pin10",
+              "tabs": [
+                {
+                  "tab_id": "e66cbfd1.pin10.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 630
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "e66cbfd1.pin11",
+              "tabs": [
+                {
+                  "tab_id": "e66cbfd1.pin11.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 770
                   }
                 }
               ]
             }
           ],
+          "rotation": 90,
           "properties": {
-            "label": "LED",
-            "label_position": "bottom",
-            "color": "red",
-            "on_color": [
-              255,
-              0,
-              0
-            ],
-            "off_color": [
-              64,
-              0,
-              0
-            ]
+            "bus_name": "Data",
+            "start_pin": 0,
+            "number_of_pins": 12,
+            "pin_spacing": 7
+          }
+        },
+        {
+          "component_id": "eb892a15",
+          "component_type": "BUS",
+          "position": {
+            "x": 1330,
+            "y": 800
+          },
+          "pins": [
+            {
+              "pin_id": "eb892a15.pin0",
+              "tabs": [
+                {
+                  "tab_id": "eb892a15.pin0.tab",
+                  "position": {
+                    "x": 0,
+                    "y": -770
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "eb892a15.pin1",
+              "tabs": [
+                {
+                  "tab_id": "eb892a15.pin1.tab",
+                  "position": {
+                    "x": 0,
+                    "y": -630
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "eb892a15.pin2",
+              "tabs": [
+                {
+                  "tab_id": "eb892a15.pin2.tab",
+                  "position": {
+                    "x": 0,
+                    "y": -490
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "eb892a15.pin3",
+              "tabs": [
+                {
+                  "tab_id": "eb892a15.pin3.tab",
+                  "position": {
+                    "x": 0,
+                    "y": -350
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "eb892a15.pin4",
+              "tabs": [
+                {
+                  "tab_id": "eb892a15.pin4.tab",
+                  "position": {
+                    "x": 0,
+                    "y": -210
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "eb892a15.pin5",
+              "tabs": [
+                {
+                  "tab_id": "eb892a15.pin5.tab",
+                  "position": {
+                    "x": 0,
+                    "y": -70
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "eb892a15.pin6",
+              "tabs": [
+                {
+                  "tab_id": "eb892a15.pin6.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 70
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "eb892a15.pin7",
+              "tabs": [
+                {
+                  "tab_id": "eb892a15.pin7.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 210
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "eb892a15.pin8",
+              "tabs": [
+                {
+                  "tab_id": "eb892a15.pin8.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 350
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "eb892a15.pin9",
+              "tabs": [
+                {
+                  "tab_id": "eb892a15.pin9.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 490
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "eb892a15.pin10",
+              "tabs": [
+                {
+                  "tab_id": "eb892a15.pin10.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 630
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "eb892a15.pin11",
+              "tabs": [
+                {
+                  "tab_id": "eb892a15.pin11.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 770
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 90,
+          "properties": {
+            "bus_name": "Data",
+            "start_pin": 0,
+            "number_of_pins": 12,
+            "pin_spacing": 7
           }
         }
       ],
@@ -916,20 +1118,6 @@
           ]
         },
         {
-          "wire_id": "3b235212",
-          "start_tab_id": "5731b3ee.NO1.tab0",
-          "end_tab_id": "64bf0752.pin1.tab6",
-          "waypoints": [
-            {
-              "waypoint_id": "eb996cda",
-              "position": {
-                "x": 560,
-                "y": 340
-              }
-            }
-          ]
-        },
-        {
           "wire_id": "3efaa98a",
           "start_tab_id": "a7794e05.NC2.tab0",
           "end_tab_id": "021da127.NO1.tab0",
@@ -970,15 +1158,29 @@
           "end_tab_id": "021da127.COM2.tab0"
         },
         {
-          "wire_id": "13d2650e",
-          "start_tab_id": "021da127.NO2.tab0",
-          "end_tab_id": "aa14f1ec.pin1.tab12",
+          "wire_id": "f1cfe51c",
+          "start_tab_id": "5731b3ee.NO1.tab0",
+          "end_tab_id": "e66cbfd1.pin11.tab",
           "waypoints": [
             {
-              "waypoint_id": "7a32ecc6",
+              "waypoint_id": "afe0e6e8",
               "position": {
                 "x": 560,
-                "y": 700
+                "y": 340
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "f4c783f2",
+          "start_tab_id": "021da127.NC2.tab0",
+          "end_tab_id": "eb892a15.pin11.tab",
+          "waypoints": [
+            {
+              "waypoint_id": "f175521c",
+              "position": {
+                "x": 560,
+                "y": 740
               }
             }
           ]
