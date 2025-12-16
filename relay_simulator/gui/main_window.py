@@ -694,7 +694,8 @@ class MainWindow:
             return
         
         # Update menu item states based on selection
-        has_selection = len(self.selected_components) > 0
+        has_component_selection = len(self.selected_components) > 0
+        has_any_selection = has_component_selection or len(self.selected_wires) > 0
         has_clipboard = len(self.clipboard) > 0
         
         # Enable/disable menu items
@@ -703,10 +704,10 @@ class MainWindow:
         paste_index = 2
         delete_index = 4  # After separator
         
-        self.context_menu.entryconfig(cut_index, state=tk.NORMAL if has_selection else tk.DISABLED)
-        self.context_menu.entryconfig(copy_index, state=tk.NORMAL if has_selection else tk.DISABLED)
+        self.context_menu.entryconfig(cut_index, state=tk.NORMAL if has_component_selection else tk.DISABLED)
+        self.context_menu.entryconfig(copy_index, state=tk.NORMAL if has_component_selection else tk.DISABLED)
         self.context_menu.entryconfig(paste_index, state=tk.NORMAL if has_clipboard else tk.DISABLED)
-        self.context_menu.entryconfig(delete_index, state=tk.NORMAL if has_selection else tk.DISABLED)
+        self.context_menu.entryconfig(delete_index, state=tk.NORMAL if has_any_selection else tk.DISABLED)
         
         # Show menu at cursor position
         try:
@@ -892,6 +893,7 @@ class MainWindow:
         
         # Track selected components
         self.selected_components = set()  # Set of selected component IDs
+        self.selected_wires = set()  # Set of selected wire IDs
         self.selection_box = None  # Rectangle for bounding box selection
         self.selection_start = None  # Start position for bounding box
         
@@ -901,7 +903,6 @@ class MainWindow:
         self.is_dragging = False  # True when actively dragging components
         
         # Track waypoint editing
-        self.selected_wire = None  # Wire ID currently selected
         self.dragging_waypoint = None  # Waypoint being dragged (waypoint_id, wire_id)
         self.waypoint_drag_start = None  # Original position of waypoint being dragged
         self.hovered_waypoint = None  # Waypoint being hovered (waypoint_id, wire_id)
@@ -1247,11 +1248,17 @@ class MainWindow:
                 self._start_junction_drag(junction_id, canvas_x, canvas_y)
                 return
         
-        # Check if clicked on a waypoint (for dragging)
+        # Check if clicked on a waypoint
         waypoint_info = self._find_waypoint_at_position(canvas_x, canvas_y)
         if waypoint_info:
-            self._start_waypoint_drag(waypoint_info, canvas_x, canvas_y)
-            return
+            if self.wire_start_tab:
+                # While drawing a wire: convert waypoint to a junction and complete to it
+                self._convert_waypoint_to_junction_and_complete_wire(waypoint_info)
+                return
+            else:
+                # Not drawing: begin waypoint drag
+                self._start_waypoint_drag(waypoint_info, canvas_x, canvas_y)
+                return
         
         # Check if clicked on a tab (for wire creation)
         tab_id = self._find_tab_at_position(canvas_x, canvas_y)
@@ -1263,9 +1270,10 @@ class MainWindow:
         # Check if clicked on a wire (for adding waypoints or creating junctions)
         if self.wire_start_tab:
             # If we're in the middle of drawing a wire, check for wire clicks to create junctions
-            wire_id = self._find_wire_at_position(canvas_x, canvas_y)
-            if wire_id:
-                self._create_junction_and_complete_wire(canvas_x, canvas_y, wire_id)
+            wire_hit = self._find_wire_hit_at_position(canvas_x, canvas_y)
+            if wire_hit:
+                wire_id, segment_index, closest_point = wire_hit
+                self._create_junction_and_complete_wire(closest_point[0], closest_point[1], wire_id, segment_index)
                 return
             else:
                 # Clicked on empty canvas - add waypoint
@@ -1276,14 +1284,135 @@ class MainWindow:
                 self.set_status(f"Waypoint added. Click a tab to complete or click canvas for more waypoints.")
             return
         else:
-            # Not drawing a wire - check for wire segment click to add waypoint
+            # Not drawing a wire - wire click selects the wire
             wire_clicked = self._find_wire_at_position(canvas_x, canvas_y)
             if wire_clicked:
-                self._handle_wire_segment_click(event, wire_clicked)
+                self._handle_wire_selection(event, wire_clicked)
                 return
         
         # Handle component selection and dragging
         self._handle_component_selection(event)
+
+    def _convert_waypoint_to_junction_and_complete_wire(self, waypoint_info: Tuple[str, str]) -> None:
+        """Convert a clicked waypoint to a junction and complete current wire to it."""
+        wire_id, waypoint_id = waypoint_info
+
+        # Preconditions: design mode and currently drawing
+        if self.simulation_mode or not self.wire_start_tab:
+            return
+
+        tab = self.file_tabs.get_active_tab()
+        if not tab or not tab.document:
+            return
+        active_page_id = self.page_tabs.get_active_page_id()
+        if not active_page_id:
+            return
+        page = tab.document.get_page(active_page_id)
+        if not page:
+            return
+
+        # Resolve wire and waypoint
+        host_wire = page.wires.get(wire_id)
+        if not host_wire:
+            return
+        waypoint = host_wire.waypoints.get(waypoint_id)
+        if not waypoint:
+            return
+
+        # Create a new junction at waypoint position
+        from core.wire import Junction, Wire, Waypoint
+        junction_id = tab.document.id_manager.generate_id()
+        junction = Junction(junction_id, (int(waypoint.position[0]), int(waypoint.position[1])))
+        page.add_junction(junction)
+
+        # Split waypoints around the clicked waypoint to preserve geometry
+        # Keep those BEFORE on the host wire; move AFTER to the continuation wire
+        waypoint_items = list(host_wire.waypoints.items())  # [(id, Waypoint)] in insertion order
+        try:
+            clicked_index = next(i for i, (wid, _) in enumerate(waypoint_items) if wid == waypoint_id)
+        except StopIteration:
+            clicked_index = None
+
+        before_items = []
+        after_items = []
+        if clicked_index is not None:
+            before_items = waypoint_items[:clicked_index]
+            after_items = waypoint_items[clicked_index + 1:]
+
+        # Rebuild host wire's waypoints with only the BEFORE group (preserve order)
+        # This ensures the host wire path goes start → before_waypoints → junction
+        host_wire.waypoints.clear()
+        for wid, wp in before_items:
+            host_wire.waypoints[wid] = wp
+
+        # Split the host wire at the junction: host wire now ends at junction
+        original_end = host_wire.end_tab_id
+        host_wire.end_tab_id = junction_id
+
+        # Continuation from junction to original end (if any)
+        # Start at junction and route through after_waypoints to reach original endpoint
+        if original_end:
+            continuation_wire_id = tab.document.id_manager.generate_id()
+            continuation_wire = Wire(continuation_wire_id, junction_id, original_end)
+            # Move AFTER waypoints to the continuation wire to preserve routing from junction
+            for wid, wp in after_items:
+                continuation_wire.waypoints[wid] = wp
+            page.add_wire(continuation_wire)
+
+        # Complete the currently drawing wire to the new junction
+        new_wire_id = tab.document.id_manager.generate_id()
+        new_wire = Wire(new_wire_id, self.wire_start_tab, junction_id)
+        if self.wire_temp_waypoints:
+            for pos in self.wire_temp_waypoints:
+                wp_id = tab.document.id_manager.generate_id()
+                new_wp = Waypoint(wp_id, pos)
+                new_wire.add_waypoint(new_wp)
+        page.add_wire(new_wire)
+
+        # Mark modified, clear drawing state, and re-render
+        self.file_tabs.set_tab_modified(tab.tab_id, True)
+        self._clear_wire_preview()
+        self.wire_start_tab = None
+        self.wire_temp_waypoints = []
+        self.design_canvas.set_page(page)
+        self.set_status("Converted waypoint to junction and connected wire.")
+
+    def _handle_wire_selection(self, event, wire_id: str) -> None:
+        """Handle clicking on a wire to select it (design mode only)."""
+        if self.simulation_mode:
+            return
+
+        ctrl_held = (event.state & 0x0004) != 0
+
+        if ctrl_held:
+            # Ctrl+Click toggles wire selection
+            if wire_id in self.selected_wires:
+                self.selected_wires.remove(wire_id)
+                self.design_canvas.set_wire_selected(wire_id, False)
+            else:
+                self.selected_wires.add(wire_id)
+                self.design_canvas.set_wire_selected(wire_id, True)
+        else:
+            # Regular click selects only this wire
+            if (
+                wire_id not in self.selected_wires
+                or len(self.selected_wires) != 1
+                or len(self.selected_components) != 0
+            ):
+                self._clear_selection()
+                self.selected_wires.add(wire_id)
+                self.design_canvas.set_wire_selected(wire_id, True)
+
+        # Properties panel currently only supports components
+        self.properties_panel.set_component(None)
+
+        has_any_selection = len(self.selected_components) > 0 or len(self.selected_wires) > 0
+        self.menu_bar.enable_edit_menu(has_selection=has_any_selection)
+
+        if len(self.selected_wires) == 1 and len(self.selected_components) == 0:
+            self.set_status(f"Selected wire ({wire_id})")
+        elif len(self.selected_wires) > 1 and len(self.selected_components) == 0:
+            self.set_status(f"Selected {len(self.selected_wires)} wires")
     
     def _handle_component_placement(self, event) -> None:
         """
@@ -1671,7 +1800,7 @@ class MainWindow:
         
         self.set_status(f"Wire connected to existing junction.")
 
-    def _create_junction_and_complete_wire(self, canvas_x: float, canvas_y: float, wire_id: str) -> None:
+    def _create_junction_and_complete_wire(self, canvas_x: float, canvas_y: float, wire_id: str, segment_index: Optional[int] = None) -> None:
         """
         Create a junction at the click position and complete the wire to it.
         Also splits the clicked wire at the junction point.
@@ -1728,17 +1857,53 @@ class MainWindow:
         # Add new wire to page
         page.add_wire(new_wire)
         
-        # Now split the clicked wire at the junction point
-        # Store the original end point of the clicked wire
+        # Now split the clicked wire at the junction point.
+        # Preserve waypoint routing by splitting the waypoint list at the clicked segment.
         original_end = clicked_wire.end_tab_id
-        
-        # Modify the clicked wire to end at the junction instead
+
+        waypoint_items = list(clicked_wire.waypoints.items())
+        waypoint_count = len(waypoint_items)
+
+        if segment_index is None:
+            # Fallback: determine closest segment on this wire
+            start_pos = self._get_tab_canvas_position(clicked_wire.start_tab_id)
+            end_pos = self._get_tab_canvas_position(original_end) if original_end else None
+            if start_pos and (end_pos or clicked_wire.waypoints):
+                path_points = [start_pos]
+                for _, wp in waypoint_items:
+                    path_points.append(wp.position)
+                if end_pos:
+                    path_points.append(end_pos)
+
+                best_seg = 0
+                best_dist = float('inf')
+                for i in range(len(path_points) - 1):
+                    x1, y1 = path_points[i]
+                    x2, y2 = path_points[i + 1]
+                    dist, _, _ = self._point_to_segment_distance_and_closest(canvas_x, canvas_y, x1, y1, x2, y2)
+                    if dist < best_dist:
+                        best_dist = dist
+                        best_seg = i
+                segment_index = best_seg
+            else:
+                segment_index = waypoint_count
+
+        # Clamp segment index to valid range [0..waypoint_count]
+        segment_index = max(0, min(int(segment_index), waypoint_count))
+
+        before_items = waypoint_items[:segment_index]
+        after_items = waypoint_items[segment_index:]
+
+        # Modify the clicked wire to end at the new junction and keep the "before" waypoints
         clicked_wire.end_tab_id = junction_id
-        
-        # Create a new wire from the junction to the original end point
+        clicked_wire.waypoints = dict(before_items)
+
+        # Create a continuation wire from the junction to the original end point and move "after" waypoints
         if original_end:
             continuation_wire_id = tab.document.id_manager.generate_id()
             continuation_wire = Wire(continuation_wire_id, junction_id, original_end)
+            for _, wp in after_items:
+                continuation_wire.add_waypoint(wp)
             page.add_wire(continuation_wire)
         
         # Mark document as modified
@@ -1824,45 +1989,53 @@ class MainWindow:
         if not page:
             return None
         
-        # Check all wires
-        hit_distance = 8.0  # Pixels from wire line to be considered a click (increased for easier clicking)
-        
+        hit = self._find_wire_hit_at_position(x, y)
+        return hit[0] if hit else None
+
+    def _find_wire_hit_at_position(self, x: float, y: float) -> Optional[Tuple[str, int, Tuple[float, float]]]:
+        """Return the closest wire hit at (x, y) as (wire_id, segment_index, closest_point)."""
+        tab = self.file_tabs.get_active_tab()
+        if not tab or not tab.document:
+            return None
+
+        active_page_id = self.page_tabs.get_active_page_id()
+        if not active_page_id:
+            return None
+
+        page = tab.document.get_page(active_page_id)
+        if not page:
+            return None
+
+        hit_distance = 8.0  # Pixels from wire line to be considered a click
+        best: Optional[Tuple[str, int, Tuple[float, float], float]] = None  # (wire_id, seg_index, (cx,cy), dist)
+
         for wire in page.wires.values():
-            # Get wire path segments
             start_pos = self._get_tab_canvas_position(wire.start_tab_id)
             if not start_pos:
                 continue
-            
-            end_pos = None
-            if wire.end_tab_id:
-                end_pos = self._get_tab_canvas_position(wire.end_tab_id)
-            
+
+            end_pos = self._get_tab_canvas_position(wire.end_tab_id) if wire.end_tab_id else None
             if not end_pos and not wire.waypoints:
                 continue
-            
-            # Build path: start -> waypoints -> end
+
             path_points = [start_pos]
-            
-            # Add waypoints (sorted by... actually we need to maintain order)
-            # For now, just add them in dict order (should maintain insertion order in Python 3.7+)
             for waypoint in wire.waypoints.values():
                 path_points.append(waypoint.position)
-            
             if end_pos:
                 path_points.append(end_pos)
-            
-            # Check if click is near any segment
-            for i in range(len(path_points) - 1):
-                x1, y1 = path_points[i]
-                x2, y2 = path_points[i + 1]
-                
-                # Calculate distance from point to line segment
-                dist = self._point_to_segment_distance(x, y, x1, y1, x2, y2)
-                
+
+            for seg_index in range(len(path_points) - 1):
+                x1, y1 = path_points[seg_index]
+                x2, y2 = path_points[seg_index + 1]
+                dist, cx, cy = self._point_to_segment_distance_and_closest(x, y, x1, y1, x2, y2)
                 if dist <= hit_distance:
-                    return wire.wire_id
-        
-        return None
+                    if best is None or dist < best[3]:
+                        best = (wire.wire_id, seg_index, (cx, cy), dist)
+
+        if not best:
+            return None
+
+        return (best[0], best[1], best[2])
     
     def _point_to_segment_distance(self, px: float, py: float, 
                                    x1: float, y1: float, x2: float, y2: float) -> float:
@@ -1894,6 +2067,22 @@ class MainWindow:
         
         # Distance from point to closest point
         return ((px - closest_x) ** 2 + (py - closest_y) ** 2) ** 0.5
+
+    def _point_to_segment_distance_and_closest(self, px: float, py: float,
+                                               x1: float, y1: float, x2: float, y2: float) -> Tuple[float, float, float]:
+        """Return (distance, closest_x, closest_y) from point to segment."""
+        dx = x2 - x1
+        dy = y2 - y1
+
+        if dx == 0 and dy == 0:
+            dist = ((px - x1) ** 2 + (py - y1) ** 2) ** 0.5
+            return dist, x1, y1
+
+        t = max(0.0, min(1.0, ((px - x1) * dx + (py - y1) * dy) / (dx * dx + dy * dy)))
+        closest_x = x1 + t * dx
+        closest_y = y1 + t * dy
+        dist = ((px - closest_x) ** 2 + (py - closest_y) ** 2) ** 0.5
+        return dist, closest_x, closest_y
     
     def _handle_wire_segment_click(self, event, wire_id: str) -> None:
         """
@@ -2374,10 +2563,15 @@ class MainWindow:
                 pass
     
     def _clear_selection(self):
-        """Clear all selected components."""
+        """Clear all selected components and wires."""
         for component_id in self.selected_components:
             self.design_canvas.set_component_selected(component_id, False)
         self.selected_components.clear()
+
+        for wire_id in self.selected_wires:
+            self.design_canvas.set_wire_selected(wire_id, False)
+        self.selected_wires.clear()
+
         self.properties_panel.set_component(None)
         self.menu_bar.enable_edit_menu(has_selection=False)
         self.set_status("Ready")
@@ -2865,8 +3059,8 @@ class MainWindow:
         if self.simulation_mode:
             return
         
-        if not self.selected_components:
-            self.set_status("No components selected to delete")
+        if not self.selected_components and not self.selected_wires:
+            self.set_status("No items selected to delete")
             return
         
         # Get active page
@@ -2882,18 +3076,27 @@ class MainWindow:
         if not page:
             return
         
-        # Count components to delete
-        delete_count = len(self.selected_components)
-        
+        # Count items to delete
+        delete_components_count = len(self.selected_components)
+        delete_wires_count = len(self.selected_wires)
+
         # Show confirmation dialog
-        component_word = "component" if delete_count == 1 else "components"
-        message = f"Delete {delete_count} {component_word}?"
-        if delete_count == 1:
-            # For single component, show the component type
-            component_id = next(iter(self.selected_components))
-            component = page.components.get(component_id)
-            if component:
-                message = f"Delete {component.__class__.__name__} ({component_id})?"
+        if delete_components_count and not delete_wires_count:
+            component_word = "component" if delete_components_count == 1 else "components"
+            message = f"Delete {delete_components_count} {component_word}?"
+            if delete_components_count == 1:
+                component_id = next(iter(self.selected_components))
+                component = page.components.get(component_id)
+                if component:
+                    message = f"Delete {component.__class__.__name__} ({component_id})?"
+        elif delete_wires_count and not delete_components_count:
+            if delete_wires_count == 1:
+                wire_id = next(iter(self.selected_wires))
+                message = f"Delete wire ({wire_id})?"
+            else:
+                message = f"Delete {delete_wires_count} wires?"
+        else:
+            message = f"Delete {delete_components_count} component(s) and {delete_wires_count} wire(s)?"
         
         result = messagebox.askyesno(
             "Confirm Deletion",
@@ -2905,21 +3108,112 @@ class MainWindow:
             self.set_status("Deletion cancelled")
             return
         
-        # Find wires connected to deleted components
-        wires_to_delete = []
-        for wire in page.wires.values():
-            # Parse tab IDs to get component IDs
-            # Tab ID format: {component_id}.{pin_name}.{tab_name}
-            start_component_id = wire.start_tab_id.split('.')[0]
-            end_component_id = wire.end_tab_id.split('.')[0]
-            
-            # If either end is connected to a deleted component, delete wire
-            if start_component_id in self.selected_components or end_component_id in self.selected_components:
-                wires_to_delete.append(wire.wire_id)
+        def _tab_id_to_component_id(tab_id):
+            if not tab_id:
+                return None
+            parts = str(tab_id).split('.')
+            if len(parts) < 3:
+                return None
+            return parts[0]
+
+        # Find wires connected to deleted components and include explicitly selected wires
+        wires_to_delete = set(self.selected_wires)
+        if self.selected_components:
+            for wire in page.wires.values():
+                start_component_id = _tab_id_to_component_id(wire.start_tab_id)
+                end_component_id = _tab_id_to_component_id(wire.end_tab_id)
+
+                if (start_component_id and start_component_id in self.selected_components) or (
+                    end_component_id and end_component_id in self.selected_components
+                ):
+                    wires_to_delete.add(wire.wire_id)
         
-        # Delete wires
+        # Track junctions connected to wires being deleted to remove orphans later
+        junctions_to_check = set()
+        for wire_id in wires_to_delete:
+            wire_obj = page.wires.get(wire_id)
+            if wire_obj:
+                for endpoint in (wire_obj.start_tab_id, wire_obj.end_tab_id):
+                    if endpoint and page.get_junction(endpoint):
+                        junctions_to_check.add(endpoint)
+
+        # Delete wires (do not delete junctions/components yet)
         for wire_id in wires_to_delete:
             page.remove_wire(wire_id)
+
+        from core.wire import Wire, Waypoint
+
+        def _junction_degree(junction_id: str) -> int:
+            return sum(1 for w in page.wires.values() if w.start_tab_id == junction_id or w.end_tab_id == junction_id)
+
+        def _collapse_degree_two_junction(junction_id: str) -> bool:
+            """If junction has exactly two connected wires, remove junction and merge wires into one.
+
+            Returns True if a collapse occurred.
+            """
+            connected_wires = [w for w in page.wires.values() if w.start_tab_id == junction_id or w.end_tab_id == junction_id]
+            if len(connected_wires) != 2:
+                return False
+
+            junction = page.get_junction(junction_id)
+            if not junction:
+                return False
+
+            w1, w2 = connected_wires
+
+            def _other_endpoint(w: Wire) -> str:
+                if w.start_tab_id == junction_id:
+                    return w.end_tab_id
+                return w.start_tab_id
+
+            other1 = _other_endpoint(w1)
+            other2 = _other_endpoint(w2)
+            if not other1 or not other2 or other1 == other2:
+                return False
+
+            def _waypoints_in_direction(w: Wire, from_id: str, to_id: str) -> list:
+                items = list(w.waypoints.values())
+                if w.start_tab_id == from_id and w.end_tab_id == to_id:
+                    return [wp.position for wp in items]
+                if w.start_tab_id == to_id and w.end_tab_id == from_id:
+                    return [wp.position for wp in reversed(items)]
+                # Unexpected orientation; best effort
+                return [wp.position for wp in items]
+
+            # Build merged waypoint list: other1 -> junction -> other2
+            merged_positions = []
+            for pos in _waypoints_in_direction(w1, other1, junction_id):
+                if not merged_positions or merged_positions[-1] != pos:
+                    merged_positions.append(pos)
+
+            if not merged_positions or merged_positions[-1] != junction.position:
+                merged_positions.append(junction.position)
+
+            for pos in _waypoints_in_direction(w2, junction_id, other2):
+                if not merged_positions or merged_positions[-1] != pos:
+                    merged_positions.append(pos)
+
+            # Remove the two existing wires and the junction
+            page.remove_wire(w1.wire_id)
+            page.remove_wire(w2.wire_id)
+            page.remove_junction(junction_id)
+
+            # Create the replacement merged wire
+            merged_wire_id = tab.document.id_manager.generate_id()
+            merged_wire = Wire(merged_wire_id, other1, other2)
+            for pos in merged_positions:
+                waypoint_id = tab.document.id_manager.generate_id()
+                merged_wire.add_waypoint(Waypoint(waypoint_id, (int(pos[0]), int(pos[1]))))
+            page.add_wire(merged_wire)
+            return True
+
+        # Remove orphan junctions (degree 0) or collapse redundant junctions (degree 2)
+        for junction_id in list(junctions_to_check):
+            degree = _junction_degree(junction_id)
+            if degree == 0:
+                page.remove_junction(junction_id)
+            elif degree == 2:
+                _collapse_degree_two_junction(junction_id)
         
         # Delete components
         for component_id in list(self.selected_components):
@@ -2934,7 +3228,9 @@ class MainWindow:
         # Re-render page
         self.design_canvas.set_page(page)
         
-        self.set_status(f"Deleted {delete_count} component(s) and {len(wires_to_delete)} wire(s)")
+        self.set_status(
+            f"Deleted {delete_components_count} component(s) and {len(wires_to_delete)} wire(s)"
+        )
 
     
     def _clear_wire_preview(self) -> None:
