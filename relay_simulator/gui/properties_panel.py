@@ -98,7 +98,7 @@ PROPERTY_SCHEMAS: Dict[str, List[Dict[str, Any]]] = {
             'type': 'dropdown',
             'options': ['0', '90', '180', '270'],
             'default': 0,
-            'target': 'prop',
+            'target': 'attr',
             'coerce': int,
         },
         {

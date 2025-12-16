@@ -37,6 +37,7 @@ class ComponentRenderer(ABC):
         self.canvas_items: List[int] = []  # Canvas item IDs created by this renderer
         self.selected = False
         self.powered = False  # For simulation mode
+        self.simulation_engine = None  # Reference to simulation engine for VNET state checks
         
     @abstractmethod
     def render(self, zoom: float = 1.0) -> None:
@@ -74,6 +75,15 @@ class ComponentRenderer(ABC):
             powered: Whether component is powered
         """
         self.powered = powered
+    
+    def set_simulation_engine(self, simulation_engine) -> None:
+        """
+        Set the simulation engine reference for VNET state checks.
+        
+        Args:
+            simulation_engine: SimulationEngine instance
+        """
+        self.simulation_engine = simulation_engine
         
     def get_position(self) -> Tuple[float, float]:
         """
@@ -230,7 +240,7 @@ class ComponentRenderer(ABC):
         return item_id
         
     def draw_text(self, x: float, y: float, text: str,
-                 fill: str = None, font: Tuple = None,
+                 fill: str = None, font: Tuple = None, font_size: int = None,
                  anchor: str = 'center',
                  tags: Tuple[str, ...] = ()) -> int:
         """
@@ -241,6 +251,7 @@ class ComponentRenderer(ABC):
             text: Text to draw
             fill: Text color
             font: Font tuple (family, size, weight)
+            font_size: Font size (alternative to font parameter)
             anchor: Text anchor point
             tags: Canvas tags
             
@@ -250,7 +261,10 @@ class ComponentRenderer(ABC):
         if fill is None:
             fill = VSCodeTheme.COMPONENT_TEXT
         if font is None:
-            font = VSCodeTheme.get_font('small')
+            if font_size is not None:
+                font = ('Arial', font_size)
+            else:
+                font = VSCodeTheme.get_font('small')
             
         item_id = self.canvas.create_text(
             x, y,

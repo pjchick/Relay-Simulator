@@ -18,10 +18,40 @@ class RelayRenderer(ComponentRenderer):
     - 7 connection points arranged vertically
     - "Relay" text label in center
     - Minimal, clean design
+    
+    Supports rotation and flipping transformations.
     """
     
     WIDTH = 60   # Relay width in pixels
     HEIGHT = 200  # Relay height in pixels
+    
+    def _apply_flip(self, x: float, y: float, cx: float, cy: float) -> tuple:
+        """
+        Apply flip transformations to a coordinate (rotation is handled by base renderer).
+        
+        Args:
+            x, y: Absolute coordinate to transform
+            cx, cy: Component center position
+            
+        Returns:
+            (flipped_x, flipped_y)
+        """
+        # Get flip properties
+        flip_h = self.component.properties.get('flip_horizontal', False)
+        flip_v = self.component.properties.get('flip_vertical', False)
+        
+        # Convert to offset from center
+        offset_x = x - cx
+        offset_y = y - cy
+        
+        # Apply flipping to offsets
+        if flip_h:
+            offset_x = -offset_x
+        if flip_v:
+            offset_y = -offset_y
+        
+        # Convert back to absolute coordinates
+        return cx + offset_x, cy + offset_y
     
     def render(self, zoom: float = 1.0) -> None:
         """
@@ -61,54 +91,109 @@ class RelayRenderer(ComponentRenderer):
             tags=('component', f'component_{self.component.component_id}')
         )
         
-        # Draw coil section (40px wide x 20px tall, vertically centered on COIL pin)
-        # COIL pin is at y = -80 from component center
-        coil_pin_offset_y = -80  # From component center
+        # Draw coil section (40px wide x 20px tall, positioned at top of relay)
+        # Horizontally centered on relay body, vertically at y=-80 (COIL pin position)
         coil_width = 40 * zoom
         coil_height = 20 * zoom
         
-        # Position: left edge of component, vertically centered on COIL pin
-        coil_x = x + 10 * zoom  # 10px from left edge
-        coil_y = cy + coil_pin_offset_y * zoom - (coil_height / 2)  # Center on pin
+        # Coil center point (before transformations)
+        # Centered horizontally on relay body, positioned at COIL pin height
+        coil_center_x = cx  # Horizontally centered
+        coil_center_y = cy - 80 * zoom  # Offset up to COIL pin position
+        
+        # Apply flip transformations (rotation handled by draw_rectangle)
+        coil_cx, coil_cy = self._apply_flip(coil_center_x, coil_center_y, cx, cy)
+        
+        # Calculate coil top-left corner
+        coil_x = coil_cx - coil_width / 2
+        coil_y = coil_cy - coil_height / 2
         
         coil_fill = '#2a3a4a' if not is_energized else '#3a4a6a'
         
+        # Draw the coil rectangle
         self.draw_rectangle(
-            coil_x, coil_y,
-            coil_width, coil_height,
+            coil_x, coil_y, coil_width, coil_height,
             fill=coil_fill,
-            outline='#505050',
+            outline='#606060',
             width_px=1,
-            tags=('relay_coil', f'coil_{self.component.component_id}')
+            tags=('coil', f'coil_{self.component.component_id}')
         )
         
-        # Draw "Relay" label in center (or custom label)
-        label = self.component.properties.get('label', 'Relay')
+        # Draw label with position support
+        label = self.component.properties.get('label', '')
         if label:
+            label_pos = self.component.properties.get('label_position', 'top')
+            rotation = self.get_rotation()
+            
+            # Calculate offset based on relay orientation
+            # Relay is 60x200 normally
+            # At 0° or 180°: relay is vertical (tall), needs larger offset for top/bottom
+            # At 90° or 270°: relay is horizontal (wide), needs larger offset for left/right
+            if rotation in [0, 180]:
+                # Vertical orientation
+                offset_v = 120 * zoom  # For top/bottom (200/2 + 20 margin)
+                offset_h = 50 * zoom   # For left/right (60/2 + 20 margin)
+            else:
+                # Horizontal orientation (90° or 270°)
+                offset_v = 50 * zoom   # For top/bottom (60/2 + 20 margin)
+                offset_h = 120 * zoom  # For left/right (200/2 + 20 margin)
+            
+            # Label position is ALWAYS relative to canvas axes (not rotated with component)
+            if label_pos == 'top':
+                label_x, label_y = cx, cy - offset_v
+                anchor = 'center'
+            elif label_pos == 'bottom':
+                label_x, label_y = cx, cy + offset_v
+                anchor = 'center'
+            elif label_pos == 'left':
+                label_x, label_y = cx - offset_h, cy
+                anchor = 'e'  # East (right-justified) when label is on left
+            else:  # right
+                label_x, label_y = cx + offset_h, cy
+                anchor = 'w'  # West (left-justified) when label is on right
+            
             self.draw_text(
-                cx, cy,
+                label_x, label_y,
                 text=label,
-                font_size=10,
+                font_size=12,
                 fill='#a0a0a0',
+                anchor=anchor,
                 tags=('component_label', f'label_{self.component.component_id}')
             )
         
         # Draw contact lines showing relay state
-        # Pin positions (from component):
-        # Left side: COM1 (y=-20), COM2 (y=+50)
-        # Right side: NO1 (y=-50), NC1 (y=+10), NO2 (y=+30), NC2 (y=+70)
+        # Pin positions (from component center):
+        # Left side: COM1 (x=-30, y=-20), COM2 (x=-30, y=+60)
+        # Right side: NO1 (x=+30, y=-40), NC1 (x=+30, y=0), NO2 (x=+30, y=+40), NC2 (x=+30, y=+80)
         
-        line_color = '#606060'  # Gray line color
+        # Import PinState for checking if pins are HIGH
+        from core.state import PinState
+        
         line_width = 2
         
+        # Helper function to check if a pin is HIGH via VNET state
+        def is_pin_high(pin) -> bool:
+            if not self.simulation_engine or not pin:
+                return False
+            # Check all tabs on this pin
+            for tab in pin.tabs.values():
+                # Find VNET containing this tab
+                for vnet in self.simulation_engine.vnets.values():
+                    if tab.tab_id in vnet.tab_ids:
+                        if vnet.state == PinState.HIGH:
+                            return True
+            return False
+        
         # Pole 1: COM1 to NC1 (de-energized) or NO1 (energized)
-        com1_x = cx - 30 * zoom
-        com1_y = cy - 20 * zoom
+        com1_x, com1_y = self._apply_flip(cx - 30 * zoom, cy - 20 * zoom, cx, cy)
         
         if is_energized:
             # Energized: COM1 -> NO1
-            no1_x = cx + 30 * zoom
-            no1_y = cy - 50 * zoom
+            no1_x, no1_y = self._apply_flip(cx + 30 * zoom, cy - 40 * zoom, cx, cy)
+            # Check if either COM1 or NO1 pin is HIGH via VNET state
+            com1_high = is_pin_high(self.component._com1_pin) if hasattr(self.component, '_com1_pin') else False
+            no1_high = is_pin_high(self.component._no1_pin) if hasattr(self.component, '_no1_pin') else False
+            line_color = '#00ff00' if (com1_high or no1_high) else '#606060'
             self.draw_line(
                 com1_x, com1_y, no1_x, no1_y,
                 fill=line_color,
@@ -117,8 +202,11 @@ class RelayRenderer(ComponentRenderer):
             )
         else:
             # De-energized: COM1 -> NC1
-            nc1_x = cx + 30 * zoom
-            nc1_y = cy + 10 * zoom
+            nc1_x, nc1_y = self._apply_flip(cx + 30 * zoom, cy + 0 * zoom, cx, cy)
+            # Check if either COM1 or NC1 pin is HIGH via VNET state
+            com1_high = is_pin_high(self.component._com1_pin) if hasattr(self.component, '_com1_pin') else False
+            nc1_high = is_pin_high(self.component._nc1_pin) if hasattr(self.component, '_nc1_pin') else False
+            line_color = '#00ff00' if (com1_high or nc1_high) else '#606060'
             self.draw_line(
                 com1_x, com1_y, nc1_x, nc1_y,
                 fill=line_color,
@@ -127,13 +215,15 @@ class RelayRenderer(ComponentRenderer):
             )
         
         # Pole 2: COM2 to NC2 (de-energized) or NO2 (energized)
-        com2_x = cx - 30 * zoom
-        com2_y = cy + 50 * zoom
+        com2_x, com2_y = self._apply_flip(cx - 30 * zoom, cy + 60 * zoom, cx, cy)
         
         if is_energized:
             # Energized: COM2 -> NO2
-            no2_x = cx + 30 * zoom
-            no2_y = cy + 30 * zoom
+            no2_x, no2_y = self._apply_flip(cx + 30 * zoom, cy + 40 * zoom, cx, cy)
+            # Check if either COM2 or NO2 pin is HIGH via VNET state
+            com2_high = is_pin_high(self.component._com2_pin) if hasattr(self.component, '_com2_pin') else False
+            no2_high = is_pin_high(self.component._no2_pin) if hasattr(self.component, '_no2_pin') else False
+            line_color = '#00ff00' if (com2_high or no2_high) else '#606060'
             self.draw_line(
                 com2_x, com2_y, no2_x, no2_y,
                 fill=line_color,
@@ -142,8 +232,11 @@ class RelayRenderer(ComponentRenderer):
             )
         else:
             # De-energized: COM2 -> NC2
-            nc2_x = cx + 30 * zoom
-            nc2_y = cy + 70 * zoom
+            nc2_x, nc2_y = self._apply_flip(cx + 30 * zoom, cy + 80 * zoom, cx, cy)
+            # Check if either COM2 or NC2 pin is HIGH via VNET state
+            com2_high = is_pin_high(self.component._com2_pin) if hasattr(self.component, '_com2_pin') else False
+            nc2_high = is_pin_high(self.component._nc2_pin) if hasattr(self.component, '_nc2_pin') else False
+            line_color = '#00ff00' if (com2_high or nc2_high) else '#606060'
             self.draw_line(
                 com2_x, com2_y, nc2_x, nc2_y,
                 fill=line_color,
@@ -153,3 +246,39 @@ class RelayRenderer(ComponentRenderer):
         
         # Draw tabs for all pins (no visible contact indicators, just tabs)
         self.draw_tabs(zoom)
+    
+    def draw_tabs(self, zoom: float = 1.0) -> None:
+        """
+        Draw tabs for all component pins with flip and rotation transformations applied.
+        
+        Args:
+            zoom: Current zoom level
+        """
+        cx, cy = self.get_position()
+        
+        for pin in self.component.pins.values():
+            for tab in pin.tabs.values():
+                # Get tab position relative to component
+                tx_offset, ty_offset = tab.relative_position
+                
+                # Calculate absolute position (before flip)
+                tx_base = cx + tx_offset * zoom
+                ty_base = cy + ty_offset * zoom
+                
+                # Apply flip transformations
+                tx_flipped, ty_flipped = self._apply_flip(tx_base, ty_base, cx, cy)
+                
+                # Apply rotation manually (draw_circle doesn't auto-rotate center like draw_rectangle does)
+                rotation = self.get_rotation()
+                tx, ty = self.rotate_point(tx_flipped, ty_flipped, cx, cy, rotation)
+                
+                # Draw tab as small circle
+                tab_size = VSCodeTheme.TAB_SIZE * zoom
+                self.draw_circle(
+                    tx, ty,
+                    radius=tab_size / 2,
+                    fill='#00ff00',  # Bright green for visibility
+                    outline='#ffffff',  # White outline
+                    width_px=1,
+                    tags=('tab', f'tab_{tab.tab_id}')
+                )

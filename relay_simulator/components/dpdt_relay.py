@@ -102,9 +102,12 @@ class DPDTRelay(Component):
         self.properties["label"] = ""
         self.properties["label_position"] = "top"
         self.properties["color"] = "blue"
-        self.properties["rotation"] = 0
         self.properties["flip_horizontal"] = False
         self.properties["flip_vertical"] = False
+        
+        # Rotation is handled by base Component.rotation attribute
+        # Set default rotation
+        self.rotation = 0
         
         # Set default colors
         self.set_color("blue")

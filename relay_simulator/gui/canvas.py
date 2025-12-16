@@ -514,6 +514,7 @@ class DesignCanvas:
                 
                 # Set powered state if simulation is running
                 if self.simulation_engine:
+                    renderer.set_simulation_engine(self.simulation_engine)
                     is_powered = self._is_component_powered(component, self.simulation_engine)
                     renderer.set_powered(is_powered)
                 
