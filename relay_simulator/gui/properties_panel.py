@@ -119,6 +119,20 @@ PROPERTY_SCHEMAS: Dict[str, List[Dict[str, Any]]] = {
         }
     ],
     'VCC': [
+        {
+            'section': 'Format',
+            'key': 'pin_position',
+            'label': 'Pin Position',
+            'type': 'dropdown',
+            'options': [
+                {'label': 'Top', 'value': 'top'},
+                {'label': 'Bottom', 'value': 'bottom'},
+                {'label': 'Left', 'value': 'left'},
+                {'label': 'Right', 'value': 'right'},
+            ],
+            'default': 'bottom',
+            'target': 'prop',
+        },
     ],
 }
 
@@ -699,6 +713,13 @@ class PropertiesPanel:
                     self.current_component.set_color(str(value))
                 except Exception:
                     self.current_component.properties[key] = value
+            # Special-case: changing VCC pin_position should update the pin/tab location
+            elif key == 'pin_position' and hasattr(self.current_component, 'update_pin_position'):
+                self.current_component.properties[key] = value
+                try:
+                    self.current_component.update_pin_position()
+                except Exception:
+                    pass
             else:
                 self.current_component.properties[key] = value
 

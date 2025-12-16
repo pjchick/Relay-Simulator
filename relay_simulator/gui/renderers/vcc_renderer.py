@@ -66,16 +66,15 @@ class VCCRenderer(ComponentRenderer):
             tags=('vcc_symbol',)
         )
         
-        # Draw voltage label below
-        voltage = self.component.properties.get('voltage', 5.0)
-        label = f"{voltage}V"
-        
-        label_y = cy + radius + 15 * zoom
-        self.draw_text(
-            cx, label_y,
-            text=label,
-            tags=('component_label', f'label_{self.component.component_id}')
-        )
+        # Draw user label if present
+        label = self.component.properties.get('label', '')
+        if label:
+            label_y = cy + radius + 15 * zoom
+            self.draw_text(
+                cx, label_y,
+                text=label,
+                tags=('component_label', f'label_{self.component.component_id}')
+            )
         
         # Draw tabs
         self.draw_tabs(zoom)
