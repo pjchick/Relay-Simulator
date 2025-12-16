@@ -239,7 +239,11 @@ class Component(ABC):
         if self.link_name is not None:
             result['link_name'] = self.link_name
         if self.properties:
-            result['properties'] = self.properties.copy()
+            # Canonical link storage is the top-level `link_name` field, not a property.
+            props = self.properties.copy()
+            props.pop('link_name', None)
+            if props:
+                result['properties'] = props
         
         return result
     

@@ -516,6 +516,15 @@ class MainWindow:
             page_vnets = vnet_builder.build_vnets_for_page(page)
             for vnet in page_vnets:
                 vnets[vnet.vnet_id] = vnet
+
+        # Resolve cross-page links (adds link_names onto the appropriate VNETs)
+        try:
+            from core.link_resolver import LinkResolver
+            resolver = LinkResolver()
+            resolver.resolve_links(document, list(vnets.values()))
+        except Exception:
+            # Links are optional; continue without failing simulation build
+            pass
         
         # TODO: Build bridges for cross-page connections
         # This would require scanning for components with matching link_names
@@ -1131,7 +1140,7 @@ class MainWindow:
                 active_page = tab.document.get_page(active_page_id)
                 if active_page:
                     # Set page on canvas (will render components)
-                    self.design_canvas.set_page(active_page)
+                    self._set_canvas_page(active_page)
                     
                     # Restore canvas state
                     self.design_canvas.restore_canvas_state(
@@ -1216,8 +1225,9 @@ class MainWindow:
         if not page:
             return
             
-        # Set page on canvas (will render components)
-        self.design_canvas.set_page(page)
+        # Set page on canvas (will render components). In simulation mode we must
+        # keep the simulation engine attached so powered/dim visuals are correct.
+        self._set_canvas_page(page)
         
         # Restore canvas state for this page
         self.design_canvas.restore_canvas_state(

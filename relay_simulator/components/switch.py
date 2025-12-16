@@ -128,6 +128,8 @@ class Switch(Component):
         """
         Initialize switch for simulation start.
         
+        Sets initial state and adds link name to VNET if specified.
+        
         Args:
             vnet_manager: VnetManager instance
             bridge_manager: BridgeManager instance (unused for switch)
@@ -261,6 +263,17 @@ class Switch(Component):
         # Restore properties
         if 'properties' in data:
             switch.properties.update(data['properties'])
+
+            # Backward-compatibility: older files/UI stored link_name inside properties.
+            # Canonical storage is the component attribute `link_name`.
+            legacy_link = None
+            try:
+                legacy_link = switch.properties.pop('link_name', None)
+            except Exception:
+                legacy_link = None
+
+            if (not switch.link_name) and isinstance(legacy_link, str) and legacy_link.strip():
+                switch.link_name = legacy_link.strip()
             
             # Update color presets if color changed
             color = switch.properties.get('color', 'red')

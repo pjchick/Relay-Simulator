@@ -127,8 +127,10 @@ class LinkResolver:
         for page in document.get_all_pages():
             for component in page.get_all_components():
                 # Check if component has a link name
-                if component.link_name:
-                    link_name = component.link_name
+                link_name = getattr(component, 'link_name', None)
+                if isinstance(link_name, str):
+                    link_name = link_name.strip()
+                if link_name:
                     
                     # Collect all tab IDs from this component
                     tab_ids = []

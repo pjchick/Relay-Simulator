@@ -333,7 +333,8 @@ class SimulationEngine:
 
                         old_state = gvnet.state
                         if old_state != group_state:
-                            gvnet.state = group_state
+                            # Let the propagator update gvnet.state; it also propagates across LINKS.
+                            # If we set gvnet.state first, the propagator would early-return and skip propagation.
                             propagated = self.propagator.propagate_vnet_state(gvnet, group_state, include_bridges=False)
                             # Clear dirty for anything propagation touched so we don't re-evaluate it back to base.
                             for affected_id in propagated:

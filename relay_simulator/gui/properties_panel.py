@@ -70,6 +70,14 @@ PROPERTY_SCHEMAS: Dict[str, List[Dict[str, Any]]] = {
             'default': 'toggle',
             'target': 'prop',
         },
+        {
+            'section': 'Advanced',
+            'key': 'link_name',
+            'label': 'Link Name',
+            'type': 'text',
+            'default': '',
+            'target': 'attr',
+        },
     ],
     'Indicator': [ 
         {
@@ -88,6 +96,14 @@ PROPERTY_SCHEMAS: Dict[str, List[Dict[str, Any]]] = {
             ],
             'default': 'red',
             'target': 'prop',
+        },
+        {
+            'section': 'Advanced',
+            'key': 'link_name',
+            'label': 'Link Name',
+            'type': 'text',
+            'default': '',
+            'target': 'attr',
         },
     ],
     'DPDTRelay': [

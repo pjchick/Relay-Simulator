@@ -232,6 +232,17 @@ class Indicator(Component):
         # Restore properties
         if 'properties' in data:
             indicator.properties.update(data['properties'])
+
+            # Backward-compatibility: older files/UI may have stored link_name inside properties.
+            # Canonical storage is the component attribute `link_name`.
+            legacy_link = None
+            try:
+                legacy_link = indicator.properties.pop('link_name', None)
+            except Exception:
+                legacy_link = None
+
+            if (not indicator.link_name) and isinstance(legacy_link, str) and legacy_link.strip():
+                indicator.link_name = legacy_link.strip()
             
             # Update color presets if color changed
             color = indicator.properties.get('color', 'red')
