@@ -6,6 +6,7 @@ including waypoints for routing and junctions for branching.
 """
 
 import tkinter as tk
+import math
 from typing import List, Tuple, Optional, Dict
 from gui.theme import VSCodeTheme
 from core.wire import Wire, Waypoint, Junction
@@ -185,9 +186,21 @@ class WireRenderer:
         
         # Get absolute position
         comp_x, comp_y = component.position
+        rotation = getattr(component, 'rotation', 0) or 0
         tab_dx, tab_dy = tab.relative_position
-        
-        return (comp_x + tab_dx, comp_y + tab_dy)
+
+        x = comp_x + tab_dx
+        y = comp_y + tab_dy
+        if rotation:
+            rad = math.radians(rotation % 360)
+            tx = x - comp_x
+            ty = y - comp_y
+            rx = (tx * math.cos(rad)) - (ty * math.sin(rad))
+            ry = (tx * math.sin(rad)) + (ty * math.cos(rad))
+            x = rx + comp_x
+            y = ry + comp_y
+
+        return (x, y)
     
     def _draw_waypoint(self, waypoint: Waypoint, zoom: float) -> None:
         """

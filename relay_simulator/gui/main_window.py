@@ -9,6 +9,7 @@ import tkinter as tk
 from tkinter import messagebox, filedialog
 from typing import Optional, Dict, Tuple
 from pathlib import Path
+import math
 
 from gui.theme import VSCodeTheme, apply_theme
 from gui.menu_bar import MenuBar
@@ -57,33 +58,48 @@ class MainWindow:
         
         # Apply VS Code dark theme
         apply_theme(self.root)
-        
+
         # Load settings
         self.settings = Settings()
-        
+
         # Initialize document loader
         self.document_loader = DocumentLoader()
-        
+
         # Track if there are unsaved changes
         self.has_unsaved_changes = False
-        
+
         # Track simulation mode (False = Design Mode, True = Simulation Mode)
         self.simulation_mode = False
         self.simulation_engine = None  # Will hold SimulationEngine instance when running
-        
+
         # Create menu bar (before setting up window close handler so Exit callback works)
         self.menu_bar = MenuBar(self.root)
         self._setup_menu_callbacks()
-        
+
         # Sync recent documents from settings to menu
         for filepath in self.settings.get_recent_documents():
             self.menu_bar.add_recent_document(filepath)
-        
+
         # Setup window close handler
         self.root.protocol("WM_DELETE_WINDOW", self._on_closing)
-        
+
         # Create UI components
         self._create_widgets()
+
+    def _rotate_point(self, x: float, y: float, cx: float, cy: float, angle_deg: float) -> Tuple[float, float]:
+        """Rotate (x,y) around (cx,cy) by angle degrees."""
+        if not angle_deg:
+            return (x, y)
+        angle_deg = angle_deg % 360
+        if angle_deg == 0:
+            return (x, y)
+
+        rad = math.radians(angle_deg)
+        tx = x - cx
+        ty = y - cy
+        rx = (tx * math.cos(rad)) - (ty * math.sin(rad))
+        ry = (tx * math.sin(rad)) + (ty * math.cos(rad))
+        return (rx + cx, ry + cy)
         
     def _center_window(self) -> None:
         """Center the window on the screen."""
@@ -1809,11 +1825,14 @@ class MainWindow:
         # Check all components and their tabs
         for component in page.components.values():
             comp_x, comp_y = component.position
+            rotation = getattr(component, 'rotation', 0) or 0
             for pin in component.pins.values():
                 for tab_obj in pin.tabs.values():
                     tab_dx, tab_dy = tab_obj.relative_position
                     tab_x = comp_x + tab_dx
                     tab_y = comp_y + tab_dy
+                    if rotation:
+                        tab_x, tab_y = self._rotate_point(tab_x, tab_y, comp_x, comp_y, rotation)
                     
                     # Check if click is within tab area (scale hit radius with zoom)
                     hit_radius = VSCodeTheme.TAB_SIZE * 0.8 * zoom  # Reduced radius for easier component selection
@@ -1872,8 +1891,13 @@ class MainWindow:
             return None
         
         comp_x, comp_y = component.position
+        rotation = getattr(component, 'rotation', 0) or 0
         tab_dx, tab_dy = tab_obj.relative_position
-        return (comp_x + tab_dx, comp_y + tab_dy)
+        x = comp_x + tab_dx
+        y = comp_y + tab_dy
+        if rotation:
+            x, y = self._rotate_point(x, y, comp_x, comp_y, rotation)
+        return (x, y)
     
     def _complete_wire_to_junction(self, junction_id: str) -> None:
         """
