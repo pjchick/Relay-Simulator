@@ -61,6 +61,7 @@ class MenuBar:
             'zoom_in': None,
             'zoom_out': None,
             'reset_zoom': None,
+            'toggle_properties': None,
         }
         
         # Create all menus
@@ -199,6 +200,16 @@ class MenuBar:
         self.view_menu = tk.Menu(self.menubar, tearoff=0)
         self.menubar.add_cascade(label="View", menu=self.view_menu)
         
+        # Properties Panel toggle with checkbutton
+        self.properties_visible = tk.BooleanVar(master=self.parent, value=True)
+        self.view_menu.add_checkbutton(
+            label="Properties Panel",
+            variable=self.properties_visible,
+            command=self._on_toggle_properties
+        )
+        
+        self.view_menu.add_separator()
+        
         self.view_menu.add_command(
             label="Zoom In",
             accelerator="Ctrl++",
@@ -299,6 +310,11 @@ class MenuBar:
         """Handle Reset Zoom command."""
         if self.callbacks['reset_zoom']:
             self.callbacks['reset_zoom']()
+    
+    def _on_toggle_properties(self) -> None:
+        """Handle Toggle Properties Panel command."""
+        if self.callbacks['toggle_properties']:
+            self.callbacks['toggle_properties'](self.properties_visible.get())
             
     def _on_recent_document(self, filepath: str) -> None:
         """

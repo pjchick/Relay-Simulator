@@ -45,8 +45,8 @@ class ComponentButton(tk.Frame):
             activeforeground=VSCodeTheme.FG_PRIMARY,
             relief=tk.FLAT,
             borderwidth=0,
-            padx=VSCodeTheme.PADDING_MEDIUM * 2,
-            pady=VSCodeTheme.PADDING_MEDIUM,
+            padx=8,
+            pady=4,
             anchor=tk.W,
             command=self._on_click
         )
@@ -107,7 +107,7 @@ class ToolboxPanel(tk.Frame):
             parent: Parent widget
             on_component_select: Callback when component is selected (None = select tool)
         """
-        super().__init__(parent, bg=VSCodeTheme.BG_SECONDARY, width=200)
+        super().__init__(parent, bg=VSCodeTheme.BG_SECONDARY)
         
         self.on_component_select = on_component_select
         self.component_buttons = {}
@@ -126,47 +126,26 @@ class ToolboxPanel(tk.Frame):
             fg=VSCodeTheme.FG_PRIMARY,
             pady=VSCodeTheme.PADDING_MEDIUM
         )
-        title.pack(fill=tk.X, padx=VSCodeTheme.PADDING_MEDIUM)
+        title.pack(fill=tk.X, padx=2)
         
         # Separator
         separator = tk.Frame(self, bg=VSCodeTheme.BG_TERTIARY, height=1)
-        separator.pack(fill=tk.X, padx=VSCodeTheme.PADDING_MEDIUM, pady=VSCodeTheme.PADDING_SMALL)
+        separator.pack(fill=tk.X, padx=2, pady=VSCodeTheme.PADDING_SMALL)
         
-        # Create scrollable frame for components
-        canvas = tk.Canvas(
-            self,
-            bg=VSCodeTheme.BG_SECONDARY,
-            highlightthickness=0,
-            borderwidth=0
-        )
-        scrollbar = ttk.Scrollbar(self, orient=tk.VERTICAL, command=canvas.yview)
-        scrollable_frame = tk.Frame(canvas, bg=VSCodeTheme.BG_SECONDARY)
-        
-        scrollable_frame.bind(
-            "<Configure>",
-            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
-        )
-        
-        canvas.create_window((0, 0), window=scrollable_frame, anchor=tk.NW)
-        canvas.configure(yscrollcommand=scrollbar.set)
+        # Container frame for component buttons
+        button_frame = tk.Frame(self, bg=VSCodeTheme.BG_SECONDARY)
+        button_frame.pack(fill=tk.BOTH, expand=True)
         
         # Add component buttons
         for component_type, display_name in self.COMPONENTS:
             button = ComponentButton(
-                scrollable_frame,
+                button_frame,
                 component_type,
                 display_name,
                 self._on_component_selected
             )
-            button.pack(fill=tk.X, padx=VSCodeTheme.PADDING_SMALL, pady=1)
+            button.pack(fill=tk.X, padx=2, pady=1)
             self.component_buttons[component_type] = button
-        
-        # Pack canvas and scrollbar
-        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        
-        # Mouse wheel scrolling
-        canvas.bind_all("<MouseWheel>", lambda e: canvas.yview_scroll(-1 * (e.delta // 120), "units"))
     
     def _on_component_selected(self, component_type: Optional[str]):
         """

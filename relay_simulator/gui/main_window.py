@@ -122,6 +122,8 @@ class MainWindow:
         self.menu_bar.set_callback('zoom_in', self._menu_zoom_in)
         self.menu_bar.set_callback('zoom_out', self._menu_zoom_out)
         self.menu_bar.set_callback('reset_zoom', self._menu_reset_zoom)
+        self.menu_bar.set_callback('toggle_properties', self._menu_toggle_properties)
+        self.menu_bar.set_callback('toggle_properties', self._menu_toggle_properties)
         
         # Initialize menu states
         self.menu_bar.enable_edit_menu(has_selection=False)
@@ -704,6 +706,13 @@ class MainWindow:
         """Handle View > Reset Zoom."""
         self.design_canvas.reset_zoom()
         self.set_status("Zoom: 100%")
+    
+    def _menu_toggle_properties(self, visible: bool) -> None:
+        """Handle View > Properties Panel toggle."""
+        if visible:
+            self.properties_panel.frame.pack(side=tk.RIGHT, fill=tk.Y, padx=(1, 0))
+        else:
+            self.properties_panel.frame.pack_forget()
     
     # === Context Menu ===
     
