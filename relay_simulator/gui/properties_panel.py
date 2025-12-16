@@ -197,6 +197,53 @@ PROPERTY_SCHEMAS: Dict[str, List[Dict[str, Any]]] = {
             'coerce': int,
         },
     ],
+
+    'SevenSegmentDisplay': [
+        {
+            'section': 'Format',
+            'key': 'color',
+            'label': 'Color',
+            'type': 'dropdown',
+            'options': [
+                {'label': 'Red', 'value': 'red'},
+                {'label': 'Green', 'value': 'green'},
+                {'label': 'Blue', 'value': 'blue'},
+                {'label': 'Yellow', 'value': 'yellow'},
+                {'label': 'Orange', 'value': 'orange'},
+                {'label': 'White', 'value': 'white'},
+                {'label': 'Amber', 'value': 'amber'},
+            ],
+            'default': 'green',
+            'target': 'prop',
+        },
+        {
+            'section': 'Advanced',
+            'key': 'bus_name',
+            'label': 'Bus Name',
+            'type': 'text',
+            'default': 'Data',
+            'target': 'prop',
+        },
+        {
+            'section': 'Advanced',
+            'key': 'link_ids',
+            'label': "Link ID's",
+            'type': 'text-readonly',
+            'default': '',
+            'target': 'attr',
+        },
+        {
+            'section': 'Advanced',
+            'key': 'start_pin',
+            'label': 'Start Pin',
+            'type': 'number',
+            'default': 0,
+            'min': -999999,
+            'max': 999999,
+            'target': 'prop',
+            'coerce': int,
+        },
+    ],
 }
 
 

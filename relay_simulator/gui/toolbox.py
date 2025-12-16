@@ -98,6 +98,7 @@ class ToolboxPanel(tk.Frame):
         ('DPDTRelay', 'DPDT Relay'),
         ('VCC', 'VCC Source'),
         ('BUS', 'BUS'),
+        ('SevenSegmentDisplay', '7-Segment Display'),
     ]
     
     def __init__(self, parent, on_component_select: Optional[Callable[[Optional[str]], None]] = None):

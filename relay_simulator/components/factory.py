@@ -12,6 +12,7 @@ from components.indicator import Indicator
 from components.dpdt_relay import DPDTRelay
 from components.vcc import VCC
 from components.bus import BUS
+from components.seven_segment_display import SevenSegmentDisplay
 
 
 class ComponentFactory:
@@ -36,6 +37,7 @@ class ComponentFactory:
         self.register_component("DPDTRelay", DPDTRelay)
         self.register_component("VCC", VCC)
         self.register_component("BUS", BUS)
+        self.register_component("SevenSegmentDisplay", SevenSegmentDisplay)
     
     def register_component(self, type_name: str, component_class: Type[Component]):
         """

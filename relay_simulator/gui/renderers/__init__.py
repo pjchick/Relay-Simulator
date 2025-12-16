@@ -8,6 +8,7 @@ from gui.renderers.indicator_renderer import IndicatorRenderer
 from gui.renderers.relay_renderer import RelayRenderer
 from gui.renderers.vcc_renderer import VCCRenderer
 from gui.renderers.bus_renderer import BUSRenderer
+from gui.renderers.seven_segment_display_renderer import SevenSegmentDisplayRenderer
 from gui.renderers.wire_renderer import WireRenderer
 
 __all__ = [
@@ -17,5 +18,6 @@ __all__ = [
     'RelayRenderer',
     'VCCRenderer',
     'BUSRenderer',
+    'SevenSegmentDisplayRenderer',
     'WireRenderer',
 ]

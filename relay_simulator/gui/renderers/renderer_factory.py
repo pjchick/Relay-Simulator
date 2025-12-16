@@ -11,6 +11,7 @@ from gui.renderers.indicator_renderer import IndicatorRenderer
 from gui.renderers.relay_renderer import RelayRenderer
 from gui.renderers.vcc_renderer import VCCRenderer
 from gui.renderers.bus_renderer import BUSRenderer
+from gui.renderers.seven_segment_display_renderer import SevenSegmentDisplayRenderer
 
 
 class RendererFactory:
@@ -27,6 +28,7 @@ class RendererFactory:
         'DPDTRelay': RelayRenderer,
         'VCC': VCCRenderer,
         'BUS': BUSRenderer,
+        'SevenSegmentDisplay': SevenSegmentDisplayRenderer,
     }
     
     @classmethod

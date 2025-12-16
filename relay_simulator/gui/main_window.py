@@ -1580,6 +1580,7 @@ class MainWindow:
         from components.dpdt_relay import DPDTRelay
         from components.vcc import VCC
         from components.bus import BUS
+        from components.seven_segment_display import SevenSegmentDisplay
         
         # Create component instance based on type
         component = None
@@ -1593,6 +1594,8 @@ class MainWindow:
             component = VCC(component_id, page.page_id)
         elif self.placement_component == 'BUS':
             component = BUS(component_id, page.page_id)
+        elif self.placement_component == 'SevenSegmentDisplay':
+            component = SevenSegmentDisplay(component_id, page.page_id)
         
         if component:
             # Set position and rotation
