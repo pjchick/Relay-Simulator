@@ -290,12 +290,13 @@ class ComponentRenderer(ABC):
                     tx = cx + tx
                     ty = cy + ty
                     
-                # Draw tab as small square
+                # Draw tab as small circle
                 tab_size = VSCodeTheme.TAB_SIZE * zoom
-                self.draw_rectangle(
-                    tx - tab_size/2, ty - tab_size/2,
-                    tab_size, tab_size,
+                self.draw_circle(
+                    tx, ty,
+                    radius=tab_size / 2,
                     fill='#00ff00',  # Bright green for visibility
                     outline='#ffffff',  # White outline
+                    width_px=1,
                     tags=('tab', f'tab_{tab.tab_id}')
                 )

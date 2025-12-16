@@ -70,19 +70,25 @@ class SwitchRenderer(ComponentRenderer):
         label_offset = (radius + 15) * zoom
         label_x = cx
         label_y = cy
+        anchor = 'center'
         
         if label_position == 'bottom':
             label_y = cy + label_offset
+            anchor = 'n'
         elif label_position == 'top':
             label_y = cy - label_offset
+            anchor = 's'
         elif label_position == 'left':
             label_x = cx - label_offset
+            anchor = 'e'  # right-justified when on the left
         elif label_position == 'right':
             label_x = cx + label_offset
+            anchor = 'w'  # left-justified when on the right
             
         self.draw_text(
             label_x, label_y,
             text=label,
+            anchor=anchor,
             tags=('component_label', f'label_{self.component.component_id}')
         )
         

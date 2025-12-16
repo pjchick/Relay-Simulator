@@ -1,11 +1,10 @@
-"""
-Indicator (LED) Component for Relay Logic Simulator
+"""Indicator (LED) Component for Relay Logic Simulator.
 
 A passive visual indicator that displays the state of an electrical signal.
 The indicator reads the state from its pin and displays it visually.
 
-Visual: Circular LED, 40px diameter
-Pins: 1 pin with 4 tabs at 12, 3, 6, 9 o'clock positions
+Visual: Circular LED, 30px diameter
+Pins: 1 pin with 4 tabs at 12, 3, 6, 9 o'clock positions (on the circle edge)
 State: Displays ON (bright) when pin is HIGH, OFF (dim) when pin is FLOAT
 """
 
@@ -33,6 +32,10 @@ class Indicator(Component):
     """
     
     component_type = "Indicator"
+
+    # Keep component geometry consistent with the GUI renderer.
+    DIAMETER_PX = 30
+    RADIUS_PX = DIAMETER_PX / 2
     
     # Default colors for different color options
     COLOR_PRESETS = {
@@ -73,9 +76,9 @@ class Indicator(Component):
         pin_id = f"{self.component_id}.pin1"
         pin = Pin(pin_id, self)
         
-        # Create 4 tabs at 12, 3, 6, 9 o'clock positions
-        # Positions relative to component center (40px diameter = 20px radius)
-        radius = 20
+        # Create 4 tabs at 12, 3, 6, 9 o'clock positions.
+        # Positions relative to component center, placed on the LED circle edge.
+        radius = self.RADIUS_PX
         tab_positions = {
             '12': (0, -radius),    # 12 o'clock (top)
             '3': (radius, 0),       # 3 o'clock (right)
@@ -174,11 +177,11 @@ class Indicator(Component):
         # Get colors based on state
         color = self.properties['on_color'] if is_on else self.properties['off_color']
         
-        # Draw circular LED (40px diameter)
-        canvas_adapter.draw_circle(x, y, 20, fill_color=color, outline_color=(0, 0, 0))
+        # Draw circular LED (30px diameter)
+        canvas_adapter.draw_circle(x, y, self.RADIUS_PX, fill_color=color, outline_color=(0, 0, 0))
         
-        # Draw tabs at 12, 3, 6, 9 o'clock positions
-        radius = 20
+        # Draw tabs at 12, 3, 6, 9 o'clock positions (on the circle edge)
+        radius = self.RADIUS_PX
         tab_positions = [
             (x, y - radius),      # 12 o'clock
             (x + radius, y),      # 3 o'clock

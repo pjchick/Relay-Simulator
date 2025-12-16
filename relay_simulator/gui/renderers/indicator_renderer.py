@@ -21,6 +21,7 @@ class IndicatorRenderer(ComponentRenderer):
     """
     
     DIAMETER = 30  # Indicator diameter in pixels
+    LABEL_PADDING_PX = 20  # Extra gap between LED edge and label
 
     @staticmethod
     def _to_hex(color) -> str:
@@ -74,22 +75,29 @@ class IndicatorRenderer(ComponentRenderer):
         label_position = self.component.properties.get('label_position', 'bottom')
         
         # Calculate label position
-        label_offset = (radius + 15) * zoom
+        # Keep label a bit away from the LED, and scale padding with zoom.
+        label_offset = radius + (self.LABEL_PADDING_PX * zoom)
         label_x = cx
         label_y = cy
+        anchor = 'center'
         
         if label_position == 'bottom':
             label_y = cy + label_offset
+            anchor = 'n'
         elif label_position == 'top':
             label_y = cy - label_offset
+            anchor = 's'
         elif label_position == 'left':
             label_x = cx - label_offset
+            anchor = 'e'  # right-justified when on the left
         elif label_position == 'right':
             label_x = cx + label_offset
+            anchor = 'w'  # left-justified when on the right
             
         self.draw_text(
             label_x, label_y,
             text=label,
+            anchor=anchor,
             tags=('component_label', f'label_{self.component.component_id}')
         )
         
