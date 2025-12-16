@@ -1563,6 +1563,7 @@ class MainWindow:
         from components.indicator import Indicator
         from components.dpdt_relay import DPDTRelay
         from components.vcc import VCC
+        from components.bus import BUS
         
         # Create component instance based on type
         component = None
@@ -1574,6 +1575,8 @@ class MainWindow:
             component = DPDTRelay(component_id, page.page_id)
         elif self.placement_component == 'VCC':
             component = VCC(component_id, page.page_id)
+        elif self.placement_component == 'BUS':
+            component = BUS(component_id, page.page_id)
         
         if component:
             # Set position and rotation
@@ -3259,6 +3262,7 @@ class MainWindow:
         from components.indicator import Indicator
         from components.dpdt_relay import DPDTRelay
         from components.vcc import VCC
+        from components.bus import BUS
         
         # Clear current selection
         self._clear_selection()
@@ -3285,11 +3289,17 @@ class MainWindow:
                 component = DPDTRelay(new_id, active_page_id)
             elif component_type == 'VCC':
                 component = VCC(new_id, active_page_id)
+            elif component_type == 'BUS':
+                component = BUS(new_id, active_page_id)
             
             if component:
                 # Restore properties from clipboard data
                 if 'properties' in component_data:
                     component.properties = component_data['properties'].copy()
+
+                # Restore optional link_name (used by some components)
+                if 'link_name' in component_data:
+                    component.link_name = component_data.get('link_name')
                 
                 # Apply offset to position
                 # Position is stored as {'x': float, 'y': float} in to_dict()
@@ -3305,6 +3315,14 @@ class MainWindow:
                 # Restore rotation
                 if 'rotation' in component_data:
                     component.rotation = component_data['rotation']
+
+                # Components with dynamic pin layouts (e.g., BUS) need a rebuild after
+                # restoring properties.
+                if hasattr(component, 'on_property_changed') and callable(getattr(component, 'on_property_changed')):
+                    try:
+                        component.on_property_changed('number_of_pins')
+                    except Exception:
+                        pass
                 
                 # Add to page
                 page.add_component(component)

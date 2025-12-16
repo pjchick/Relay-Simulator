@@ -10,6 +10,7 @@ from gui.renderers.switch_renderer import SwitchRenderer
 from gui.renderers.indicator_renderer import IndicatorRenderer
 from gui.renderers.relay_renderer import RelayRenderer
 from gui.renderers.vcc_renderer import VCCRenderer
+from gui.renderers.bus_renderer import BUSRenderer
 
 
 class RendererFactory:
@@ -25,6 +26,7 @@ class RendererFactory:
         'Indicator': IndicatorRenderer,
         'DPDTRelay': RelayRenderer,
         'VCC': VCCRenderer,
+        'BUS': BUSRenderer,
     }
     
     @classmethod

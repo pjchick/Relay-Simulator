@@ -126,6 +126,41 @@ class LinkResolver:
         # Scan all components in all pages
         for page in document.get_all_pages():
             for component in page.get_all_components():
+                # Support components that provide per-pin link mappings.
+                # Example: BUS returns {'Bus_0': ['comp.pin0.tab'], 'Bus_1': [...], ...}
+                get_link_mappings = getattr(component, 'get_link_mappings', None)
+                if callable(get_link_mappings):
+                    try:
+                        mappings = get_link_mappings()
+                    except Exception:
+                        mappings = None
+
+                    if isinstance(mappings, dict):
+                        for link_name, tab_ids in mappings.items():
+                            if isinstance(link_name, str):
+                                link_name = link_name.strip()
+                            else:
+                                continue
+
+                            if not link_name:
+                                continue
+
+                            if isinstance(tab_ids, (tuple, set)):
+                                tab_ids = list(tab_ids)
+
+                            if not isinstance(tab_ids, list):
+                                continue
+
+                            cleaned_tab_ids: List[str] = []
+                            for tab_id in tab_ids:
+                                if isinstance(tab_id, str):
+                                    tab_id = tab_id.strip()
+                                if tab_id:
+                                    cleaned_tab_ids.append(tab_id)
+
+                            if cleaned_tab_ids:
+                                link_map[link_name].append((component.component_id, page.page_id, cleaned_tab_ids))
+
                 # Check if component has a link name
                 link_name = getattr(component, 'link_name', None)
                 if isinstance(link_name, str):

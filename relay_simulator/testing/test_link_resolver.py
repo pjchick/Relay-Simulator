@@ -20,6 +20,7 @@ from core.wire import Wire
 from core.pin import Pin
 from core.tab import Tab
 from components.base import Component
+from components.bus import BUS
 
 
 # Create a simple test component
@@ -133,6 +134,70 @@ def test_same_page_link():
     print(f"✓ Both VNETs have 'POWER' link")
     
     print("✓ Same-page link tests passed")
+
+
+def test_bus_pin_links_same_page():
+    """BUS pins should contribute per-pin link names (e.g., Bus_0) to VNETs."""
+    print("\n=== Testing BUS Per-Pin Links (Same Page) ===")
+
+    doc = Document()
+    page = doc.create_page("Test Page")
+
+    # Two buses with the same name/start_pin should electrically connect per-pin via links.
+    bus1 = BUS("bus001", page.page_id)
+    bus1.properties['bus_name'] = 'Bus'
+    bus1.properties['start_pin'] = 0
+    bus1.properties['number_of_pins'] = 1
+    bus1.on_property_changed('number_of_pins')
+    page.add_component(bus1)
+
+    bus2 = BUS("bus002", page.page_id)
+    bus2.properties['bus_name'] = 'Bus'
+    bus2.properties['start_pin'] = 0
+    bus2.properties['number_of_pins'] = 1
+    bus2.on_property_changed('number_of_pins')
+    page.add_component(bus2)
+
+    # Two generic components connected to each bus's pin0.
+    comp_a = TestComponent("compA", page.page_id)
+    pin_a = Pin("pinA", comp_a)
+    tab_a = Tab("tabA", pin_a, (0, 0))
+    pin_a.add_tab(tab_a)
+    comp_a.add_pin(pin_a)
+    page.add_component(comp_a)
+
+    comp_b = TestComponent("compB", page.page_id)
+    pin_b = Pin("pinB", comp_b)
+    tab_b = Tab("tabB", pin_b, (0, 0))
+    pin_b.add_tab(tab_b)
+    comp_b.add_pin(pin_b)
+    page.add_component(comp_b)
+
+    # Wire comp_a -> bus1.pin0, and bus2.pin0 -> comp_b
+    bus1_tab0 = next(iter(next(iter(bus1.pins.values())).tabs.values())).tab_id
+    bus2_tab0 = next(iter(next(iter(bus2.pins.values())).tabs.values())).tab_id
+    page.add_wire(Wire("wireA", tab_a.tab_id, bus1_tab0))
+    page.add_wire(Wire("wireB", bus2_tab0, tab_b.tab_id))
+
+    # Build VNETs
+    builder = VnetBuilder()
+    vnets = builder.build_vnets_for_page(page)
+    assert len(vnets) >= 2
+
+    # Resolve links (should attach Bus_0 to both VNETs containing the wired tabs)
+    resolver = LinkResolver()
+    result = resolver.resolve_links(doc, vnets)
+    assert result.total_links >= 1
+    assert "Bus_0" not in result.unresolved_links
+
+    vnet_a = next(v for v in vnets if v.has_tab(tab_a.tab_id))
+    vnet_b = next(v for v in vnets if v.has_tab(tab_b.tab_id))
+
+    assert vnet_a.has_link("Bus_0"), "Expected VNET containing comp_a to have Bus_0 link"
+    assert vnet_b.has_link("Bus_0"), "Expected VNET containing comp_b to have Bus_0 link"
+
+    print(f"✓ BUS link resolved: {result}")
+    print("✓ BUS per-pin link tests passed")
 
 
 def test_cross_page_link():

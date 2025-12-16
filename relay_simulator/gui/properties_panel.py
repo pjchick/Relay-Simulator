@@ -136,6 +136,67 @@ PROPERTY_SCHEMAS: Dict[str, List[Dict[str, Any]]] = {
     ],
     'VCC': [
     ],
+    'BUS': [
+        {
+            'section': 'Format',
+            'key': 'rotation',
+            'label': 'Rotation',
+            'type': 'dropdown',
+            'options': ['0', '90', '180', '270'],
+            'default': 0,
+            'target': 'attr',
+            'coerce': int,
+        },
+        {
+            'section': 'Advanced',
+            'key': 'bus_name',
+            'label': 'Bus Name',
+            'type': 'text',
+            'default': 'Bus',
+            'target': 'prop',
+        },
+        {
+            'section': 'Advanced',
+            'key': 'link_ids',
+            'label': "Link ID's",
+            'type': 'text-readonly',
+            'default': '',
+            'target': 'attr',
+        },
+        {
+            'section': 'Advanced',
+            'key': 'start_pin',
+            'label': 'Start Pin',
+            'type': 'number',
+            'default': 0,
+            'min': -999999,
+            'max': 999999,
+            'target': 'prop',
+            'coerce': int,
+        },
+        {
+            'section': 'Advanced',
+            'key': 'number_of_pins',
+            'label': 'Number of Pins',
+            'type': 'number',
+            'default': 8,
+            'min': 1,
+            'max': 256,
+            'target': 'prop',
+            'coerce': int,
+        },
+        {
+            'section': 'Advanced',
+            'key': 'pin_spacing',
+            'label': 'Pin Spacing',
+            'type': 'number',
+            'default': 1,
+            'min': 1,
+            'max': 15,
+            'target': 'prop',
+            'coerce': int,
+        },
+    ],
 }
 
 
@@ -311,6 +372,27 @@ class TextPropertyEditor(PropertyEditor):
         return self.widget.get()
 
 
+class LabelPropertyEditor(PropertyEditor):
+    """Read-only label property editor (non-editable)."""
+
+    def __init__(self, parent: tk.Widget):
+        super().__init__(parent)
+        self.widget = tk.Label(
+            parent,
+            text="",
+            bg=VSCodeTheme.BG_PRIMARY,
+            fg=VSCodeTheme.FG_PRIMARY,
+            font=("Segoe UI", 9),
+            anchor=tk.W
+        )
+
+    def set_value(self, value: Any) -> None:
+        self.widget.config(text=str(value) if value is not None else "")
+
+    def get_value(self) -> str:
+        return str(self.widget.cget('text'))
+
+
 class NumberPropertyEditor(PropertyEditor):
     """Numeric entry property editor."""
     
@@ -484,6 +566,7 @@ class PropertiesPanel:
         self.parent = parent
         self.current_component = None
         self.property_editors: Dict[str, PropertyEditor] = {}
+        self._active_definition_by_key: Dict[str, Dict[str, Any]] = {}
         
         # Main container
         self.frame = tk.Frame(
@@ -608,6 +691,10 @@ class PropertiesPanel:
         comp_type = self.current_component.__class__.__name__
         definitions = BASE_PROPERTY_SCHEMA + PROPERTY_SCHEMAS.get(comp_type, [])
 
+        self._active_definition_by_key = {
+            d.get('key'): d for d in definitions if isinstance(d, dict) and d.get('key')
+        }
+
         for definition in definitions:
             section_name = definition.get('section', 'Advanced')
             section = self.sections.get(section_name)
@@ -642,9 +729,8 @@ class PropertiesPanel:
                 value = default
 
         if ptype == 'text-readonly':
-            editor = TextPropertyEditor(parent)
+            editor = LabelPropertyEditor(parent)
             editor.set_value(value if value is not None else '')
-            editor.widget.config(state='readonly')
             return editor
 
         if ptype == 'text':
@@ -718,7 +804,43 @@ class PropertiesPanel:
             else:
                 self.current_component.properties[key] = value
 
+        # Optional hook for components that need to respond to property changes
+        # (e.g., dynamic pin layouts).
+        if hasattr(self.current_component, 'on_property_changed') and callable(getattr(self.current_component, 'on_property_changed')):
+            try:
+                self.current_component.on_property_changed(key)
+            except Exception:
+                pass
+
+        self._refresh_readonly_fields()
+
         self._notify_change()
+
+    def _refresh_readonly_fields(self) -> None:
+        """Recompute and refresh any read-only fields (e.g. computed attrs like BUS link_ids)."""
+        if not self.current_component:
+            return
+
+        for key, definition in self._active_definition_by_key.items():
+            ptype = str(definition.get('type', 'text')).lower()
+            if ptype != 'text-readonly':
+                continue
+
+            editor = self.property_editors.get(key)
+            if not editor:
+                continue
+
+            target = definition.get('target', 'prop')
+            default = definition.get('default')
+            coerce_fn = definition.get('coerce')
+            value = self._get_property_value(key, target, default)
+            if coerce_fn:
+                try:
+                    value = coerce_fn(value)
+                except Exception:
+                    value = default
+
+            editor.set_value(value if value is not None else '')
     
     def _update_component_id(self, new_id: str):
         """
