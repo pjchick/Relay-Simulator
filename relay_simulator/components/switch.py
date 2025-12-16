@@ -28,22 +28,24 @@ class Switch(Component):
         mode: "toggle" or "pushbutton"
         label: Display label (optional)
         label_position: "top", "bottom", "left", or "right"
-        color: Color name (affects on/off colors)
-        on_color: RGB tuple for ON state
-        off_color: RGB tuple for OFF state
+        color: Color name (affects switch shades)
+        on_color: RGB tuple for ON state (bright shade)
+        dull_color: RGB tuple for OFF state when seeing HIGH (dull shade)
+        off_color: RGB tuple for OFF state (dark shade)
     """
     
     component_type = "Switch"
     
     # Default colors for different color options
     COLOR_PRESETS = {
-        "red": {"on": (255, 0, 0), "off": (128, 0, 0)},
-        "green": {"on": (0, 255, 0), "off": (0, 128, 0)},
-        "blue": {"on": (0, 0, 255), "off": (0, 0, 128)},
-        "yellow": {"on": (255, 255, 0), "off": (128, 128, 0)},
-        "orange": {"on": (255, 165, 0), "off": (128, 82, 0)},
-        "white": {"on": (255, 255, 255), "off": (192, 192, 192)},
-        "gray": {"on": (200, 200, 200), "off": (128, 128, 128)},
+        "red": {"on": (255, 0, 0), "dull": (128, 0, 0), "off": (64, 0, 0)},
+        "green": {"on": (0, 255, 0), "dull": (0, 128, 0), "off": (0, 64, 0)},
+        "blue": {"on": (0, 0, 255), "dull": (0, 0, 128), "off": (0, 0, 64)},
+        "yellow": {"on": (255, 255, 0), "dull": (128, 128, 0), "off": (64, 64, 0)},
+        "orange": {"on": (255, 165, 0), "dull": (128, 82, 0), "off": (64, 42, 0)},
+        "white": {"on": (255, 255, 255), "dull": (128, 128, 128), "off": (64, 64, 64)},
+        "amber": {"on": (255, 191, 0), "dull": (128, 96, 0), "off": (64, 48, 0)},
+        "gray": {"on": (200, 200, 200), "dull": (128, 128, 128), "off": (64, 64, 64)},
     }
     
     def __init__(self, component_id: str, page_id: str):
@@ -66,6 +68,7 @@ class Switch(Component):
             'label_position': 'bottom',  # 'top', 'bottom', 'left', 'right'
             'color': 'red',
             'on_color': self.COLOR_PRESETS['red']['on'],
+            'dull_color': self.COLOR_PRESETS['red']['dull'],
             'off_color': self.COLOR_PRESETS['red']['off'],
         }
         
@@ -263,6 +266,7 @@ class Switch(Component):
             color = switch.properties.get('color', 'red')
             if color in cls.COLOR_PRESETS:
                 switch.properties['on_color'] = cls.COLOR_PRESETS[color]['on']
+                switch.properties['dull_color'] = cls.COLOR_PRESETS[color]['dull']
                 switch.properties['off_color'] = cls.COLOR_PRESETS[color]['off']
         
         # Restore pins and tabs (schema uses arrays)
@@ -300,6 +304,7 @@ class Switch(Component):
         if color_name in self.COLOR_PRESETS:
             self.properties['color'] = color_name
             self.properties['on_color'] = self.COLOR_PRESETS[color_name]['on']
+            self.properties['dull_color'] = self.COLOR_PRESETS[color_name]['dull']
             self.properties['off_color'] = self.COLOR_PRESETS[color_name]['off']
     
     def get_state(self) -> bool:

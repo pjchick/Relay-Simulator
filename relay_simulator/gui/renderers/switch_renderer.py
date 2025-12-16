@@ -20,6 +20,22 @@ class SwitchRenderer(ComponentRenderer):
     """
     
     DIAMETER = 40  # Switch diameter in pixels
+
+    @staticmethod
+    def _to_hex(color) -> str:
+        """Convert (r,g,b) or [r,g,b] to '#rrggbb'. Pass through hex strings."""
+        if isinstance(color, str):
+            return color
+        if isinstance(color, (tuple, list)) and len(color) >= 3:
+            try:
+                r, g, b = int(color[0]), int(color[1]), int(color[2])
+                r = max(0, min(255, r))
+                g = max(0, min(255, g))
+                b = max(0, min(255, b))
+                return f"#{r:02x}{g:02x}{b:02x}"
+            except Exception:
+                pass
+        return VSCodeTheme.SWITCH_OFF
     
     def render(self, zoom: float = 1.0) -> None:
         """
@@ -34,20 +50,17 @@ class SwitchRenderer(ComponentRenderer):
         cx, cy = self.get_position()
         radius = (self.DIAMETER / 2) * zoom
         
-        # Determine fill color based on state
+        # Determine fill color based on state:
+        # - Bright when ON
+        # - Dull when OFF but seeing HIGH (powered)
+        # - Dark when OFF
         is_on = self.component._is_on
-        if self.powered and is_on:
-            # Switch is pressed AND powered - bright red
-            fill_color = VSCodeTheme.SWITCH_ON
+        if is_on:
+            fill_color = self._to_hex(self.component.properties.get('on_color', VSCodeTheme.SWITCH_ON))
         elif self.powered:
-            # Switch NOT pressed but receiving HIGH signal - dull red
-            fill_color = '#804040'  # Dull red (powered but not pressed)
-        elif is_on:
-            # Switch pressed but no power - dark red
-            fill_color = '#800000'  # Dark red when ON but not powered
+            fill_color = self._to_hex(self.component.properties.get('dull_color', '#804040'))
         else:
-            # Switch OFF and no power - default off color
-            fill_color = VSCodeTheme.SWITCH_OFF
+            fill_color = self._to_hex(self.component.properties.get('off_color', VSCodeTheme.SWITCH_OFF))
             
         # Outline color (highlight if selected)
         outline_color = VSCodeTheme.COMPONENT_SELECTED if self.selected else VSCodeTheme.COMPONENT_OUTLINE

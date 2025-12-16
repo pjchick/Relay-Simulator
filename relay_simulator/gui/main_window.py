@@ -554,13 +554,14 @@ class MainWindow:
         # (debug logging removed)
     
     def _handle_switch_toggle(self, canvas_x: float, canvas_y: float):
-        """
-        Handle switch toggling in simulation mode.
-        
-        Args:
-            canvas_x: Canvas X coordinate of click
-            canvas_y: Canvas Y coordinate of click
-        """
+        """Backward-compatible wrapper for simulation switch click handling."""
+        self._handle_switch_interaction(canvas_x, canvas_y, action='press')
+
+    def _handle_switch_interaction(self, canvas_x: float, canvas_y: float, action: str) -> None:
+        """Handle switch press/toggle in simulation mode."""
+        # Clear any previous press tracking; we only track the current mouse-down.
+        self._pressed_switch_component = None
+
         # Get active page
         tab = self.file_tabs.get_active_tab()
         if not tab or not tab.document:
@@ -590,35 +591,76 @@ class MainWindow:
         # Check if it's a switch component
         if clicked_component.component_type != "Switch":
             return
-        
-        # Toggle the switch
+
+        # Remember the pressed switch so we can release it even if the mouse
+        # is released away from the component (pushbutton behavior).
         try:
-            # Switch component has a toggle_switch() method
-            if hasattr(clicked_component, 'toggle_switch'):
+            self._pressed_switch_component = clicked_component
+        except Exception:
+            self._pressed_switch_component = None
+
+        # Dispatch interaction based on the switch's mode
+        try:
+            changed = False
+            if hasattr(clicked_component, 'interact') and callable(getattr(clicked_component, 'interact')):
+                changed = bool(clicked_component.interact(action))
+            elif hasattr(clicked_component, 'toggle_switch') and action in ('press', 'toggle', 'click'):
+                # Fallback to legacy API
                 clicked_component.toggle_switch()
-                self.set_status(f"Switch toggled")
-                
-                # Update the component's logic to propagate the state change
+                changed = True
+
+            if changed:
+                self.set_status("Switch updated")
+
                 if self.simulation_engine:
-                    clicked_component.simulate_logic(self.simulation_engine.vnet_manager, self.simulation_engine.bridge_manager)
-                    
-                    # Mark all VNETs dirty to force re-evaluation
+                    # Propagate switch output changes
+                    clicked_component.simulate_logic(
+                        self.simulation_engine.vnet_manager,
+                        self.simulation_engine.bridge_manager
+                    )
+
+                    # Force re-evaluation
                     self.simulation_engine.dirty_manager.mark_all_dirty()
-                    
+
                     # Update visuals immediately
                     self._update_simulation_visuals()
-                    
+
                     # Re-run simulation to propagate change
                     self.root.after(10, self._run_simulation_step)
-                else:
-                    pass
-            else:
-                self.set_status(f"Component {clicked_component.component_type} is not interactive")
         except Exception as e:
-            print(f"Error toggling switch: {e}")
+            print(f"Error interacting with switch: {e}")
             import traceback
             traceback.print_exc()
-            self.set_status(f"Error toggling switch: {e}")
+            self.set_status(f"Error interacting with switch: {e}")
+
+    def _handle_switch_release(self) -> None:
+        """Handle mouse release for pushbutton switches in simulation mode."""
+        clicked_component = getattr(self, '_pressed_switch_component', None)
+        self._pressed_switch_component = None
+        if not clicked_component:
+            return
+
+        if getattr(clicked_component, 'component_type', None) != "Switch":
+            return
+
+        try:
+            changed = False
+            if hasattr(clicked_component, 'interact') and callable(getattr(clicked_component, 'interact')):
+                changed = bool(clicked_component.interact('release'))
+
+            if changed and self.simulation_engine:
+                clicked_component.simulate_logic(
+                    self.simulation_engine.vnet_manager,
+                    self.simulation_engine.bridge_manager
+                )
+                self.simulation_engine.dirty_manager.mark_all_dirty()
+                self._update_simulation_visuals()
+                self.root.after(10, self._run_simulation_step)
+        except Exception as e:
+            print(f"Error releasing switch: {e}")
+            import traceback
+            traceback.print_exc()
+            self.set_status(f"Error releasing switch: {e}")
         
     def _menu_zoom_in(self) -> None:
         """Handle View > Zoom In."""
@@ -1228,7 +1270,8 @@ class MainWindow:
         
         # In simulation mode, only allow switch toggling
         if self.simulation_mode:
-            self._handle_switch_toggle(canvas_x, canvas_y)
+            # Mouse-down: toggle (toggle mode) or press (pushbutton mode)
+            self._handle_switch_interaction(canvas_x, canvas_y, action='press')
             return
         
         # Design mode only - handle component placement mode
@@ -2583,6 +2626,11 @@ class MainWindow:
         Args:
             event: Mouse release event
         """
+        # In simulation mode, mouse-up releases pushbutton switches
+        if self.simulation_mode:
+            self._handle_switch_release()
+            return
+
         # Handle junction drag end
         if self.dragging_junction:
             self._end_junction_drag()
