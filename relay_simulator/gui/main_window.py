@@ -2853,7 +2853,13 @@ class MainWindow:
         if self.simulation_mode:
             return
         
-        self.drag_start = (canvas_x, canvas_y)
+        # Snap initial mouse position to 10px grid
+        grid_size = self.settings.get_grid_size()
+        snap_size = grid_size // 2  # 10px for 20px grid
+        snapped_x = round(canvas_x / snap_size) * snap_size
+        snapped_y = round(canvas_y / snap_size) * snap_size
+        
+        self.drag_start = (snapped_x, snapped_y)
         self.drag_components = {}
         self.drag_junctions = {}  # {junction_id: (original_x, original_y)}
         self.drag_waypoints = {}  # {(wire_id, waypoint_id): (original_x, original_y)}
@@ -2889,10 +2895,18 @@ class MainWindow:
         if not self.drag_start or not self.drag_components:
             return
         
-        # Calculate drag delta
+        # Get grid size for snapping
+        grid_size = self.settings.get_grid_size()
+        snap_size = grid_size // 2  # 10px for 20px grid
+        
+        # Snap current mouse position to grid
+        snapped_x = round(canvas_x / snap_size) * snap_size
+        snapped_y = round(canvas_y / snap_size) * snap_size
+        
+        # Calculate drag delta from snapped positions
         start_x, start_y = self.drag_start
-        delta_x = canvas_x - start_x
-        delta_y = canvas_y - start_y
+        delta_x = snapped_x - start_x
+        delta_y = snapped_y - start_y
         
         # Only start dragging after minimum movement threshold
         if not self.is_dragging:
@@ -2914,40 +2928,28 @@ class MainWindow:
         if not page:
             return
         
-        # Get grid size for snapping
-        grid_size = self.settings.get_grid_size()
-        snap_size = grid_size // 2  # Snap to half-grid (10px for 20px grid)
-        
-        # Update all dragged components
+        # Update all dragged components - no individual snapping needed
         for component_id, original_pos in self.drag_components.items():
             component = page.components.get(component_id)
             if component:
-                # Calculate new position
+                # Calculate new position from snapped delta
                 new_x = original_pos[0] + delta_x
                 new_y = original_pos[1] + delta_y
                 
-                # Snap to grid
-                snapped_x = round(new_x / snap_size) * snap_size
-                snapped_y = round(new_y / snap_size) * snap_size
-                
-                # Update component position
-                component.position = (snapped_x, snapped_y)
+                # Update component position (no snapping)
+                component.position = (new_x, new_y)
         
         # Update all dragged junctions
         if hasattr(self, 'drag_junctions'):
             for junction_id, original_pos in self.drag_junctions.items():
                 junction = page.junctions.get(junction_id)
                 if junction:
-                    # Calculate new position
+                    # Calculate new position from snapped delta
                     new_x = original_pos[0] + delta_x
                     new_y = original_pos[1] + delta_y
                     
-                    # Snap to grid
-                    snapped_x = round(new_x / snap_size) * snap_size
-                    snapped_y = round(new_y / snap_size) * snap_size
-                    
-                    # Update junction position
-                    junction.position = (snapped_x, snapped_y)
+                    # Update junction position (no snapping)
+                    junction.position = (new_x, new_y)
         
         # Update all dragged waypoints
         if hasattr(self, 'drag_waypoints'):
@@ -2956,16 +2958,12 @@ class MainWindow:
                 if wire:
                     waypoint = wire.waypoints.get(waypoint_id)
                     if waypoint:
-                        # Calculate new position
+                        # Calculate new position from snapped delta
                         new_x = original_pos[0] + delta_x
                         new_y = original_pos[1] + delta_y
                         
-                        # Snap to grid
-                        snapped_x = round(new_x / snap_size) * snap_size
-                        snapped_y = round(new_y / snap_size) * snap_size
-                        
-                        # Update waypoint position
-                        waypoint.position = (snapped_x, snapped_y)
+                        # Update waypoint position (no snapping)
+                        waypoint.position = (new_x, new_y)
         
         # Re-render page to show updated positions
         self.design_canvas.set_page(page)
