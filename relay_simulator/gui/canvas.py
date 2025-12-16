@@ -60,8 +60,13 @@ class DesignCanvas:
         self.wire_renderers: Dict[str, WireRenderer] = {}  # wire_id -> wire_renderer
         self.junction_items: List[int] = []  # Canvas items for junctions
         self.current_page: Optional[Page] = None
-        self.hovered_waypoint: Optional[Tuple[str, str]] = None  # (waypoint_id, wire_id)
+        self.hovered_waypoint: Optional[Tuple[str, str]] = None  # (wire_id, waypoint_id)
         self.simulation_engine = None  # SimulationEngine for powered state visualization
+
+        # Optional selection state (populated by MainWindow)
+        self.selected_wires: Optional[set] = None
+        self.selected_waypoints: Optional[set] = None  # set of (wire_id, waypoint_id)
+        self.selected_junctions: Optional[set] = None
         
         # Create widgets
         self._create_widgets()
@@ -585,7 +590,17 @@ class DesignCanvas:
         # Create renderers for all wires
         for wire in self.current_page.wires.values():
             try:
-                renderer = WireRenderer(self.canvas, wire, self.current_page, self.hovered_waypoint)
+                renderer = WireRenderer(
+                    self.canvas,
+                    wire,
+                    self.current_page,
+                    self.hovered_waypoint,
+                    selected_waypoints=self.selected_waypoints,
+                )
+
+                # Persist wire selection across redraws
+                if self.selected_wires and wire.wire_id in self.selected_wires:
+                    renderer.set_selected(True)
                 
                 # Set powered state if simulation running
                 if simulation_engine:
@@ -672,8 +687,11 @@ class DesignCanvas:
             x, y = junction.position
             radius = 5 * self.zoom_level
             
-            # Determine junction color based on powered state
+            # Determine junction color based on selection/powered state
             fill_color = '#656565'  # Default: gray (unpowered)
+
+            if self.selected_junctions and junction.junction_id in self.selected_junctions:
+                fill_color = VSCodeTheme.WIRE_SELECTED
             
             if simulation_engine and junction.junction_id:
                 # Check if junction is powered by checking connected wires

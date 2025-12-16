@@ -27,7 +27,14 @@ class WireRenderer:
     - Zoom scaling
     """
     
-    def __init__(self, canvas: tk.Canvas, wire: Wire, page: Page, hovered_waypoint: Optional[Tuple[str, str]] = None):
+    def __init__(
+        self,
+        canvas: tk.Canvas,
+        wire: Wire,
+        page: Page,
+        hovered_waypoint: Optional[Tuple[str, str]] = None,
+        selected_waypoints: Optional[set] = None,
+    ):
         """
         Initialize wire renderer.
         
@@ -35,7 +42,8 @@ class WireRenderer:
             canvas: Tkinter canvas to draw on
             wire: Wire object to render
             page: Page containing the wire (for looking up tab positions)
-            hovered_waypoint: Optional tuple of (waypoint_id, wire_id) for waypoint being hovered
+            hovered_waypoint: Optional tuple of (wire_id, waypoint_id) for waypoint being hovered
+            selected_waypoints: Optional set of (wire_id, waypoint_id) tuples to render as selected
         """
         self.canvas = canvas
         self.wire = wire
@@ -44,6 +52,7 @@ class WireRenderer:
         self.selected = False
         self.powered = False
         self.hovered_waypoint = hovered_waypoint
+        self.selected_waypoints = selected_waypoints
     
     def render(self, zoom: float = 1.0) -> None:
         """
@@ -89,7 +98,13 @@ class WireRenderer:
             self._draw_junction(junction, zoom)
             # Recursively render child wires from this junction
             for child_wire in junction.child_wires.values():
-                child_renderer = WireRenderer(self.canvas, child_wire, self.page, self.hovered_waypoint)
+                child_renderer = WireRenderer(
+                    self.canvas,
+                    child_wire,
+                    self.page,
+                    self.hovered_waypoint,
+                    selected_waypoints=self.selected_waypoints,
+                )
                 child_renderer.selected = self.selected
                 child_renderer.powered = self.powered
                 child_renderer.render(zoom)
@@ -182,26 +197,32 @@ class WireRenderer:
             waypoint: Waypoint to draw
             zoom: Current zoom level
         """
-        # Only draw waypoint marker if it's being hovered
+        # Draw waypoint marker when hovered or explicitly selected
         # hovered_waypoint format: (wire_id, waypoint_id)
-        is_hovered = (self.hovered_waypoint and 
-                      self.hovered_waypoint[0] == self.wire.wire_id and 
-                      self.hovered_waypoint[1] == waypoint.waypoint_id)
-        
-        if not is_hovered:
-            return  # Don't draw waypoint marker unless hovered
+        is_hovered = (
+            self.hovered_waypoint
+            and self.hovered_waypoint[0] == self.wire.wire_id
+            and self.hovered_waypoint[1] == waypoint.waypoint_id
+        )
+        is_selected = bool(self.selected_waypoints) and ((self.wire.wire_id, waypoint.waypoint_id) in self.selected_waypoints)
+
+        if not (is_hovered or is_selected):
+            return
         
         x, y = waypoint.position
         size = 4 * zoom  # Waypoint size
         
+        fill = VSCodeTheme.WIRE_SELECTED if (self.selected or is_selected) else VSCodeTheme.COMPONENT_OUTLINE
+        outline = VSCodeTheme.COMPONENT_OUTLINE
+
         # Draw as small circle
         item = self.canvas.create_oval(
             x - size, y - size,
             x + size, y + size,
-            fill=VSCodeTheme.WIRE_SELECTED if self.selected else VSCodeTheme.COMPONENT_OUTLINE,
-            outline=VSCodeTheme.COMPONENT_OUTLINE,
+            fill=fill,
+            outline=outline,
             width=1,
-            tags=(f"waypoint_{waypoint.waypoint_id}", "waypoint")
+            tags=(f"waypoint_{self.wire.wire_id}_{waypoint.waypoint_id}", "waypoint")
         )
         self.canvas_items.append(item)
     

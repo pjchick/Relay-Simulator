@@ -7,7 +7,7 @@ including initialization, lifecycle, and basic window operations.
 
 import tkinter as tk
 from tkinter import messagebox, filedialog
-from typing import Optional, Dict
+from typing import Optional, Dict, Tuple
 from pathlib import Path
 
 from gui.theme import VSCodeTheme, apply_theme
@@ -332,12 +332,38 @@ class MainWindow:
         for component_id in page.components.keys():
             self.selected_components.add(component_id)
             self.design_canvas.set_component_selected(component_id, True)
+
+        # Select all wires on the page
+        for wire_id in page.wires.keys():
+            self.selected_wires.add(wire_id)
+            self.design_canvas.set_wire_selected(wire_id, True)
+
+        # Select all junctions on the page
+        for junction_id in page.junctions.keys():
+            self.selected_junctions.add(junction_id)
+
+        # Select all waypoints on the page
+        for wire in page.wires.values():
+            for waypoint_id in wire.waypoints.keys():
+                self.selected_waypoints.add((wire.wire_id, waypoint_id))
+
+        # Redraw so junction/waypoint selection is visible
+        self._redraw_canvas()
         
         # Update properties panel (don't show individual component if multiple selected)
-        if len(self.selected_components) > 0:
+        total_selected = (
+            len(self.selected_components)
+            + len(self.selected_wires)
+            + len(self.selected_junctions)
+            + len(self.selected_waypoints)
+        )
+        if total_selected > 0:
             self.properties_panel.set_component(None)
             self.menu_bar.enable_edit_menu(has_selection=True)
-            self.set_status(f"Selected all {len(self.selected_components)} component(s)")
+            self.set_status(
+                f"Selected all: {len(self.selected_components)} component(s), {len(self.selected_wires)} wire(s), "
+                f"{len(self.selected_junctions)} junction(s), {len(self.selected_waypoints)} waypoint(s)"
+            )
         else:
             self.menu_bar.enable_edit_menu(has_selection=False)
             self.set_status("No components to select")
@@ -717,6 +743,11 @@ class MainWindow:
             accelerator="Ctrl+A",
             command=self._menu_select_all
         )
+        
+        self.context_menu.add_command(
+            label="Select None",
+            command=self._clear_selection
+        )
     
     def _show_context_menu(self, event) -> None:
         """
@@ -737,7 +768,12 @@ class MainWindow:
         
         # Update menu item states based on selection
         has_component_selection = len(self.selected_components) > 0
-        has_any_selection = has_component_selection or len(self.selected_wires) > 0
+        has_any_selection = (
+            has_component_selection
+            or len(self.selected_wires) > 0
+            or len(self.selected_junctions) > 0
+            or len(self.selected_waypoints) > 0
+        )
         has_clipboard = len(self.clipboard) > 0
         
         # Enable/disable menu items
@@ -936,18 +972,27 @@ class MainWindow:
         # Track selected components
         self.selected_components = set()  # Set of selected component IDs
         self.selected_wires = set()  # Set of selected wire IDs
+        self.selected_junctions = set()  # Set of selected junction IDs
+        self.selected_waypoints = set()  # Set of (wire_id, waypoint_id)
         self.selection_box = None  # Rectangle for bounding box selection
         self.selection_start = None  # Start position for bounding box
+
+        # Provide selection references to the canvas so redraws preserve highlight state
+        self.design_canvas.selected_wires = self.selected_wires
+        self.design_canvas.selected_junctions = self.selected_junctions
+        self.design_canvas.selected_waypoints = self.selected_waypoints
         
         # Track component dragging
         self.drag_start = None  # (canvas_x, canvas_y) where drag started
         self.drag_components = {}  # {component_id: (original_x, original_y)}
         self.is_dragging = False  # True when actively dragging components
+        self._pending_drag_start = None  # (canvas_x, canvas_y) click start for potential drag
+        self._pending_drag_page = None  # Active page snapshot at mouse-down
         
         # Track waypoint editing
         self.dragging_waypoint = None  # Waypoint being dragged (waypoint_id, wire_id)
         self.waypoint_drag_start = None  # Original position of waypoint being dragged
-        self.hovered_waypoint = None  # Waypoint being hovered (waypoint_id, wire_id)
+        self.hovered_waypoint = None  # Waypoint being hovered (wire_id, waypoint_id)
         
         # Track junction editing
         self.dragging_junction = None  # Junction ID being dragged
@@ -1562,6 +1607,23 @@ class MainWindow:
         if self.dragging_waypoint:
             self._update_waypoint_drag(canvas_x, canvas_y)
             return
+
+        # If the user clicked a component (selection) but hasn't moved enough yet,
+        # only enter drag mode once Button-1 is held and movement exceeds threshold.
+        if self._pending_drag_start and not self.drag_start and not self.selection_start and not self.wire_start_tab:
+            # Tk state bit for Button1 is 0x0100
+            if (event.state & 0x0100) != 0:
+                start_x, start_y = self._pending_drag_start
+                delta_x = canvas_x - start_x
+                delta_y = canvas_y - start_y
+                if abs(delta_x) >= 3 or abs(delta_y) >= 3:
+                    page = self._pending_drag_page
+                    self._pending_drag_start = None
+                    self._pending_drag_page = None
+                    if page:
+                        self._start_drag(start_x, start_y, page)
+                        self._update_drag(canvas_x, canvas_y)
+                        return
         
         # Handle component dragging (check drag_start, not is_dragging)
         if self.drag_start:
@@ -2579,9 +2641,11 @@ class MainWindow:
                     self._clear_selection()
                     self.selected_components.add(clicked_component.component_id)
                     self.design_canvas.set_component_selected(clicked_component.component_id, True)
-                
-                # Always start drag operation for selected components on regular click
-                self._start_drag(canvas_x, canvas_y, page)
+
+                # Do not start dragging on click; only start drag when the user
+                # actually drags (mouse moves with Button-1 held).
+                self._pending_drag_start = (canvas_x, canvas_y)
+                self._pending_drag_page = page
             
             # Update properties panel and menu
             if len(self.selected_components) == 1:
@@ -2601,12 +2665,17 @@ class MainWindow:
             if not ctrl_held:
                 # Start bounding box selection
                 self.selection_start = (canvas_x, canvas_y)
+                # Clear any pending component drag
+                self._pending_drag_start = None
+                self._pending_drag_page = None
             else:
                 # Ctrl held but no component - do nothing
                 pass
     
     def _clear_selection(self):
         """Clear all selected components and wires."""
+        had_junction_or_waypoint_selection = bool(self.selected_junctions) or bool(self.selected_waypoints)
+
         for component_id in self.selected_components:
             self.design_canvas.set_component_selected(component_id, False)
         self.selected_components.clear()
@@ -2614,6 +2683,13 @@ class MainWindow:
         for wire_id in self.selected_wires:
             self.design_canvas.set_wire_selected(wire_id, False)
         self.selected_wires.clear()
+
+        self.selected_junctions.clear()
+        self.selected_waypoints.clear()
+
+        # Redraw wires/junctions to remove selection markers
+        if had_junction_or_waypoint_selection:
+            self._redraw_canvas()
 
         self.properties_panel.set_component(None)
         self.menu_bar.enable_edit_menu(has_selection=False)
@@ -2630,6 +2706,10 @@ class MainWindow:
         if self.simulation_mode:
             self._handle_switch_release()
             return
+
+        # If we never crossed the drag threshold, clear pending drag state
+        self._pending_drag_start = None
+        self._pending_drag_page = None
 
         # Handle junction drag end
         if self.dragging_junction:
@@ -2658,7 +2738,7 @@ class MainWindow:
         self.selection_start = None
     
     def _finalize_box_selection(self):
-        """Finalize bounding box selection by selecting all components in the box."""
+        """Finalize bounding box selection by selecting all components, wires, junctions, and waypoints in the box."""
         # Get active page
         tab = self.file_tabs.get_active_tab()
         if not tab or not tab.document:
@@ -2694,19 +2774,66 @@ class MainWindow:
                 self.selected_components.add(component.component_id)
                 self.design_canvas.set_component_selected(component.component_id, True)
         
+        # Select all junctions inside the box
+        for junction in page.junctions.values():
+            jx, jy = junction.position
+            if min_x <= jx <= max_x and min_y <= jy <= max_y:
+                self.selected_junctions.add(junction.junction_id)
+        
+        # Select all wires and waypoints that are inside the box
+        for wire in page.wires.values():
+            # Check if any waypoint is in the box
+            for waypoint in wire.waypoints.values():
+                wx, wy = waypoint.position
+                if min_x <= wx <= max_x and min_y <= wy <= max_y:
+                    self.selected_waypoints.add((wire.wire_id, waypoint.waypoint_id))
+            
+            # Check if wire endpoints or segments are in the box
+            # For simplicity, select wire if start or end point is in box
+            start_pos = self._get_tab_canvas_position(wire.start_tab_id)
+            end_pos = self._get_tab_canvas_position(wire.end_tab_id)
+            
+            wire_in_box = False
+            if start_pos:
+                sx, sy = start_pos
+                if min_x <= sx <= max_x and min_y <= sy <= max_y:
+                    wire_in_box = True
+            
+            if end_pos and not wire_in_box:
+                ex, ey = end_pos
+                if min_x <= ex <= max_x and min_y <= ey <= max_y:
+                    wire_in_box = True
+            
+            if wire_in_box:
+                self.selected_wires.add(wire.wire_id)
+                self.design_canvas.set_wire_selected(wire.wire_id, True)
+        
+        # Redraw to show junction/waypoint selection
+        if self.selected_junctions or self.selected_waypoints:
+            self._redraw_canvas()
+        
         # Update status and menu
-        if len(self.selected_components) > 0:
+        total_selected = (
+            len(self.selected_components)
+            + len(self.selected_wires)
+            + len(self.selected_junctions)
+            + len(self.selected_waypoints)
+        )
+        if total_selected > 0:
             self.menu_bar.enable_edit_menu(has_selection=True)
-            self.set_status(f"Selected {len(self.selected_components)} components")
+            self.set_status(
+                f"Selected {len(self.selected_components)} component(s), {len(self.selected_wires)} wire(s), "
+                f"{len(self.selected_junctions)} junction(s), {len(self.selected_waypoints)} waypoint(s)"
+            )
         else:
             self.menu_bar.enable_edit_menu(has_selection=False)
-            self.set_status("No components selected")
+            self.set_status("No items selected")
     
     # === Component Movement ===
     
     def _start_drag(self, canvas_x: float, canvas_y: float, page) -> None:
         """
-        Start dragging selected components.
+        Start dragging selected components, junctions, and waypoints.
         
         Args:
             canvas_x: Starting canvas X coordinate
@@ -2719,12 +2846,28 @@ class MainWindow:
         
         self.drag_start = (canvas_x, canvas_y)
         self.drag_components = {}
+        self.drag_junctions = {}  # {junction_id: (original_x, original_y)}
+        self.drag_waypoints = {}  # {(wire_id, waypoint_id): (original_x, original_y)}
         
         # Store original positions of all selected components
         for component_id in self.selected_components:
             component = page.components.get(component_id)
             if component:
                 self.drag_components[component_id] = component.position
+        
+        # Store original positions of all selected junctions
+        for junction_id in self.selected_junctions:
+            junction = page.junctions.get(junction_id)
+            if junction:
+                self.drag_junctions[junction_id] = junction.position
+        
+        # Store original positions of all selected waypoints
+        for wire_id, waypoint_id in self.selected_waypoints:
+            wire = page.wires.get(wire_id)
+            if wire:
+                waypoint = wire.waypoints.get(waypoint_id)
+                if waypoint:
+                    self.drag_waypoints[(wire_id, waypoint_id)] = waypoint.position
     
     def _update_drag(self, canvas_x: float, canvas_y: float) -> None:
         """
@@ -2781,6 +2924,40 @@ class MainWindow:
                 # Update component position
                 component.position = (snapped_x, snapped_y)
         
+        # Update all dragged junctions
+        if hasattr(self, 'drag_junctions'):
+            for junction_id, original_pos in self.drag_junctions.items():
+                junction = page.junctions.get(junction_id)
+                if junction:
+                    # Calculate new position
+                    new_x = original_pos[0] + delta_x
+                    new_y = original_pos[1] + delta_y
+                    
+                    # Snap to grid
+                    snapped_x = round(new_x / snap_size) * snap_size
+                    snapped_y = round(new_y / snap_size) * snap_size
+                    
+                    # Update junction position
+                    junction.position = (snapped_x, snapped_y)
+        
+        # Update all dragged waypoints
+        if hasattr(self, 'drag_waypoints'):
+            for (wire_id, waypoint_id), original_pos in self.drag_waypoints.items():
+                wire = page.wires.get(wire_id)
+                if wire:
+                    waypoint = wire.waypoints.get(waypoint_id)
+                    if waypoint:
+                        # Calculate new position
+                        new_x = original_pos[0] + delta_x
+                        new_y = original_pos[1] + delta_y
+                        
+                        # Snap to grid
+                        snapped_x = round(new_x / snap_size) * snap_size
+                        snapped_y = round(new_y / snap_size) * snap_size
+                        
+                        # Update waypoint position
+                        waypoint.position = (snapped_x, snapped_y)
+        
         # Re-render page to show updated positions
         self.design_canvas.set_page(page)
     
@@ -2803,11 +2980,16 @@ class MainWindow:
                         if component:
                             self.properties_panel.set_component(component)
             
-            self.set_status(f"Moved {len(self.selected_components)} component(s)")
+            total_moved = len(self.selected_components) + len(self.selected_junctions) + len(self.selected_waypoints)
+            self.set_status(f"Moved {total_moved} item(s)")
         
         # Reset drag state
         self.drag_start = None
         self.drag_components = {}
+        if hasattr(self, 'drag_junctions'):
+            self.drag_junctions = {}
+        if hasattr(self, 'drag_waypoints'):
+            self.drag_waypoints = {}
         self.is_dragging = False
     
     def _cancel_drag(self) -> None:
@@ -2828,11 +3010,27 @@ class MainWindow:
         if not page:
             return
         
-        # Restore original positions
+        # Restore original positions of components
         for component_id, original_pos in self.drag_components.items():
             component = page.components.get(component_id)
             if component:
                 component.position = original_pos
+        
+        # Restore original positions of junctions
+        if hasattr(self, 'drag_junctions'):
+            for junction_id, original_pos in self.drag_junctions.items():
+                junction = page.junctions.get(junction_id)
+                if junction:
+                    junction.position = original_pos
+        
+        # Restore original positions of waypoints
+        if hasattr(self, 'drag_waypoints'):
+            for (wire_id, waypoint_id), original_pos in self.drag_waypoints.items():
+                wire = page.wires.get(wire_id)
+                if wire:
+                    waypoint = wire.waypoints.get(waypoint_id)
+                    if waypoint:
+                        waypoint.position = original_pos
         
         # Re-render page
         self.design_canvas.set_page(page)
@@ -2840,19 +3038,23 @@ class MainWindow:
         # Reset drag state
         self.drag_start = None
         self.drag_components = {}
+        if hasattr(self, 'drag_junctions'):
+            self.drag_junctions = {}
+        if hasattr(self, 'drag_waypoints'):
+            self.drag_waypoints = {}
         self.is_dragging = False
         
         self.set_status("Drag cancelled")
     
     def _move_selected_components(self, dx: int, dy: int) -> None:
         """
-        Move selected components by specified delta.
+        Move selected components, junctions, and waypoints by specified delta.
         
         Args:
             dx: Delta X (pixels)
             dy: Delta Y (pixels)
         """
-        if not self.selected_components:
+        if not self.selected_components and not self.selected_junctions and not self.selected_waypoints:
             return
         
         # Get active page
@@ -2874,6 +3076,22 @@ class MainWindow:
             if component:
                 current_x, current_y = component.position
                 component.position = (current_x + dx, current_y + dy)
+        
+        # Move all selected junctions
+        for junction_id in self.selected_junctions:
+            junction = page.junctions.get(junction_id)
+            if junction:
+                current_x, current_y = junction.position
+                junction.position = (current_x + dx, current_y + dy)
+        
+        # Move all selected waypoints
+        for wire_id, waypoint_id in self.selected_waypoints:
+            wire = page.wires.get(wire_id)
+            if wire:
+                waypoint = wire.waypoints.get(waypoint_id)
+                if waypoint:
+                    current_x, current_y = waypoint.position
+                    waypoint.position = (current_x + dx, current_y + dy)
         
         # Mark as modified
         self.file_tabs.set_tab_modified(tab.tab_id, True)
