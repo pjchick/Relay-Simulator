@@ -31,7 +31,12 @@ BASE_PROPERTY_SCHEMA: List[Dict[str, Any]] = [
         'key': 'label_position',
         'label': 'Label Position',
         'type': 'dropdown',
-        'options': ['Top', 'Bottom', 'Left', 'Right'],
+        'options': [
+            {'label': 'Top', 'value': 'top'},
+            {'label': 'Bottom', 'value': 'bottom'},
+            {'label': 'Left', 'value': 'left'},
+            {'label': 'Right', 'value': 'right'},
+        ],
         'default': 'bottom',
         'target': 'prop'
     }
@@ -44,7 +49,15 @@ PROPERTY_SCHEMAS: Dict[str, List[Dict[str, Any]]] = {
             'key': 'color',
             'label': 'Color',
             'type': 'dropdown',
-            'options': ['red', 'green', 'blue', 'yellow', 'orange', 'white', 'amber'],
+            'options': [
+                {'label': 'Red', 'value': 'red'},
+                {'label': 'Green', 'value': 'green'},
+                {'label': 'Blue', 'value': 'blue'},
+                {'label': 'Yellow', 'value': 'yellow'},
+                {'label': 'Orange', 'value': 'orange'},
+                {'label': 'White', 'value': 'white'},
+                {'label': 'Amber', 'value': 'amber'},
+            ],
             'default': 'red',
             'target': 'prop',
         },
@@ -64,7 +77,15 @@ PROPERTY_SCHEMAS: Dict[str, List[Dict[str, Any]]] = {
             'key': 'color',
             'label': 'Color',
             'type': 'dropdown',
-            'options': ['red', 'green', 'blue', 'yellow', 'orange', 'white', 'amber'],
+            'options': [
+                {'label': 'Red', 'value': 'red'},
+                {'label': 'Green', 'value': 'green'},
+                {'label': 'Blue', 'value': 'blue'},
+                {'label': 'Yellow', 'value': 'yellow'},
+                {'label': 'Orange', 'value': 'orange'},
+                {'label': 'White', 'value': 'white'},
+                {'label': 'Amber', 'value': 'amber'},
+            ],
             'default': 'red',
             'target': 'prop',
         },
@@ -343,13 +364,32 @@ class DropdownPropertyEditor(PropertyEditor):
             options: List of available options
         """
         super().__init__(parent)
+        # Options can be:
+        # - list[str] (display==value)
+        # - list[{'label': str, 'value': Any}] (display label, store value)
         self.options = options
-        
+        self._label_to_value: Dict[str, Any] = {}
+        self._value_to_label: Dict[str, str] = {}
+
+        display_values: List[str] = []
+        for opt in options:
+            if isinstance(opt, dict) and 'label' in opt and 'value' in opt:
+                label = str(opt['label'])
+                value = opt['value']
+            else:
+                label = str(opt)
+                value = opt
+            display_values.append(label)
+            self._label_to_value[label] = value
+            # Store first label for a given value
+            if value not in self._value_to_label:
+                self._value_to_label[value] = label
+
         self.var = tk.StringVar()
         self.widget = ttk.Combobox(
             parent,
             textvariable=self.var,
-            values=options,
+            values=display_values,
             state="readonly",
             font=("Segoe UI", 9),
             width=12
@@ -364,11 +404,17 @@ class DropdownPropertyEditor(PropertyEditor):
     
     def set_value(self, value: Any) -> None:
         """Set dropdown value."""
-        self.var.set(str(value))
+        # Prefer mapping stored value -> display label
+        if value in self._value_to_label:
+            self.var.set(self._value_to_label[value])
+        else:
+            # Fall back: if caller passes a display label
+            self.var.set(str(value))
     
     def get_value(self) -> str:
         """Get dropdown value."""
-        return self.var.get()
+        label = self.var.get()
+        return self._label_to_value.get(label, label)
 
 
 class CheckboxPropertyEditor(PropertyEditor):
@@ -636,12 +682,25 @@ class PropertiesPanel:
             except Exception:
                 pass
 
+        # Normalize common string enums to match component expectations
+        if isinstance(value, str) and key in ('color', 'label_position'):
+            value = value.strip().lower()
+
         if target == 'attr':
             setattr(self.current_component, key, value)
         else:
             if not hasattr(self.current_component, 'properties') or not isinstance(self.current_component.properties, dict):
                 self.current_component.properties = {}
-            self.current_component.properties[key] = value
+
+            # Special-case: changing a component's "color" should also update
+            # its derived on/off shades when the component supports presets.
+            if key == 'color' and hasattr(self.current_component, 'set_color') and callable(getattr(self.current_component, 'set_color')):
+                try:
+                    self.current_component.set_color(str(value))
+                except Exception:
+                    self.current_component.properties[key] = value
+            else:
+                self.current_component.properties[key] = value
 
         self._notify_change()
     

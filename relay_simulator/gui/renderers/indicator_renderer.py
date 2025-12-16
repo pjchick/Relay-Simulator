@@ -21,6 +21,22 @@ class IndicatorRenderer(ComponentRenderer):
     """
     
     DIAMETER = 30  # Indicator diameter in pixels
+
+    @staticmethod
+    def _to_hex(color) -> str:
+        """Convert (r,g,b) or [r,g,b] to '#rrggbb'. Pass through hex strings."""
+        if isinstance(color, str):
+            return color
+        if isinstance(color, (tuple, list)) and len(color) >= 3:
+            try:
+                r, g, b = int(color[0]), int(color[1]), int(color[2])
+                r = max(0, min(255, r))
+                g = max(0, min(255, g))
+                b = max(0, min(255, b))
+                return f"#{r:02x}{g:02x}{b:02x}"
+            except Exception:
+                pass
+        return VSCodeTheme.INDICATOR_OFF
     
     def render(self, zoom: float = 1.0) -> None:
         """
@@ -35,11 +51,10 @@ class IndicatorRenderer(ComponentRenderer):
         cx, cy = self.get_position()
         radius = (self.DIAMETER / 2) * zoom
         
-        # Determine fill color based on powered state
-        if self.powered:
-            fill_color = VSCodeTheme.INDICATOR_ON
-        else:
-            fill_color = VSCodeTheme.INDICATOR_OFF
+        # Determine fill color based on powered state and component-selected color
+        on_rgb = self.component.properties.get('on_color')
+        off_rgb = self.component.properties.get('off_color')
+        fill_color = self._to_hex(on_rgb) if self.powered else self._to_hex(off_rgb)
             
         # Outline color (highlight if selected)
         outline_color = VSCodeTheme.COMPONENT_SELECTED if self.selected else VSCodeTheme.COMPONENT_OUTLINE
