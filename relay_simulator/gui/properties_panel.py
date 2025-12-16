@@ -9,8 +9,97 @@ Displays properties of selected component(s) with grouped sections:
 
 import tkinter as tk
 from tkinter import ttk
-from typing import Optional, Dict, Any, Callable
+from typing import Optional, Dict, Any, Callable, List
 from gui.theme import VSCodeTheme
+
+# Schema-driven property registry. Edit here to add/change component properties.
+# Sections: Component, Label, Format, Advanced.
+# Fields: section, key, label, type (text, text-readonly, dropdown, boolean, number),
+#         target ('prop' for component.properties, 'attr' for attribute),
+#         default, options (for dropdown), min/max (number), coerce (callable type like int/float).
+BASE_PROPERTY_SCHEMA: List[Dict[str, Any]] = [
+    {
+        'section': 'Label',
+        'key': 'label',
+        'label': 'Label',
+        'type': 'text',
+        'target': 'prop',
+        'default': ''
+    },
+    {
+        'section': 'Label',
+        'key': 'label_position',
+        'label': 'Label Position',
+        'type': 'dropdown',
+        'options': ['Top', 'Bottom', 'Left', 'Right'],
+        'default': 'bottom',
+        'target': 'prop'
+    }
+]
+
+PROPERTY_SCHEMAS: Dict[str, List[Dict[str, Any]]] = {
+    'Switch': [
+        {
+            'section': 'Format',
+            'key': 'color',
+            'label': 'Color',
+            'type': 'dropdown',
+            'options': ['red', 'green', 'blue', 'yellow', 'orange', 'white', 'amber'],
+            'default': 'red',
+            'target': 'prop',
+        },
+        {
+            'section': 'Advanced',
+            'key': 'mode',
+            'label': 'Mode',
+            'type': 'dropdown',
+            'options': ['toggle', 'pushbutton'],
+            'default': 'toggle',
+            'target': 'prop',
+        },
+    ],
+    'Indicator': [ 
+        {
+            'section': 'Format',
+            'key': 'color',
+            'label': 'Color',
+            'type': 'dropdown',
+            'options': ['red', 'green', 'blue', 'yellow', 'orange', 'white', 'amber'],
+            'default': 'red',
+            'target': 'prop',
+        },
+    ],
+    'DPDTRelay': [
+        {
+            'section': 'Format',
+            'key': 'rotation',
+            'label': 'Rotation',
+            'type': 'dropdown',
+            'options': ['0', '90', '180', '270'],
+            'default': 0,
+            'target': 'prop',
+            'coerce': int,
+        },
+        {
+            'section': 'Format',
+            'key': 'flip_horizontal',
+            'label': 'Flip Horizontal',
+            'type': 'boolean',
+            'default': False,
+            'target': 'prop',
+        },
+                {
+            'section': 'Format',
+            'key': 'flip_vertical',
+            'label': 'Flip Vertical',
+            'type': 'boolean',
+            'default': False,
+            'target': 'prop',
+        }
+    ],
+    'VCC': [
+    ],
+}
 
 
 class PropertySection:
@@ -93,17 +182,11 @@ class PropertySection:
             self.arrow_label.config(text="▶")
             self.content.pack_forget()
     
-    def add_property(self, label: str, widget: tk.Widget) -> None:
-        """
-        Add a property editor to this section.
-        
-        Args:
-            label: Property label
-            widget: Editor widget
-        """
+    def add_property_row(self, label: str) -> tk.Frame:
+        """Create and return a single property row frame (label left, value right)."""
         row = tk.Frame(self.content, bg=VSCodeTheme.BG_PRIMARY)
         row.pack(fill=tk.X, pady=2)
-        
+
         label_widget = tk.Label(
             row,
             text=label,
@@ -114,7 +197,11 @@ class PropertySection:
             width=12
         )
         label_widget.pack(side=tk.LEFT, padx=(0, 5))
-        
+        return row
+
+    def add_property(self, label: str, widget: tk.Widget) -> None:
+        """Add a property row with a pre-built widget (widget must be created with the row as parent)."""
+        row = self.add_property_row(label)
         widget.pack(side=tk.LEFT, fill=tk.X, expand=True)
     
     def clear(self):
@@ -386,22 +473,23 @@ class PropertiesPanel:
         self.content.bind('<Configure>', on_configure)
         canvas.bind('<Configure>', on_configure)
         
-        # Create sections
-        self.component_section = PropertySection(self.content, "Component")
-        self.properties_section = PropertySection(self.content, "Properties")
-        self.advanced_section = PropertySection(self.content, "Advanced")
+        # Create sections (fixed set for consistency)
+        self.sections: Dict[str, PropertySection] = {
+            'Component': PropertySection(self.content, "Component"),
+            'Label': PropertySection(self.content, "Label"),
+            'Format': PropertySection(self.content, "Format"),
+            'Advanced': PropertySection(self.content, "Advanced"),
+        }
         
         # Show "No selection" message initially
         self._show_no_selection()
     
     def _show_no_selection(self):
         """Show message when no component is selected."""
-        self.component_section.clear()
-        self.properties_section.clear()
-        self.advanced_section.clear()
-        
+        for section in self.sections.values():
+            section.clear()
         message = tk.Label(
-            self.component_section.content,
+            self.sections['Component'].content,
             text="No component selected",
             bg=VSCodeTheme.BG_PRIMARY,
             fg=VSCodeTheme.FG_SECONDARY,
@@ -418,180 +506,144 @@ class PropertiesPanel:
         """
         self.current_component = component
         self.property_editors.clear()
-        
-        # Clear all sections
-        self.component_section.clear()
-        self.properties_section.clear()
-        self.advanced_section.clear()
+        for section in self.sections.values():
+            section.clear()
         
         if not component:
             self._show_no_selection()
             return
         
-        # Component section - basic info
-        self._add_component_properties()
-        
-        # Properties section - component-specific
-        self._add_component_specific_properties()
-        
-        # Advanced section - extra settings
-        self._add_advanced_properties()
+        self._add_component_header_and_id()
+        self._render_schema_properties()
     
-    def _add_component_properties(self):
-        """Add basic component properties (id, type, position, rotation)."""
+    def _add_component_header_and_id(self):
+        """Add the component header (with type) and ID field."""
         if not self.current_component:
             return
-        
-        # ID (editable with validation)
-        id_frame = tk.Frame(self.component_section.content, bg=VSCodeTheme.BG_PRIMARY)
-        id_frame.pack(fill=tk.X, pady=2)
-        
-        id_label = tk.Label(
-            id_frame,
-            text="ID:",
-            bg=VSCodeTheme.BG_PRIMARY,
-            fg=VSCodeTheme.FG_SECONDARY,
-            font=("Segoe UI", 9),
-            anchor=tk.W,
-            width=12
-        )
-        id_label.pack(side=tk.LEFT, padx=(0, 5))
-        
-        id_editor = TextPropertyEditor(id_frame)
+
+        # Update header with component type
+        try:
+            comp_type_name = self.current_component.__class__.__name__
+            self.sections['Component'].title_label.config(
+                text=f"Component — {comp_type_name}"
+            )
+        except Exception:
+            pass
+
+        # ID (editable with validation) — single line: label left, value right
+        id_row = self.sections['Component'].add_property_row("ID:")
+        id_editor = TextPropertyEditor(id_row)
         id_editor.set_value(self.current_component.component_id)
         id_editor.set_on_change(lambda v: self._update_component_id(v))
         id_editor.widget.pack(side=tk.LEFT, fill=tk.X, expand=True)
         self.property_editors['id'] = id_editor
-        
-        # Type (read-only)
-        type_editor = TextPropertyEditor(self.component_section.content)
-        type_editor.set_value(self.current_component.__class__.__name__)
-        type_editor.widget.config(state='readonly')
-        self.component_section.add_property("Type:", type_editor.widget)
-        
-        # Position X with snap-to-grid button
-        x_frame = tk.Frame(self.component_section.content, bg=VSCodeTheme.BG_PRIMARY)
-        x_frame.pack(fill=tk.X, pady=2)
-        
-        x_label = tk.Label(
-            x_frame,
-            text="X:",
-            bg=VSCodeTheme.BG_PRIMARY,
-            fg=VSCodeTheme.FG_SECONDARY,
-            font=("Segoe UI", 9),
-            anchor=tk.W,
-            width=12
-        )
-        x_label.pack(side=tk.LEFT, padx=(0, 5))
-        
-        x_editor = NumberPropertyEditor(x_frame)
-        x_editor.set_value(self.current_component.position[0])
-        x_editor.set_on_change(lambda v: self._update_position_x(v))
-        x_editor.widget.pack(side=tk.LEFT, fill=tk.X, expand=True)
-        self.property_editors['x'] = x_editor
-        
-        # Position Y with snap-to-grid button
-        y_frame = tk.Frame(self.component_section.content, bg=VSCodeTheme.BG_PRIMARY)
-        y_frame.pack(fill=tk.X, pady=2)
-        
-        y_label = tk.Label(
-            y_frame,
-            text="Y:",
-            bg=VSCodeTheme.BG_PRIMARY,
-            fg=VSCodeTheme.FG_SECONDARY,
-            font=("Segoe UI", 9),
-            anchor=tk.W,
-            width=12
-        )
-        y_label.pack(side=tk.LEFT, padx=(0, 5))
-        
-        y_editor = NumberPropertyEditor(y_frame)
-        y_editor.set_value(self.current_component.position[1])
-        y_editor.set_on_change(lambda v: self._update_position_y(v))
-        y_editor.widget.pack(side=tk.LEFT, fill=tk.X, expand=True)
-        self.property_editors['y'] = y_editor
-        
-        # Snap to grid button (below X/Y)
-        snap_button = tk.Button(
-            self.component_section.content,
-            text="📐 Snap to Grid",
-            bg=VSCodeTheme.BG_SECONDARY,
-            fg=VSCodeTheme.FG_PRIMARY,
-            activebackground=VSCodeTheme.BG_HOVER,
-            activeforeground=VSCodeTheme.FG_PRIMARY,
-            relief=tk.FLAT,
-            font=("Segoe UI", 9),
-            cursor="hand2",
-            command=self._snap_to_grid
-        )
-        snap_button.pack(fill=tk.X, pady=(2, 5))
-        
-        # Rotation
-        rotation_editor = DropdownPropertyEditor(
-            self.component_section.content,
-            ["0", "90", "180", "270"]
-        )
-        rotation_editor.set_value(self.current_component.rotation)
-        rotation_editor.set_on_change(lambda v: self._update_rotation(v))
-        self.component_section.add_property("Rotation:", rotation_editor.widget)
-        self.property_editors['rotation'] = rotation_editor
-    
-    def _add_component_specific_properties(self):
-        """Add component-specific properties."""
+
+    def _render_schema_properties(self):
+        """Render properties based on the registry for the current component type."""
         if not self.current_component:
             return
-        
-        component_type = self.current_component.__class__.__name__
-        
-        if component_type == "Switch":
-            # Switch mode property (toggle or pushbutton)
-            mode_editor = DropdownPropertyEditor(
-                self.properties_section.content,
-                ["toggle", "pushbutton"]
-            )
-            current_mode = self.current_component.properties.get('mode', 'toggle')
-            mode_editor.set_value(current_mode)
-            mode_editor.set_on_change(lambda v: self._update_switch_mode(v))
-            self.properties_section.add_property("Mode:", mode_editor.widget)
-            self.property_editors['mode'] = mode_editor
-        
-        elif component_type == "Indicator":
-            # Color property
-            color_editor = DropdownPropertyEditor(
-                self.properties_section.content,
-                ["red", "green", "blue", "yellow", "orange", "white", "amber"]
-            )
-            current_color = self.current_component.properties.get('color', 'red')
-            color_editor.set_value(current_color)
-            color_editor.set_on_change(lambda v: self._update_indicator_color(v))
-            self.properties_section.add_property("Color:", color_editor.widget)
-            self.property_editors['color'] = color_editor
-        
-        elif component_type == "DPDTRelay":
-            # Coil resistance
-            resistance_editor = NumberPropertyEditor(
-                self.properties_section.content,
-                min_val=0.0
-            )
-            resistance_editor.set_value(getattr(self.current_component, 'coil_resistance', 100.0))
-            resistance_editor.set_on_change(lambda v: self._update_property('coil_resistance', v))
-            self.properties_section.add_property("Coil Resistance:", resistance_editor.widget)
-            self.property_editors['coil_resistance'] = resistance_editor
-        
-        elif component_type == "VCC":
-            # Voltage
-            voltage_editor = NumberPropertyEditor(
-                self.properties_section.content,
-                min_val=0.0
-            )
-            voltage_editor.set_value(getattr(self.current_component, 'voltage', 5.0))
-            voltage_editor.set_on_change(lambda v: self._update_property('voltage', v))
-            self.properties_section.add_property("Voltage:", voltage_editor.widget)
-            self.property_editors['voltage'] = voltage_editor
+
+        comp_type = self.current_component.__class__.__name__
+        definitions = BASE_PROPERTY_SCHEMA + PROPERTY_SCHEMAS.get(comp_type, [])
+
+        for definition in definitions:
+            section_name = definition.get('section', 'Advanced')
+            section = self.sections.get(section_name)
+            if not section:
+                continue
+
+            row = section.add_property_row(f"{definition.get('label', definition['key'])}:")
+            editor = self._create_editor_for_definition(row, definition)
+            if not editor:
+                continue
+
+            # Pack the control into the row (label already present)
+            editor.widget.pack(side=tk.LEFT, fill=tk.X, expand=True)
+
+            # Store editor for future reference
+            self.property_editors[definition['key']] = editor
+
+    def _create_editor_for_definition(self, parent: tk.Widget, definition: Dict[str, Any]) -> Optional[PropertyEditor]:
+        """Create and wire a property editor based on a schema definition."""
+        ptype = definition.get('type', 'text').lower()
+        key = definition['key']
+        target = definition.get('target', 'prop')
+        default = definition.get('default')
+        coerce_fn = definition.get('coerce')
+        value = self._get_property_value(key, target, default)
+
+        # Apply optional coercion on read
+        if coerce_fn:
+            try:
+                value = coerce_fn(value)
+            except Exception:
+                value = default
+
+        if ptype == 'text-readonly':
+            editor = TextPropertyEditor(parent)
+            editor.set_value(value if value is not None else '')
+            editor.widget.config(state='readonly')
+            return editor
+
+        if ptype == 'text':
+            editor = TextPropertyEditor(parent)
+            editor.set_value(value if value is not None else '')
+            editor.set_on_change(lambda v, k=key, t=target, c=coerce_fn: self._set_property_value(k, t, v, c))
+            return editor
+
+        if ptype == 'dropdown':
+            options = definition.get('options', [])
+            editor = DropdownPropertyEditor(parent, options)
+            editor.set_value(str(value) if value is not None else '')
+            editor.set_on_change(lambda v, k=key, t=target, c=coerce_fn: self._set_property_value(k, t, v, c))
+            return editor
+
+        if ptype == 'boolean':
+            editor = CheckboxPropertyEditor(parent)
+            editor.set_value(bool(value))
+            editor.set_on_change(lambda v, k=key, t=target, c=coerce_fn: self._set_property_value(k, t, v, c))
+            return editor
+
+        if ptype == 'number':
+            editor = NumberPropertyEditor(parent, min_val=definition.get('min'), max_val=definition.get('max'))
+            editor.set_value(value if value is not None else 0)
+            editor.set_on_change(lambda v, k=key, t=target, c=coerce_fn: self._set_property_value(k, t, v, c))
+            return editor
+
+        # Fallback to text editor
+        editor = TextPropertyEditor(parent)
+        editor.set_value(value if value is not None else '')
+        editor.set_on_change(lambda v, k=key, t=target, c=coerce_fn: self._set_property_value(k, t, v, c))
+        return editor
     
-    def _add_advanced_properties(self):
-        """Add advanced properties (future enhancement)."""
-        pass
+    def _get_property_value(self, key: str, target: str, default: Any):
+        if not self.current_component:
+            return default
+        if target == 'attr':
+            return getattr(self.current_component, key, default)
+        # default to properties dict
+        props = getattr(self.current_component, 'properties', None)
+        if isinstance(props, dict):
+            return props.get(key, default)
+        return default
+
+    def _set_property_value(self, key: str, target: str, value: Any, coerce_fn=None):
+        if not self.current_component:
+            return
+        if coerce_fn:
+            try:
+                value = coerce_fn(value)
+            except Exception:
+                pass
+
+        if target == 'attr':
+            setattr(self.current_component, key, value)
+        else:
+            if not hasattr(self.current_component, 'properties') or not isinstance(self.current_component.properties, dict):
+                self.current_component.properties = {}
+            self.current_component.properties[key] = value
+
+        self._notify_change()
     
     def _update_component_id(self, new_id: str):
         """
@@ -617,84 +669,6 @@ class PropertiesPanel:
         # For now, just update the ID
         self.current_component.component_id = new_id
         self._notify_change()
-    
-    def _snap_to_grid(self):
-        """Snap component position to grid."""
-        if not self.current_component:
-            return
-        
-        # Default grid size is 20px, snap to 10px increments
-        grid_snap = 10
-        
-        current_x, current_y = self.current_component.position
-        snapped_x = round(current_x / grid_snap) * grid_snap
-        snapped_y = round(current_y / grid_snap) * grid_snap
-        
-        self.current_component.position = (snapped_x, snapped_y)
-        
-        # Update editor displays
-        if 'x' in self.property_editors:
-            self.property_editors['x'].set_value(snapped_x)
-        if 'y' in self.property_editors:
-            self.property_editors['y'].set_value(snapped_y)
-        
-        self._notify_change()
-    
-    def _update_position_x(self, value: float):
-        """Update component X position."""
-        if self.current_component:
-            self.current_component.position = (value, self.current_component.position[1])
-            self._notify_change()
-    
-    def _update_position_y(self, value: float):
-        """Update component Y position."""
-        if self.current_component:
-            self.current_component.position = (self.current_component.position[0], value)
-            self._notify_change()
-    
-    def _update_rotation(self, value: str):
-        """Update component rotation."""
-        if self.current_component:
-            self.current_component.rotation = int(value)
-            self._notify_change()
-    
-    def _update_indicator_color(self, color: str):
-        """
-        Update indicator color and on/off colors.
-        
-        Args:
-            color: Color name from COLOR_PRESETS
-        """
-        if not self.current_component:
-            return
-        
-        # Import Indicator to access COLOR_PRESETS
-        from components.indicator import Indicator
-        
-        if color in Indicator.COLOR_PRESETS:
-            self.current_component.properties['color'] = color
-            self.current_component.properties['on_color'] = Indicator.COLOR_PRESETS[color]['on']
-            self.current_component.properties['off_color'] = Indicator.COLOR_PRESETS[color]['off']
-            self._notify_change()
-    
-    def _update_switch_mode(self, mode: str):
-        """
-        Update switch mode (toggle or pushbutton).
-        
-        Args:
-            mode: "toggle" or "pushbutton"
-        """
-        if not self.current_component:
-            return
-        
-        self.current_component.properties['mode'] = mode
-        self._notify_change()
-    
-    def _update_property(self, name: str, value: Any):
-        """Update a component property."""
-        if self.current_component:
-            setattr(self.current_component, name, value)
-            self._notify_change()
     
     def _notify_change(self):
         """Notify that a property has changed (trigger canvas redraw)."""
