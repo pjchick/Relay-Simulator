@@ -1651,6 +1651,7 @@ class MainWindow:
         from components.bus import BUS
         from components.seven_segment_display import SevenSegmentDisplay
         from components.thumbwheel import Thumbwheel
+        from components.bus_display import BusDisplay
         
         # Create component instance based on type
         component = None
@@ -1668,6 +1669,8 @@ class MainWindow:
             component = SevenSegmentDisplay(component_id, page.page_id)
         elif self.placement_component == 'Thumbwheel':
             component = Thumbwheel(component_id, page.page_id)
+        elif self.placement_component == 'BusDisplay':
+            component = BusDisplay(component_id, page.page_id)
         
         if component:
             # Set position and rotation

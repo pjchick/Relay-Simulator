@@ -100,6 +100,7 @@ class ToolboxPanel(tk.Frame):
         ('BUS', 'BUS'),
         ('SevenSegmentDisplay', '7-Segment Display'),
         ('Thumbwheel', 'Thumbwheel'),
+        ('BusDisplay', 'Bus Display'),
     ]
     
     def __init__(self, parent, on_component_select: Optional[Callable[[Optional[str]], None]] = None):

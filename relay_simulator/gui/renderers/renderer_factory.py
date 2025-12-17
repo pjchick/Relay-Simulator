@@ -13,6 +13,7 @@ from gui.renderers.vcc_renderer import VCCRenderer
 from gui.renderers.bus_renderer import BUSRenderer
 from gui.renderers.seven_segment_display_renderer import SevenSegmentDisplayRenderer
 from gui.renderers.thumbwheel_renderer import ThumbwheelRenderer
+from gui.renderers.bus_display_renderer import BusDisplayRenderer
 
 
 class RendererFactory:
@@ -31,6 +32,7 @@ class RendererFactory:
         'BUS': BUSRenderer,
         'SevenSegmentDisplay': SevenSegmentDisplayRenderer,
         'Thumbwheel': ThumbwheelRenderer,
+        'BusDisplay': BusDisplayRenderer,
     }
     
     @classmethod

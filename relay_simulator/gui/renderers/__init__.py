@@ -10,6 +10,7 @@ from gui.renderers.vcc_renderer import VCCRenderer
 from gui.renderers.bus_renderer import BUSRenderer
 from gui.renderers.seven_segment_display_renderer import SevenSegmentDisplayRenderer
 from gui.renderers.thumbwheel_renderer import ThumbwheelRenderer
+from gui.renderers.bus_display_renderer import BusDisplayRenderer
 from gui.renderers.wire_renderer import WireRenderer
 
 __all__ = [
@@ -21,5 +22,6 @@ __all__ = [
     'BUSRenderer',
     'SevenSegmentDisplayRenderer',
     'ThumbwheelRenderer',
+    'BusDisplayRenderer',
     'WireRenderer',
 ]

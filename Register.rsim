@@ -215,7 +215,7 @@
           ],
           "link_name": "RLA",
           "properties": {
-            "mode": "pushbutton",
+            "mode": "toggle",
             "label": "RLA",
             "label_position": "left",
             "color": "red",
@@ -391,7 +391,7 @@
           ],
           "link_name": "RSA",
           "properties": {
-            "mode": "pushbutton",
+            "mode": "toggle",
             "label": "RSA",
             "label_position": "left",
             "color": "red",
@@ -553,8 +553,8 @@
           "component_id": "e66cbfd1",
           "component_type": "BUS",
           "position": {
-            "x": 1330,
-            "y": 220
+            "x": 1310,
+            "y": 180
           },
           "pins": [
             {
@@ -714,7 +714,7 @@
           "component_id": "eb892a15",
           "component_type": "BUS",
           "position": {
-            "x": 1330,
+            "x": 1310,
             "y": 800
           },
           "pins": [
@@ -1007,6 +1007,750 @@
             "label": "",
             "pin_position": "bottom"
           }
+        },
+        {
+          "component_id": "a1c139fb",
+          "component_type": "DPDTRelay",
+          "position": {
+            "x": 630,
+            "y": 380
+          },
+          "pins": [
+            {
+              "pin_id": "a1c139fb.COIL",
+              "tabs": [
+                {
+                  "tab_id": "a1c139fb.COIL.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "a1c139fb.COM1",
+              "tabs": [
+                {
+                  "tab_id": "a1c139fb.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "a1c139fb.COM2",
+              "tabs": [
+                {
+                  "tab_id": "a1c139fb.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "a1c139fb.NO1",
+              "tabs": [
+                {
+                  "tab_id": "a1c139fb.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "a1c139fb.NC1",
+              "tabs": [
+                {
+                  "tab_id": "a1c139fb.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "a1c139fb.NO2",
+              "tabs": [
+                {
+                  "tab_id": "a1c139fb.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "a1c139fb.NC2",
+              "tabs": [
+                {
+                  "tab_id": "a1c139fb.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 80
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "d74569cb",
+          "component_type": "DPDTRelay",
+          "position": {
+            "x": 630,
+            "y": 660
+          },
+          "pins": [
+            {
+              "pin_id": "d74569cb.COIL",
+              "tabs": [
+                {
+                  "tab_id": "d74569cb.COIL.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "d74569cb.COM1",
+              "tabs": [
+                {
+                  "tab_id": "d74569cb.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "d74569cb.COM2",
+              "tabs": [
+                {
+                  "tab_id": "d74569cb.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "d74569cb.NO1",
+              "tabs": [
+                {
+                  "tab_id": "d74569cb.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "d74569cb.NC1",
+              "tabs": [
+                {
+                  "tab_id": "d74569cb.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "d74569cb.NO2",
+              "tabs": [
+                {
+                  "tab_id": "d74569cb.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "d74569cb.NC2",
+              "tabs": [
+                {
+                  "tab_id": "d74569cb.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 80
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "46d437a0",
+          "component_type": "VCC",
+          "position": {
+            "x": 580,
+            "y": 720
+          },
+          "pins": [
+            {
+              "pin_id": "46d437a0.pin1",
+              "tabs": [
+                {
+                  "tab_id": "46d437a0.pin1.tab1",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "pin_position": "bottom"
+          }
+        },
+        {
+          "component_id": "039f6764",
+          "component_type": "DPDTRelay",
+          "position": {
+            "x": 770,
+            "y": 380
+          },
+          "pins": [
+            {
+              "pin_id": "039f6764.COIL",
+              "tabs": [
+                {
+                  "tab_id": "039f6764.COIL.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "039f6764.COM1",
+              "tabs": [
+                {
+                  "tab_id": "039f6764.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "039f6764.COM2",
+              "tabs": [
+                {
+                  "tab_id": "039f6764.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "039f6764.NO1",
+              "tabs": [
+                {
+                  "tab_id": "039f6764.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "039f6764.NC1",
+              "tabs": [
+                {
+                  "tab_id": "039f6764.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "039f6764.NO2",
+              "tabs": [
+                {
+                  "tab_id": "039f6764.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "039f6764.NC2",
+              "tabs": [
+                {
+                  "tab_id": "039f6764.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 80
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "340a2a9e",
+          "component_type": "DPDTRelay",
+          "position": {
+            "x": 770,
+            "y": 660
+          },
+          "pins": [
+            {
+              "pin_id": "340a2a9e.COIL",
+              "tabs": [
+                {
+                  "tab_id": "340a2a9e.COIL.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "340a2a9e.COM1",
+              "tabs": [
+                {
+                  "tab_id": "340a2a9e.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "340a2a9e.COM2",
+              "tabs": [
+                {
+                  "tab_id": "340a2a9e.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "340a2a9e.NO1",
+              "tabs": [
+                {
+                  "tab_id": "340a2a9e.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "340a2a9e.NC1",
+              "tabs": [
+                {
+                  "tab_id": "340a2a9e.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "340a2a9e.NO2",
+              "tabs": [
+                {
+                  "tab_id": "340a2a9e.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "340a2a9e.NC2",
+              "tabs": [
+                {
+                  "tab_id": "340a2a9e.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 80
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "e9eebff5",
+          "component_type": "DPDTRelay",
+          "position": {
+            "x": 910,
+            "y": 380
+          },
+          "pins": [
+            {
+              "pin_id": "e9eebff5.COIL",
+              "tabs": [
+                {
+                  "tab_id": "e9eebff5.COIL.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "e9eebff5.COM1",
+              "tabs": [
+                {
+                  "tab_id": "e9eebff5.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "e9eebff5.COM2",
+              "tabs": [
+                {
+                  "tab_id": "e9eebff5.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "e9eebff5.NO1",
+              "tabs": [
+                {
+                  "tab_id": "e9eebff5.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "e9eebff5.NC1",
+              "tabs": [
+                {
+                  "tab_id": "e9eebff5.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "e9eebff5.NO2",
+              "tabs": [
+                {
+                  "tab_id": "e9eebff5.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "e9eebff5.NC2",
+              "tabs": [
+                {
+                  "tab_id": "e9eebff5.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 80
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "6a4f308c",
+          "component_type": "DPDTRelay",
+          "position": {
+            "x": 910,
+            "y": 660
+          },
+          "pins": [
+            {
+              "pin_id": "6a4f308c.COIL",
+              "tabs": [
+                {
+                  "tab_id": "6a4f308c.COIL.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "6a4f308c.COM1",
+              "tabs": [
+                {
+                  "tab_id": "6a4f308c.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "6a4f308c.COM2",
+              "tabs": [
+                {
+                  "tab_id": "6a4f308c.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "6a4f308c.NO1",
+              "tabs": [
+                {
+                  "tab_id": "6a4f308c.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "6a4f308c.NC1",
+              "tabs": [
+                {
+                  "tab_id": "6a4f308c.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "6a4f308c.NO2",
+              "tabs": [
+                {
+                  "tab_id": "6a4f308c.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "6a4f308c.NC2",
+              "tabs": [
+                {
+                  "tab_id": "6a4f308c.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 80
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "4aca3c9d",
+          "component_type": "VCC",
+          "position": {
+            "x": 720,
+            "y": 720
+          },
+          "pins": [
+            {
+              "pin_id": "4aca3c9d.pin1",
+              "tabs": [
+                {
+                  "tab_id": "4aca3c9d.pin1.tab1",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "pin_position": "bottom"
+          }
+        },
+        {
+          "component_id": "cb19bd0d",
+          "component_type": "VCC",
+          "position": {
+            "x": 860,
+            "y": 720
+          },
+          "pins": [
+            {
+              "pin_id": "cb19bd0d.pin1",
+              "tabs": [
+                {
+                  "tab_id": "cb19bd0d.pin1.tab1",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "pin_position": "bottom"
+          }
         }
       ],
       "wires": [
@@ -1061,7 +1805,7 @@
         {
           "wire_id": "3efaa98a",
           "start_tab_id": "a7794e05.NC2.tab0",
-          "end_tab_id": "021da127.NO1.tab0",
+          "end_tab_id": "24c21a99",
           "waypoints": [
             {
               "waypoint_id": "3c60ae21",
@@ -1075,20 +1819,6 @@
               "position": {
                 "x": 280,
                 "y": 520
-              }
-            },
-            {
-              "waypoint_id": "489b5b17",
-              "position": {
-                "x": 560,
-                "y": 520
-              }
-            },
-            {
-              "waypoint_id": "e5da0d8e",
-              "position": {
-                "x": 560,
-                "y": 620
               }
             }
           ]
@@ -1106,7 +1836,7 @@
             {
               "waypoint_id": "afe0e6e8",
               "position": {
-                "x": 560,
+                "x": 540,
                 "y": 340
               }
             }
@@ -1120,7 +1850,7 @@
             {
               "waypoint_id": "e95643d1",
               "position": {
-                "x": 560,
+                "x": 540,
                 "y": 700
               }
             }
@@ -1155,7 +1885,7 @@
         {
           "wire_id": "90b16c7b",
           "start_tab_id": "e0f42bd9.NC1.tab0",
-          "end_tab_id": "5731b3ee.COIL.tab0",
+          "end_tab_id": "37a39da4",
           "waypoints": [
             {
               "waypoint_id": "df87fa76",
@@ -1163,15 +1893,360 @@
                 "x": 420,
                 "y": 380
               }
-            },
+            }
+          ]
+        },
+        {
+          "wire_id": "2f2b855c",
+          "start_tab_id": "37a39da4",
+          "end_tab_id": "5731b3ee.COIL.tab0"
+        },
+        {
+          "wire_id": "c52e7d1d",
+          "start_tab_id": "e53861ed.pin1.tab3",
+          "end_tab_id": "f342e498"
+        },
+        {
+          "wire_id": "bb105a77",
+          "start_tab_id": "f342e498",
+          "end_tab_id": "37a39da4"
+        },
+        {
+          "wire_id": "ad144e76",
+          "start_tab_id": "a1c139fb.COIL.tab0",
+          "end_tab_id": "b94a52eb",
+          "waypoints": [
             {
-              "waypoint_id": "0f6de58f",
+              "waypoint_id": "f62b2209",
               "position": {
-                "x": 420,
+                "x": 560,
                 "y": 300
               }
             }
           ]
+        },
+        {
+          "wire_id": "f86038cb",
+          "start_tab_id": "d74569cb.COM1.tab0",
+          "end_tab_id": "152c87e7",
+          "waypoints": [
+            {
+              "waypoint_id": "6655f0f4",
+              "position": {
+                "x": 580,
+                "y": 640
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "733396ff",
+          "start_tab_id": "d74569cb.COIL.tab0",
+          "end_tab_id": "152c87e7"
+        },
+        {
+          "wire_id": "e1890cd4",
+          "start_tab_id": "152c87e7",
+          "end_tab_id": "a1c139fb.COM1.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "68877759",
+              "position": {
+                "x": 580,
+                "y": 360
+              }
+            },
+            {
+              "waypoint_id": "9179dd46",
+              "position": {
+                "x": 600,
+                "y": 360
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "92a75124",
+          "start_tab_id": "a1c139fb.NO1.tab0",
+          "end_tab_id": "e66cbfd1.pin10.tab",
+          "waypoints": [
+            {
+              "waypoint_id": "613c8591",
+              "position": {
+                "x": 680,
+                "y": 340
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "a9782326",
+          "start_tab_id": "24c21a99",
+          "end_tab_id": "021da127.NO1.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "e5da0d8e",
+              "position": {
+                "x": 540,
+                "y": 620
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "0128b57e",
+          "start_tab_id": "d74569cb.NO1.tab0",
+          "end_tab_id": "ad2fb2d5",
+          "waypoints": [
+            {
+              "waypoint_id": "00ed24a6",
+              "position": {
+                "x": 680,
+                "y": 620
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "8c840e1f",
+          "start_tab_id": "eb892a15.pin10.tab",
+          "end_tab_id": "d74569cb.NO2.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "7a85484c",
+              "position": {
+                "x": 680,
+                "y": 700
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "7d4c4707",
+          "start_tab_id": "46d437a0.pin1.tab1",
+          "end_tab_id": "d74569cb.COM2.tab0"
+        },
+        {
+          "wire_id": "76ef9d48",
+          "start_tab_id": "039f6764.NO1.tab0",
+          "end_tab_id": "e66cbfd1.pin9.tab",
+          "waypoints": [
+            {
+              "waypoint_id": "6ca2f4fd",
+              "position": {
+                "x": 820,
+                "y": 340
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "d6245e87",
+          "start_tab_id": "b94a52eb",
+          "end_tab_id": "f342e498"
+        },
+        {
+          "wire_id": "3d6b161a",
+          "start_tab_id": "039f6764.COIL.tab0",
+          "end_tab_id": "146bab26",
+          "waypoints": [
+            {
+              "waypoint_id": "8cb360d5",
+              "position": {
+                "x": 700,
+                "y": 300
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "d971e77f",
+          "start_tab_id": "039f6764.COM1.tab0",
+          "end_tab_id": "0328ec1d",
+          "waypoints": [
+            {
+              "waypoint_id": "8a88a983",
+              "position": {
+                "x": 720,
+                "y": 360
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "e9096f77",
+          "start_tab_id": "340a2a9e.COIL.tab0",
+          "end_tab_id": "0328ec1d"
+        },
+        {
+          "wire_id": "92635a68",
+          "start_tab_id": "0328ec1d",
+          "end_tab_id": "340a2a9e.COM1.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "9ea5f648",
+              "position": {
+                "x": 720,
+                "y": 640
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "f7e7a740",
+          "start_tab_id": "340a2a9e.NO2.tab0",
+          "end_tab_id": "eb892a15.pin9.tab",
+          "waypoints": [
+            {
+              "waypoint_id": "0227e52a",
+              "position": {
+                "x": 820,
+                "y": 700
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "48087bf7",
+          "start_tab_id": "ad2fb2d5",
+          "end_tab_id": "24c21a99"
+        },
+        {
+          "wire_id": "7998daff",
+          "start_tab_id": "340a2a9e.NO1.tab0",
+          "end_tab_id": "9f2ad023",
+          "waypoints": [
+            {
+              "waypoint_id": "6a73fd4e",
+              "position": {
+                "x": 820,
+                "y": 620
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "9e42e752",
+          "start_tab_id": "e9eebff5.NO1.tab0",
+          "end_tab_id": "e66cbfd1.pin8.tab",
+          "waypoints": [
+            {
+              "waypoint_id": "04a6cbb4",
+              "position": {
+                "x": 960,
+                "y": 340
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "07188f06",
+          "start_tab_id": "146bab26",
+          "end_tab_id": "b94a52eb"
+        },
+        {
+          "wire_id": "536a7f64",
+          "start_tab_id": "e9eebff5.COIL.tab0",
+          "end_tab_id": "146bab26",
+          "waypoints": [
+            {
+              "waypoint_id": "508e5fd6",
+              "position": {
+                "x": 840,
+                "y": 300
+              }
+            },
+            {
+              "waypoint_id": "8ac0b71f",
+              "position": {
+                "x": 840,
+                "y": 220
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "9bb11afc",
+          "start_tab_id": "6a4f308c.COM1.tab0",
+          "end_tab_id": "6bff7158",
+          "waypoints": [
+            {
+              "waypoint_id": "0eff9bf1",
+              "position": {
+                "x": 860,
+                "y": 640
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "347bf55e",
+          "start_tab_id": "6a4f308c.COIL.tab0",
+          "end_tab_id": "6bff7158"
+        },
+        {
+          "wire_id": "6e779a2f",
+          "start_tab_id": "6bff7158",
+          "end_tab_id": "e9eebff5.COM1.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "9e8f5fe2",
+              "position": {
+                "x": 860,
+                "y": 360
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "273f3ef8",
+          "start_tab_id": "9f2ad023",
+          "end_tab_id": "ad2fb2d5"
+        },
+        {
+          "wire_id": "913448e5",
+          "start_tab_id": "6a4f308c.NO1.tab0",
+          "end_tab_id": "9f2ad023",
+          "waypoints": [
+            {
+              "waypoint_id": "3631420c",
+              "position": {
+                "x": 960,
+                "y": 620
+              }
+            },
+            {
+              "waypoint_id": "b93aed63",
+              "position": {
+                "x": 960,
+                "y": 520
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "53e7b744",
+          "start_tab_id": "6a4f308c.NO2.tab0",
+          "end_tab_id": "eb892a15.pin8.tab",
+          "waypoints": [
+            {
+              "waypoint_id": "0bd525e9",
+              "position": {
+                "x": 960,
+                "y": 700
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "7fe42e0c",
+          "start_tab_id": "4aca3c9d.pin1.tab1",
+          "end_tab_id": "340a2a9e.COM2.tab0"
+        },
+        {
+          "wire_id": "9433cc04",
+          "start_tab_id": "cb19bd0d.pin1.tab1",
+          "end_tab_id": "6a4f308c.COM2.tab0"
         }
       ],
       "junctions": [
@@ -1180,6 +2255,86 @@
           "position": {
             "x": 440,
             "y": 580
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "37a39da4",
+          "position": {
+            "x": 420,
+            "y": 300
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "f342e498",
+          "position": {
+            "x": 420,
+            "y": 220
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "152c87e7",
+          "position": {
+            "x": 580,
+            "y": 580
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "24c21a99",
+          "position": {
+            "x": 540,
+            "y": 520
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "b94a52eb",
+          "position": {
+            "x": 560,
+            "y": 220
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "0328ec1d",
+          "position": {
+            "x": 720,
+            "y": 580
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "ad2fb2d5",
+          "position": {
+            "x": 680,
+            "y": 520
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "146bab26",
+          "position": {
+            "x": 700,
+            "y": 220
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "6bff7158",
+          "position": {
+            "x": 860,
+            "y": 580
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "9f2ad023",
+          "position": {
+            "x": 820,
+            "y": 520
           },
           "child_wires": []
         }
@@ -1420,333 +2575,7 @@
           "properties": {
             "bus_name": "Data",
             "start_pin": 8,
-            "value": 15
-          }
-        },
-        {
-          "component_id": "5d8f28f3",
-          "component_type": "BUS",
-          "position": {
-            "x": 800,
-            "y": 120
-          },
-          "pins": [
-            {
-              "pin_id": "5d8f28f3.pin0",
-              "tabs": [
-                {
-                  "tab_id": "5d8f28f3.pin0.tab",
-                  "position": {
-                    "x": 0,
-                    "y": -220
-                  }
-                }
-              ]
-            },
-            {
-              "pin_id": "5d8f28f3.pin1",
-              "tabs": [
-                {
-                  "tab_id": "5d8f28f3.pin1.tab",
-                  "position": {
-                    "x": 0,
-                    "y": -180
-                  }
-                }
-              ]
-            },
-            {
-              "pin_id": "5d8f28f3.pin2",
-              "tabs": [
-                {
-                  "tab_id": "5d8f28f3.pin2.tab",
-                  "position": {
-                    "x": 0,
-                    "y": -140
-                  }
-                }
-              ]
-            },
-            {
-              "pin_id": "5d8f28f3.pin3",
-              "tabs": [
-                {
-                  "tab_id": "5d8f28f3.pin3.tab",
-                  "position": {
-                    "x": 0,
-                    "y": -100
-                  }
-                }
-              ]
-            },
-            {
-              "pin_id": "5d8f28f3.pin4",
-              "tabs": [
-                {
-                  "tab_id": "5d8f28f3.pin4.tab",
-                  "position": {
-                    "x": 0,
-                    "y": -60
-                  }
-                }
-              ]
-            },
-            {
-              "pin_id": "5d8f28f3.pin5",
-              "tabs": [
-                {
-                  "tab_id": "5d8f28f3.pin5.tab",
-                  "position": {
-                    "x": 0,
-                    "y": -20
-                  }
-                }
-              ]
-            },
-            {
-              "pin_id": "5d8f28f3.pin6",
-              "tabs": [
-                {
-                  "tab_id": "5d8f28f3.pin6.tab",
-                  "position": {
-                    "x": 0,
-                    "y": 20
-                  }
-                }
-              ]
-            },
-            {
-              "pin_id": "5d8f28f3.pin7",
-              "tabs": [
-                {
-                  "tab_id": "5d8f28f3.pin7.tab",
-                  "position": {
-                    "x": 0,
-                    "y": 60
-                  }
-                }
-              ]
-            },
-            {
-              "pin_id": "5d8f28f3.pin8",
-              "tabs": [
-                {
-                  "tab_id": "5d8f28f3.pin8.tab",
-                  "position": {
-                    "x": 0,
-                    "y": 100
-                  }
-                }
-              ]
-            },
-            {
-              "pin_id": "5d8f28f3.pin9",
-              "tabs": [
-                {
-                  "tab_id": "5d8f28f3.pin9.tab",
-                  "position": {
-                    "x": 0,
-                    "y": 140
-                  }
-                }
-              ]
-            },
-            {
-              "pin_id": "5d8f28f3.pin10",
-              "tabs": [
-                {
-                  "tab_id": "5d8f28f3.pin10.tab",
-                  "position": {
-                    "x": 0,
-                    "y": 180
-                  }
-                }
-              ]
-            },
-            {
-              "pin_id": "5d8f28f3.pin11",
-              "tabs": [
-                {
-                  "tab_id": "5d8f28f3.pin11.tab",
-                  "position": {
-                    "x": 0,
-                    "y": 220
-                  }
-                }
-              ]
-            }
-          ],
-          "rotation": 90,
-          "properties": {
-            "bus_name": "Bus",
-            "start_pin": 0,
-            "number_of_pins": 12,
-            "pin_spacing": 2,
-            "label": "Data",
-            "label_position": "left"
-          }
-        },
-        {
-          "component_id": "f086188e",
-          "component_type": "BUS",
-          "position": {
-            "x": 800,
-            "y": 160
-          },
-          "pins": [
-            {
-              "pin_id": "f086188e.pin0",
-              "tabs": [
-                {
-                  "tab_id": "f086188e.pin0.tab",
-                  "position": {
-                    "x": 0,
-                    "y": -220
-                  }
-                }
-              ]
-            },
-            {
-              "pin_id": "f086188e.pin1",
-              "tabs": [
-                {
-                  "tab_id": "f086188e.pin1.tab",
-                  "position": {
-                    "x": 0,
-                    "y": -180
-                  }
-                }
-              ]
-            },
-            {
-              "pin_id": "f086188e.pin2",
-              "tabs": [
-                {
-                  "tab_id": "f086188e.pin2.tab",
-                  "position": {
-                    "x": 0,
-                    "y": -140
-                  }
-                }
-              ]
-            },
-            {
-              "pin_id": "f086188e.pin3",
-              "tabs": [
-                {
-                  "tab_id": "f086188e.pin3.tab",
-                  "position": {
-                    "x": 0,
-                    "y": -100
-                  }
-                }
-              ]
-            },
-            {
-              "pin_id": "f086188e.pin4",
-              "tabs": [
-                {
-                  "tab_id": "f086188e.pin4.tab",
-                  "position": {
-                    "x": 0,
-                    "y": -60
-                  }
-                }
-              ]
-            },
-            {
-              "pin_id": "f086188e.pin5",
-              "tabs": [
-                {
-                  "tab_id": "f086188e.pin5.tab",
-                  "position": {
-                    "x": 0,
-                    "y": -20
-                  }
-                }
-              ]
-            },
-            {
-              "pin_id": "f086188e.pin6",
-              "tabs": [
-                {
-                  "tab_id": "f086188e.pin6.tab",
-                  "position": {
-                    "x": 0,
-                    "y": 20
-                  }
-                }
-              ]
-            },
-            {
-              "pin_id": "f086188e.pin7",
-              "tabs": [
-                {
-                  "tab_id": "f086188e.pin7.tab",
-                  "position": {
-                    "x": 0,
-                    "y": 60
-                  }
-                }
-              ]
-            },
-            {
-              "pin_id": "f086188e.pin8",
-              "tabs": [
-                {
-                  "tab_id": "f086188e.pin8.tab",
-                  "position": {
-                    "x": 0,
-                    "y": 100
-                  }
-                }
-              ]
-            },
-            {
-              "pin_id": "f086188e.pin9",
-              "tabs": [
-                {
-                  "tab_id": "f086188e.pin9.tab",
-                  "position": {
-                    "x": 0,
-                    "y": 140
-                  }
-                }
-              ]
-            },
-            {
-              "pin_id": "f086188e.pin10",
-              "tabs": [
-                {
-                  "tab_id": "f086188e.pin10.tab",
-                  "position": {
-                    "x": 0,
-                    "y": 180
-                  }
-                }
-              ]
-            },
-            {
-              "pin_id": "f086188e.pin11",
-              "tabs": [
-                {
-                  "tab_id": "f086188e.pin11.tab",
-                  "position": {
-                    "x": 0,
-                    "y": 220
-                  }
-                }
-              ]
-            }
-          ],
-          "rotation": 90,
-          "properties": {
-            "bus_name": "A-Register",
-            "start_pin": 0,
-            "number_of_pins": 12,
-            "pin_spacing": 2,
-            "label": "A-Register",
-            "label_position": "left"
+            "value": 0
           }
         },
         {
@@ -1877,6 +2706,42 @@
               0,
               0
             ]
+          }
+        },
+        {
+          "component_id": "3064632e",
+          "component_type": "BusDisplay",
+          "position": {
+            "x": 800,
+            "y": 120
+          },
+          "pins": [],
+          "rotation": 90,
+          "properties": {
+            "bus_name": "Data",
+            "start_pin": 0,
+            "number_of_pins": 12,
+            "pin_spacing": 2,
+            "label": "Data",
+            "label_position": "left"
+          }
+        },
+        {
+          "component_id": "50de2cec",
+          "component_type": "BusDisplay",
+          "position": {
+            "x": 800,
+            "y": 160
+          },
+          "pins": [],
+          "rotation": 90,
+          "properties": {
+            "bus_name": "A-Register",
+            "start_pin": 0,
+            "number_of_pins": 12,
+            "pin_spacing": 2,
+            "label": "A Register",
+            "label_position": "left"
           }
         }
       ]
