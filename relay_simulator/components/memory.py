@@ -40,35 +40,6 @@ class Memory(Component):
     PIN_OFFSET_X = -440  # Pins on left side
     PIN_SPACING = 70     # Vertical spacing between pins
 
-    def _debug_enabled(self) -> bool:
-        return os.getenv('RSIM_DEBUG_MEMORY', '').strip().lower() in (
-            '1', 'true', 'yes', 'y', 'on'
-        )
-
-    def _debug(self, message: str) -> None:
-        """Emit debug output if RSIM_DEBUG_MEMORY is enabled.
-
-        If RSIM_DEBUG_MEMORY_FILE is set, append logs to that file.
-        Otherwise, print to stdout with flushing.
-        """
-        if not self._debug_enabled():
-            return
-
-        try:
-            path = os.getenv('RSIM_DEBUG_MEMORY_FILE', '').strip()
-            if path:
-                with open(path, 'a', encoding='utf-8') as f:
-                    f.write(message + "\n")
-                return
-        except Exception:
-            # Fall back to stdout
-            pass
-
-        try:
-            print(message, flush=True)
-        except Exception:
-            pass
-
     def _read_input_pin_high(self, vnet_manager, pin: Optional[Pin]) -> bool:
         """Read a passive input pin by looking at its VNET state.
 
@@ -446,8 +417,6 @@ class Memory(Component):
         read = self._read_input_pin_high(vnet_manager, read_pin)
         write = self._read_input_pin_high(vnet_manager, write_pin)
 
-        debug_enabled = self._debug_enabled()
-
         addr_bus = self._get_address_bus_name()
         data_bus = self._get_data_bus_name()
         addr_bits = self._get_address_bits()
@@ -461,26 +430,15 @@ class Memory(Component):
         if not enable:
             # Float data bus when not enabled
             self._drive_data_bus_pins(vnet_manager, None)
-            if debug_enabled:
-                self._debug(f"[RSIM_DEBUG_MEMORY] {self.component_id} EN=0 -> float Data bus")
             return
 
         # Read address from address bus
         address = self._read_bus_value(vnet_manager, addr_bus, addr_bits)
 
-        if debug_enabled:
-            self._debug(
-                f"[RSIM_DEBUG_MEMORY] {self.component_id} EN={int(enable)} R={int(read)} W={int(write)} "
-                f"addr_bus={addr_bus} data_bus={data_bus} addr=0x{address:X}"
-            )
-
         if read and not write:
             # Read operation: output memory[address] to data bus
             value = self.read_memory(address)
             self._drive_data_bus_pins(vnet_manager, value)
-
-            if debug_enabled:
-                self._debug(f"[RSIM_DEBUG_MEMORY] {self.component_id} READ addr=0x{address:X} -> 0x{value:X}")
 
             self.last_operation = 'read'
             self.last_address = address
@@ -492,9 +450,6 @@ class Memory(Component):
             self.write_memory(address, value)
             # Don't drive the bus during write.
             self._drive_data_bus_pins(vnet_manager, None)
-
-            if debug_enabled:
-                self._debug(f"[RSIM_DEBUG_MEMORY] {self.component_id} WRITE addr=0x{address:X} <- 0x{value:X}")
 
             self.last_operation = 'write'
             self.last_address = address
@@ -520,13 +475,6 @@ class Memory(Component):
         # doesn't know about, preventing bus outputs from propagating.
         # Just ensure the bus is floated initially.
         self._drive_data_bus_pins(vnet_manager, None)
-
-        # Debug banner so it's obvious whether the running process sees the env var.
-        if self._debug_enabled():
-            self._debug(
-                f"[RSIM_DEBUG_MEMORY] {self.component_id} sim_start: addr_bus={self._get_address_bus_name()} "
-                f"data_bus={self._get_data_bus_name()} addr_bits={self._get_address_bits()} data_bits={self._get_data_bits()}"
-            )
 
         # Load default memory file if specified
         default_file = self._get_default_memory_file()
