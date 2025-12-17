@@ -18,6 +18,8 @@ Date: 2025-12-10
 
 import time
 import threading
+import os
+from collections import defaultdict
 from typing import Dict, List, Optional, Set
 from dataclasses import dataclass
 from enum import Enum
@@ -140,6 +142,72 @@ class SimulationEngine:
         
         # GUI callback for async updates (e.g., relay timer completion)
         self._gui_restart_callback = None
+
+        # Debug controls (off by default).
+        # PowerShell:
+        #   $env:RSIM_DEBUG_VNETS = "1"
+        # Optional:
+        #   $env:RSIM_DEBUG_VNETS_MODE = "all"   # or "dirty"
+        #   $env:RSIM_DEBUG_VNETS_INCLUDE_TABS = "1"
+        # CMD.exe:
+        #   set RSIM_DEBUG_VNETS=1
+        self._debug_vnets_enabled = self._read_env_bool("RSIM_DEBUG_VNETS")
+        self._debug_vnets_mode = (os.getenv("RSIM_DEBUG_VNETS_MODE", "all") or "all").strip().lower()
+        self._debug_vnets_include_tabs = self._read_env_bool("RSIM_DEBUG_VNETS_INCLUDE_TABS")
+
+    @staticmethod
+    def _read_env_bool(name: str, default: bool = False) -> bool:
+        value = os.getenv(name)
+        if value is None:
+            return default
+        value = str(value).strip().lower()
+        return value in ("1", "true", "yes", "y", "on")
+
+    def _debug_dump_vnets(self, *, iteration: int, phase: str, dirty_vnets: Optional[List[VNET]] = None) -> None:
+        if not self._debug_vnets_enabled:
+            return
+
+        try:
+            dirty_ids: Set[str] = set()
+            if dirty_vnets is not None:
+                dirty_ids = {v.vnet_id for v in dirty_vnets if v}
+            else:
+                # If caller didn't provide a snapshot, read current dirty set.
+                try:
+                    dirty_ids = set(self.dirty_manager.get_dirty_vnet_ids())
+                except Exception:
+                    dirty_ids = {v.vnet_id for v in self.vnets.values() if v and getattr(v, 'is_dirty', None) and v.is_dirty()}
+
+            print("\n" + "=" * 80)
+            print(f"[RSIM_DEBUG_VNETS] iter={iteration} phase={phase} dirty={len(dirty_ids)} total_vnets={len(self.vnets)}")
+
+            # Stable ordering for diffing between runs
+            vnets_sorted = sorted(self.vnets.values(), key=lambda v: v.vnet_id)
+
+            if self._debug_vnets_mode == "dirty":
+                vnets_sorted = [v for v in vnets_sorted if v and v.vnet_id in dirty_ids]
+
+            for vnet in vnets_sorted:
+                if not vnet:
+                    continue
+
+                page = vnet.page_id or "(none)"
+                state = getattr(vnet, "state", None)
+                links = sorted(list(getattr(vnet, "link_names", set()) or []))
+                bridges = sorted(list(getattr(vnet, "bridge_ids", set()) or []))
+                tabs = sorted(list(getattr(vnet, "tab_ids", set()) or []))
+
+                dirty_mark = "*" if vnet.vnet_id in dirty_ids else " "
+                print(
+                    f"{dirty_mark} {vnet.vnet_id} page={page} state={state} tabs={len(tabs)} links={links} bridges={bridges}"
+                )
+                if self._debug_vnets_include_tabs and tabs:
+                    for tab_id in tabs:
+                        print(f"    tab={tab_id}")
+
+            print("=" * 80 + "\n")
+        except Exception as e:
+            print(f"[RSIM_DEBUG_VNETS] dump failed: {e}")
     
     def initialize(self) -> bool:
         """
@@ -179,6 +247,8 @@ class SimulationEngine:
             
             # Mark all VNETs dirty to force initial evaluation
             self.dirty_manager.mark_all_dirty()
+
+            self._debug_dump_vnets(iteration=0, phase="after_initialize_mark_all_dirty")
             
             # Reset control flags
             self._running = False
@@ -252,29 +322,74 @@ class SimulationEngine:
         start_time = time.time()
         iteration = 0
 
-        def collect_bridge_group(start_vnet: VNET) -> Set[str]:
-            """Return all VNET IDs connected to start_vnet via active bridges."""
-            group: Set[str] = set()
-            stack = [start_vnet.vnet_id]
-            while stack:
-                current_id = stack.pop()
-                if current_id in group:
+        def evaluate_tabs_only(vnet: VNET) -> PinState:
+            """Evaluate a VNET from tab/pin drives only.
+
+            IMPORTANT: VNET.state is not a drive source. Only component pin states
+            (via Tab.state -> Pin.state) can actively assert HIGH.
+            """
+            for tab_id in vnet.get_all_tabs():
+                tab = self.tabs.get(tab_id)
+                if tab and tab.state == PinState.HIGH:
+                    return PinState.HIGH
+            return PinState.FLOAT
+
+        # Pre-index link_name -> {vnet_id} (links are static during a run)
+        link_index: Dict[str, Set[str]] = defaultdict(set)
+        for vnet_id, vnet in self.vnets.items():
+            if not vnet:
+                continue
+            for link_name in getattr(vnet, 'link_names', set()) or set():
+                if link_name:
+                    link_index[link_name].add(vnet_id)
+
+        def _union_find_groups() -> Dict[str, Set[str]]:
+            """Build connected components across bridges + link names.
+
+            Deterministic and order-independent. This replaces recursive link
+            evaluation (which can become order-dependent in cyclic link graphs).
+            """
+
+            parent: Dict[str, str] = {}
+
+            def find(x: str) -> str:
+                # Path compression
+                while parent[x] != x:
+                    parent[x] = parent[parent[x]]
+                    x = parent[x]
+                return x
+
+            def union(a: str, b: str) -> None:
+                ra, rb = find(a), find(b)
+                if ra != rb:
+                    parent[rb] = ra
+
+            # Init parents
+            for vnet_id in self.vnets.keys():
+                parent[vnet_id] = vnet_id
+
+            # Bridges (dynamic)
+            for bridge in self.bridges.values():
+                if not bridge:
                     continue
-                group.add(current_id)
+                v1 = getattr(bridge, 'vnet_id1', None)
+                v2 = getattr(bridge, 'vnet_id2', None)
+                if v1 in parent and v2 in parent:
+                    union(v1, v2)
 
-                current_vnet = self.vnets.get(current_id)
-                if not current_vnet:
+            # Links (static)
+            for vnet_ids in link_index.values():
+                vnet_ids_list = list(vnet_ids)
+                if len(vnet_ids_list) < 2:
                     continue
+                first = vnet_ids_list[0]
+                for other in vnet_ids_list[1:]:
+                    union(first, other)
 
-                for bridge_id in current_vnet.bridge_ids.copy():
-                    bridge = self.bridges.get(bridge_id)
-                    if not bridge:
-                        continue
-                    other_id = bridge.get_other_vnet(current_id)
-                    if other_id and other_id not in group:
-                        stack.append(other_id)
-
-            return group
+            groups: Dict[str, Set[str]] = defaultdict(set)
+            for vnet_id in self.vnets.keys():
+                groups[find(vnet_id)].add(vnet_id)
+            return groups
         
         try:
             while self._running and not self._stop_requested:
@@ -286,6 +401,8 @@ class SimulationEngine:
                 
                 # Get dirty VNETs
                 dirty_vnets = self.dirty_manager.get_dirty_vnets()
+
+                self._debug_dump_vnets(iteration=iteration, phase="loop_start", dirty_vnets=dirty_vnets)
                 
                 # (debug logging removed)
                 
@@ -301,31 +418,24 @@ class SimulationEngine:
                         self.state = SimulationState.STABLE
                     
                     self._running = False
+                    self._debug_dump_vnets(iteration=iteration, phase="stable_reached")
                     break
-                
-                # Process dirty VNETs in bridge-connected groups.
-                # This avoids oscillation when the evaluator intentionally ignores bridges.
-                processed: Set[str] = set()
-                for vnet in dirty_vnets:
-                    if vnet.vnet_id in processed:
-                        continue
 
-                    group_ids = collect_bridge_group(vnet)
-                    processed.update(group_ids)
+                # Deterministic recompute: build full connectivity groups (bridges + links),
+                # compute group state from pin/tab drives only, then apply to all VNETs.
+                # Only queue components when a VNET's state actually changes.
+                groups = _union_find_groups()
 
-                    # Evaluate base (tabs+links) for each VNET in the group, then OR to get group state.
+                for group_ids in groups.values():
                     group_state = PinState.FLOAT
                     for vnet_id in group_ids:
                         gvnet = self.vnets.get(vnet_id)
                         if not gvnet:
                             continue
-                        base_state = self.evaluator.evaluate_vnet_state(gvnet)
-                        if base_state == PinState.HIGH:
+                        if evaluate_tabs_only(gvnet) == PinState.HIGH:
                             group_state = PinState.HIGH
                             break
 
-                    # Apply group_state to all VNETs in the group.
-                    # Propagate across LINKS only (bridges are already handled by grouping).
                     for vnet_id in group_ids:
                         gvnet = self.vnets.get(vnet_id)
                         if not gvnet:
@@ -333,19 +443,14 @@ class SimulationEngine:
 
                         old_state = gvnet.state
                         if old_state != group_state:
-                            # Let the propagator update gvnet.state; it also propagates across LINKS.
-                            # If we set gvnet.state first, the propagator would early-return and skip propagation.
-                            propagated = self.propagator.propagate_vnet_state(gvnet, group_state, include_bridges=False)
-                            # Clear dirty for anything propagation touched so we don't re-evaluate it back to base.
-                            for affected_id in propagated:
-                                self.dirty_manager.clear_dirty(affected_id)
-                                affected_vnet = self.vnets.get(affected_id)
-                                if affected_vnet:
-                                    self.coordinator.queue_components_for_vnet(affected_vnet)
-
-                        # Clear dirty and queue components for the group VNET regardless.
+                            gvnet.state = group_state
+                            self.coordinator.queue_components_for_vnet(gvnet)
+                        # Consider this VNET evaluated for this iteration.
                         self.dirty_manager.clear_dirty(vnet_id)
-                        self.coordinator.queue_components_for_vnet(gvnet)
+
+                # If nothing changed electrically, we can still have pending component updates
+                # from previous iteration; otherwise we are stable.
+                self._debug_dump_vnets(iteration=iteration, phase="after_vnet_processing")
                 
                 # Start component updates
                 num_pending = self.coordinator.start_updates()
