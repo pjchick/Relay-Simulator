@@ -989,14 +989,13 @@ class MainWindow:
             return
         
         # Update menu item states based on selection
-        has_component_selection = len(self.selected_components) > 0
         has_any_selection = (
-            has_component_selection
+            len(self.selected_components) > 0
             or len(self.selected_wires) > 0
             or len(self.selected_junctions) > 0
             or len(self.selected_waypoints) > 0
         )
-        has_clipboard = len(self.clipboard) > 0
+        has_clipboard = self._clipboard_has_items()
         
         # Enable/disable menu items
         cut_index = 0
@@ -1004,8 +1003,8 @@ class MainWindow:
         paste_index = 2
         delete_index = 4  # After separator
         
-        self.context_menu.entryconfig(cut_index, state=tk.NORMAL if has_component_selection else tk.DISABLED)
-        self.context_menu.entryconfig(copy_index, state=tk.NORMAL if has_component_selection else tk.DISABLED)
+        self.context_menu.entryconfig(cut_index, state=tk.NORMAL if has_any_selection else tk.DISABLED)
+        self.context_menu.entryconfig(copy_index, state=tk.NORMAL if has_any_selection else tk.DISABLED)
         self.context_menu.entryconfig(paste_index, state=tk.NORMAL if has_clipboard else tk.DISABLED)
         self.context_menu.entryconfig(delete_index, state=tk.NORMAL if has_any_selection else tk.DISABLED)
         
@@ -1225,7 +1224,9 @@ class MainWindow:
         self.right_click_start = None  # Position where right-click started
         
         # Clipboard for copy/paste
-        self.clipboard = []  # List of serialized components
+        # Structured clipboard payload; see _copy_selected/_paste_clipboard.
+        # (Backward compatible with older list-only clipboard.)
+        self.clipboard = None
         
         # Create context menu
         self._create_context_menu()
@@ -3431,13 +3432,180 @@ class MainWindow:
             return 'break'  # Prevent default behavior
     
     # === Clipboard Operations ===
+
+    def _clipboard_has_items(self) -> bool:
+        clip = getattr(self, 'clipboard', None)
+        if not clip:
+            return False
+        if isinstance(clip, list):
+            return len(clip) > 0
+        if isinstance(clip, dict):
+            return bool(clip.get('components') or clip.get('wires') or clip.get('junctions'))
+        return False
+
+    @staticmethod
+    def _tab_pos_tuple(tab_dict) -> tuple[float, float]:
+        if not isinstance(tab_dict, dict):
+            return (0.0, 0.0)
+        pos = tab_dict.get('position', {})
+        if not isinstance(pos, dict):
+            return (0.0, 0.0)
+        try:
+            return (float(pos.get('x', 0.0)), float(pos.get('y', 0.0)))
+        except Exception:
+            return (0.0, 0.0)
+
+    def _build_tab_id_map(self, old_component_data: dict, new_component) -> dict[str, str]:
+        """Map old tab_ids from serialized component -> new component tab_ids.
+
+        Uses tab relative positions (dx,dy) to match.
+        """
+        mapping: dict[str, str] = {}
+        if not isinstance(old_component_data, dict):
+            return mapping
+
+        old_pins = old_component_data.get('pins', [])
+        if not isinstance(old_pins, list):
+            return mapping
+
+        # Build a lookup from new tab relative positions -> tab_id.
+        new_pos_to_tab_id: dict[tuple[float, float], str] = {}
+        try:
+            for pin in getattr(new_component, 'pins', {}).values():
+                for tab in getattr(pin, 'tabs', {}).values():
+                    pos = getattr(tab, 'relative_position', (0.0, 0.0))
+                    key = (round(float(pos[0]), 3), round(float(pos[1]), 3))
+                    new_pos_to_tab_id.setdefault(key, tab.tab_id)
+        except Exception:
+            return mapping
+
+        for old_pin in old_pins:
+            if not isinstance(old_pin, dict):
+                continue
+            for old_tab in (old_pin.get('tabs', []) or []):
+                if not isinstance(old_tab, dict):
+                    continue
+                old_tab_id = old_tab.get('tab_id')
+                if not isinstance(old_tab_id, str) or not old_tab_id:
+                    continue
+                pos = self._tab_pos_tuple(old_tab)
+                key = (round(float(pos[0]), 3), round(float(pos[1]), 3))
+                new_tab_id = new_pos_to_tab_id.get(key)
+                if new_tab_id:
+                    mapping[old_tab_id] = str(new_tab_id)
+
+        return mapping
+
+    @staticmethod
+    def _offset_point_dict(pos_dict: dict, dx: float, dy: float) -> None:
+        if not isinstance(pos_dict, dict):
+            return
+        try:
+            pos_dict['x'] = float(pos_dict.get('x', 0.0)) + dx
+            pos_dict['y'] = float(pos_dict.get('y', 0.0)) + dy
+        except Exception:
+            return
+
+    def _remap_wire_dict(self, wire_data: dict, *, id_manager, endpoint_map: dict[str, str], offset: float) -> Optional[dict]:
+        """Return a remapped+offset wire dict suitable for Wire.from_dict()."""
+        if not isinstance(wire_data, dict):
+            return None
+
+        def map_endpoint(value: Optional[str]) -> Optional[str]:
+            if value is None:
+                return None
+            if not isinstance(value, str):
+                return None
+            return endpoint_map.get(value)
+
+        start_old = wire_data.get('start_tab_id')
+        start_new = map_endpoint(start_old)
+        if not start_new:
+            return None
+
+        end_old = wire_data.get('end_tab_id')
+        end_new = None
+        if end_old is not None:
+            end_new = map_endpoint(end_old)
+            if not end_new:
+                return None
+
+        new_wire: dict = {
+            'wire_id': id_manager.generate_id(),
+            'start_tab_id': start_new,
+        }
+        if end_old is not None:
+            new_wire['end_tab_id'] = end_new
+
+        # Waypoints: new IDs + offset positions
+        waypoints = wire_data.get('waypoints', [])
+        if isinstance(waypoints, list) and waypoints:
+            new_wps = []
+            for wp in waypoints:
+                if not isinstance(wp, dict):
+                    continue
+                wp_new = {
+                    'waypoint_id': id_manager.generate_id(),
+                    'position': dict((wp.get('position') or {})),
+                }
+                self._offset_point_dict(wp_new['position'], offset, offset)
+                new_wps.append(wp_new)
+            if new_wps:
+                new_wire['waypoints'] = new_wps
+
+        # Junctions embedded inside wire (rare in current GUI). Remap IDs + recurse.
+        junctions = wire_data.get('junctions', [])
+        if isinstance(junctions, list) and junctions:
+            new_juncs = []
+            for j in junctions:
+                if not isinstance(j, dict):
+                    continue
+                old_jid = j.get('junction_id')
+                j_new_id = id_manager.generate_id()
+                j_new = {
+                    'junction_id': j_new_id,
+                    'position': dict((j.get('position') or {})),
+                }
+                self._offset_point_dict(j_new['position'], offset, offset)
+
+                # Recurse child wires
+                child_wires = j.get('child_wires', [])
+                if isinstance(child_wires, list) and child_wires:
+                    extended_map = dict(endpoint_map)
+                    if isinstance(old_jid, str):
+                        extended_map[old_jid] = j_new_id
+
+                    new_children = []
+                    for cw in child_wires:
+                        remapped = self._remap_wire_dict(
+                            cw,
+                            id_manager=id_manager,
+                            endpoint_map=extended_map,
+                            offset=offset,
+                        )
+                        if remapped:
+                            new_children.append(remapped)
+                    if new_children:
+                        j_new['child_wires'] = new_children
+
+                new_juncs.append(j_new)
+            if new_juncs:
+                new_wire['junctions'] = new_juncs
+
+        return new_wire
     
     def _copy_selected(self) -> None:
         """
-        Copy selected components to clipboard.
+        Copy selected items (components, wires, junctions) to clipboard.
         """
-        if not self.selected_components:
-            self.set_status("No components selected to copy")
+        has_any_selection = (
+            bool(self.selected_components)
+            or bool(self.selected_wires)
+            or bool(self.selected_junctions)
+            or bool(self.selected_waypoints)
+        )
+        if not has_any_selection:
+            self.set_status("Nothing selected to copy")
             return
         
         # Get active page
@@ -3453,23 +3621,55 @@ class MainWindow:
         if not page:
             return
         
-        # Serialize selected components
-        self.clipboard = []
+        # Components
+        components_payload = []
         for component_id in self.selected_components:
             component = page.components.get(component_id)
             if component:
-                # Serialize component to dictionary
-                component_data = component.to_dict()
-                self.clipboard.append(component_data)
-        
-        self.set_status(f"Copied {len(self.clipboard)} component(s) to clipboard")
+                components_payload.append(component.to_dict())
+
+        # Wires: include explicitly selected wires and any wires that own selected waypoints
+        selected_wire_ids = set(self.selected_wires)
+        for wire_id, waypoint_id in self.selected_waypoints:
+            if wire_id:
+                selected_wire_ids.add(wire_id)
+
+        wires_payload = []
+        for wire_id in selected_wire_ids:
+            wire_obj = page.wires.get(wire_id)
+            if wire_obj:
+                wires_payload.append(wire_obj.to_dict())
+
+        # Junctions
+        junctions_payload = []
+        for junction_id in self.selected_junctions:
+            junction = page.junctions.get(junction_id)
+            if junction:
+                junctions_payload.append(junction.to_dict())
+
+        self.clipboard = {
+            'version': 1,
+            'components': components_payload,
+            'wires': wires_payload,
+            'junctions': junctions_payload,
+        }
+
+        self.set_status(
+            f"Copied {len(components_payload)} component(s), {len(wires_payload)} wire(s), {len(junctions_payload)} junction(s)"
+        )
     
     def _cut_selected(self) -> None:
         """
-        Cut selected components (copy + delete).
+        Cut selected items (copy + delete).
         """
-        if not self.selected_components:
-            self.set_status("No components selected to cut")
+        has_any_selection = (
+            bool(self.selected_components)
+            or bool(self.selected_wires)
+            or bool(self.selected_junctions)
+            or bool(self.selected_waypoints)
+        )
+        if not has_any_selection:
+            self.set_status("Nothing selected to cut")
             return
         
         # Copy first
@@ -3478,13 +3678,13 @@ class MainWindow:
         # Then delete
         self._delete_selected()
         
-        self.set_status(f"Cut {len(self.clipboard)} component(s)")
+        self.set_status("Cut selection")
     
     def _paste_clipboard(self) -> None:
         """
-        Paste components from clipboard with new IDs and offset position.
+        Paste items from clipboard with new IDs and offset position.
         """
-        if not self.clipboard:
+        if not self._clipboard_has_items():
             self.set_status("Clipboard is empty")
             return
         
@@ -3501,87 +3701,148 @@ class MainWindow:
         if not page:
             return
         
-        # Import component classes
-        from components.switch import Switch
-        from components.indicator import Indicator
-        from components.dpdt_relay import DPDTRelay
-        from components.vcc import VCC
-        from components.bus import BUS
+        from components.factory import get_factory
+        from core.wire import Wire, Junction
         
         # Clear current selection
         self._clear_selection()
         
         # Paste offset (20px right and down from original)
         paste_offset = 20
-        
-        # Paste each component
-        pasted_count = 0
-        for component_data in self.clipboard:
-            # Generate new unique ID
-            new_id = tab.document.id_manager.generate_id()
-            
-            # Get component type (key is 'component_type' from to_dict())
+
+        clip = self.clipboard
+        # Backward compatibility: old clipboard stored just a list of component dicts
+        if isinstance(clip, list):
+            clip = {'components': clip, 'wires': [], 'junctions': []}
+        if not isinstance(clip, dict):
+            self.set_status("Clipboard format not recognized")
+            return
+
+        factory = get_factory()
+        id_manager = tab.document.id_manager
+
+        # 1) Paste components first and build endpoint mapping for wire remap
+        old_tab_to_new_tab: dict[str, str] = {}
+        pasted_component_ids: list[str] = []
+
+        for component_data in (clip.get('components', []) or []):
+            if not isinstance(component_data, dict):
+                continue
+
             component_type = component_data.get('component_type', '')
-            
-            # Create new component based on type (all components need component_id and page_id)
-            component = None
-            if component_type == 'Switch':
-                component = Switch(new_id, active_page_id)
-            elif component_type == 'Indicator':
-                component = Indicator(new_id, active_page_id)
-            elif component_type == 'DPDTRelay':
-                component = DPDTRelay(new_id, active_page_id)
-            elif component_type == 'VCC':
-                component = VCC(new_id, active_page_id)
-            elif component_type == 'BUS':
-                component = BUS(new_id, active_page_id)
-            
-            if component:
-                # Restore properties from clipboard data
-                if 'properties' in component_data:
-                    component.properties = component_data['properties'].copy()
+            if not isinstance(component_type, str) or not component_type:
+                continue
 
-                # Restore optional link_name (used by some components)
-                if 'link_name' in component_data:
-                    component.link_name = component_data.get('link_name')
-                
-                # Apply offset to position
-                # Position is stored as {'x': float, 'y': float} in to_dict()
-                position_data = component_data.get('position', {'x': 0, 'y': 0})
-                if isinstance(position_data, dict):
-                    original_x = position_data.get('x', 0)
-                    original_y = position_data.get('y', 0)
-                else:
-                    # Fallback for tuple format
-                    original_x, original_y = position_data
-                component.position = (original_x + paste_offset, original_y + paste_offset)
-                
-                # Restore rotation
-                if 'rotation' in component_data:
-                    component.rotation = component_data['rotation']
+            new_id = id_manager.generate_id()
+            try:
+                component = factory.create_component(component_type, new_id, active_page_id)
+            except Exception:
+                continue
 
-                # Components with dynamic pin layouts (e.g., BUS) need a rebuild after
-                # restoring properties.
-                if hasattr(component, 'on_property_changed') and callable(getattr(component, 'on_property_changed')):
-                    try:
-                        component.on_property_changed('number_of_pins')
-                    except Exception:
-                        pass
-                
-                # Add to page
-                page.add_component(component)
-                
-                # Select pasted component
-                self.selected_components.add(new_id)
-                self.design_canvas.set_component_selected(new_id, True)
-                
-                pasted_count += 1
+            if isinstance(component_data.get('properties'), dict):
+                component.properties = component_data['properties'].copy()
+            if 'link_name' in component_data:
+                component.link_name = component_data.get('link_name')
+            if 'rotation' in component_data:
+                try:
+                    component.rotation = int(component_data.get('rotation', 0))
+                except Exception:
+                    pass
+
+            position_data = component_data.get('position', {'x': 0, 'y': 0})
+            if isinstance(position_data, dict):
+                original_x = position_data.get('x', 0)
+                original_y = position_data.get('y', 0)
+            else:
+                original_x, original_y = position_data
+            component.position = (original_x + paste_offset, original_y + paste_offset)
+
+            if hasattr(component, 'on_property_changed') and callable(getattr(component, 'on_property_changed')):
+                try:
+                    component.on_property_changed('number_of_pins')
+                except Exception:
+                    pass
+
+            try:
+                old_tab_to_new_tab.update(self._build_tab_id_map(component_data, component))
+            except Exception:
+                pass
+
+            page.add_component(component)
+            pasted_component_ids.append(new_id)
+            self.selected_components.add(new_id)
+
+        # 2) Paste junctions next and build junction ID mapping
+        old_junc_to_new_junc: dict[str, str] = {}
+        pasted_junction_ids: list[str] = []
+        embedded_wire_dicts: list[dict] = []
+        for junction_data in (clip.get('junctions', []) or []):
+            if not isinstance(junction_data, dict):
+                continue
+            old_jid = junction_data.get('junction_id')
+            if not isinstance(old_jid, str) or not old_jid:
+                continue
+
+            child_wires = junction_data.get('child_wires', [])
+            if isinstance(child_wires, list) and child_wires:
+                for cw in child_wires:
+                    if isinstance(cw, dict):
+                        embedded_wire_dicts.append(cw)
+
+            pos = junction_data.get('position', {})
+            if not isinstance(pos, dict):
+                continue
+            try:
+                x = float(pos.get('x', 0.0)) + paste_offset
+                y = float(pos.get('y', 0.0)) + paste_offset
+            except Exception:
+                x, y = 0.0, 0.0
+
+            new_jid = id_manager.generate_id()
+            junction = Junction(new_jid, (int(x), int(y)))
+            page.add_junction(junction)
+            old_junc_to_new_junc[old_jid] = new_jid
+            pasted_junction_ids.append(new_jid)
+            self.selected_junctions.add(new_jid)
+
+        endpoint_map: dict[str, str] = {}
+        endpoint_map.update(old_tab_to_new_tab)
+        endpoint_map.update(old_junc_to_new_junc)
+
+        # 3) Paste wires with endpoint remapping
+        pasted_wire_ids: list[str] = []
+        seen_source_wire_ids: set[str] = set()
+        wire_sources = list(clip.get('wires', []) or []) + embedded_wire_dicts
+        for wire_data in wire_sources:
+            if isinstance(wire_data, dict):
+                src_id = wire_data.get('wire_id')
+                if isinstance(src_id, str) and src_id:
+                    if src_id in seen_source_wire_ids:
+                        continue
+                    seen_source_wire_ids.add(src_id)
+            remapped = self._remap_wire_dict(wire_data, id_manager=id_manager, endpoint_map=endpoint_map, offset=paste_offset)
+            if not remapped:
+                continue
+            try:
+                wire_obj = Wire.from_dict(remapped)
+            except Exception:
+                continue
+            page.add_wire(wire_obj)
+            pasted_wire_ids.append(wire_obj.wire_id)
+            self.selected_wires.add(wire_obj.wire_id)
         
         # Mark document as modified
         self.file_tabs.set_tab_modified(tab.tab_id, True)
         
         # Re-render page
         self.design_canvas.set_page(page)
+
+        # Re-apply component selection (wire/junction selection persists via sets)
+        for cid in pasted_component_ids:
+            try:
+                self.design_canvas.set_component_selected(cid, True)
+            except Exception:
+                pass
         
         # Update properties panel and menu
         if len(self.selected_components) == 1:
@@ -3592,8 +3853,17 @@ class MainWindow:
         else:
             self.properties_panel.set_component(None)
         
-        self.menu_bar.enable_edit_menu(has_selection=len(self.selected_components) > 0)
-        self.set_status(f"Pasted {pasted_count} component(s)")
+        self.menu_bar.enable_edit_menu(
+            has_selection=(
+                len(self.selected_components) > 0
+                or len(self.selected_wires) > 0
+                or len(self.selected_junctions) > 0
+                or len(self.selected_waypoints) > 0
+            )
+        )
+        self.set_status(
+            f"Pasted {len(pasted_component_ids)} component(s), {len(pasted_wire_ids)} wire(s), {len(pasted_junction_ids)} junction(s)"
+        )
     
     def _delete_selected(self) -> None:
         """
@@ -3604,7 +3874,12 @@ class MainWindow:
         if self.simulation_mode:
             return
         
-        if not self.selected_components and not self.selected_wires:
+        if (
+            not self.selected_components
+            and not self.selected_wires
+            and not self.selected_junctions
+            and not self.selected_waypoints
+        ):
             self.set_status("No items selected to delete")
             return
         
@@ -3621,12 +3896,13 @@ class MainWindow:
         if not page:
             return
         
-        # Count items to delete
+        # Count items to delete (note: wires may be expanded below)
         delete_components_count = len(self.selected_components)
         delete_wires_count = len(self.selected_wires)
+        delete_junctions_count = len(self.selected_junctions)
 
         # Show confirmation dialog
-        if delete_components_count and not delete_wires_count:
+        if delete_components_count and not delete_wires_count and not delete_junctions_count:
             component_word = "component" if delete_components_count == 1 else "components"
             message = f"Delete {delete_components_count} {component_word}?"
             if delete_components_count == 1:
@@ -3634,14 +3910,22 @@ class MainWindow:
                 component = page.components.get(component_id)
                 if component:
                     message = f"Delete {component.__class__.__name__} ({component_id})?"
-        elif delete_wires_count and not delete_components_count:
+        elif delete_wires_count and not delete_components_count and not delete_junctions_count:
             if delete_wires_count == 1:
                 wire_id = next(iter(self.selected_wires))
                 message = f"Delete wire ({wire_id})?"
             else:
                 message = f"Delete {delete_wires_count} wires?"
+        elif delete_junctions_count and not delete_components_count and not delete_wires_count:
+            if delete_junctions_count == 1:
+                junction_id = next(iter(self.selected_junctions))
+                message = f"Delete junction ({junction_id}) and its connected wire(s)?"
+            else:
+                message = f"Delete {delete_junctions_count} junctions and their connected wire(s)?"
         else:
-            message = f"Delete {delete_components_count} component(s) and {delete_wires_count} wire(s)?"
+            message = (
+                f"Delete {delete_components_count} component(s), {delete_wires_count} wire(s), and {delete_junctions_count} junction(s)?"
+            )
         
         result = messagebox.askyesno(
             "Confirm Deletion",
@@ -3661,8 +3945,19 @@ class MainWindow:
                 return None
             return parts[0]
 
-        # Find wires connected to deleted components and include explicitly selected wires
+        # Find wires connected to deleted components/junctions and include explicitly selected wires/waypoints
         wires_to_delete = set(self.selected_wires)
+
+        # Waypoint selection implies wire deletion.
+        for wire_id, waypoint_id in self.selected_waypoints:
+            if wire_id:
+                wires_to_delete.add(wire_id)
+
+        # Junction selection implies deleting connected wires.
+        if self.selected_junctions:
+            for wire in page.wires.values():
+                if wire.start_tab_id in self.selected_junctions or wire.end_tab_id in self.selected_junctions:
+                    wires_to_delete.add(wire.wire_id)
         if self.selected_components:
             for wire in page.wires.values():
                 start_component_id = _tab_id_to_component_id(wire.start_tab_id)
@@ -3673,8 +3968,8 @@ class MainWindow:
                 ):
                     wires_to_delete.add(wire.wire_id)
         
-        # Track junctions connected to wires being deleted to remove orphans later
-        junctions_to_check = set()
+        # Track junctions connected to wires being deleted (and explicitly selected junctions) to remove orphans later
+        junctions_to_check = set(self.selected_junctions)
         for wire_id in wires_to_delete:
             wire_obj = page.wires.get(wire_id)
             if wire_obj:
