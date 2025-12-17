@@ -1,0 +1,12 @@
+# Test memory file for Memory component
+# Address bits: 8
+# Data bits: 8
+#
+# Format: ADDRESS:VALUE (in hex)
+0000:FF
+0001:A5
+0002:3C
+0010:12
+0011:34
+0012:56
+00FF:AA

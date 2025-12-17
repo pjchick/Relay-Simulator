@@ -15,6 +15,7 @@ from components.bus import BUS
 from components.seven_segment_display import SevenSegmentDisplay
 from components.thumbwheel import Thumbwheel
 from components.bus_display import BusDisplay
+from components.memory import Memory
 
 
 class ComponentFactory:
@@ -42,6 +43,7 @@ class ComponentFactory:
         self.register_component("SevenSegmentDisplay", SevenSegmentDisplay)
         self.register_component("Thumbwheel", Thumbwheel)
         self.register_component("BusDisplay", BusDisplay)
+        self.register_component("Memory", Memory)
     
     def register_component(self, type_name: str, component_class: Type[Component]):
         """

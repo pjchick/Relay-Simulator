@@ -12,8 +12,8 @@
           "component_id": "4536e515",
           "component_type": "SevenSegmentDisplay",
           "position": {
-            "x": 210,
-            "y": 140
+            "x": 230,
+            "y": 120
           },
           "pins": [],
           "properties": {
@@ -26,8 +26,8 @@
           "component_id": "1549dbd6",
           "component_type": "SevenSegmentDisplay",
           "position": {
-            "x": 150,
-            "y": 140
+            "x": 170,
+            "y": 120
           },
           "pins": [],
           "properties": {
@@ -40,8 +40,8 @@
           "component_id": "a8a77c43",
           "component_type": "SevenSegmentDisplay",
           "position": {
-            "x": 90,
-            "y": 140
+            "x": 110,
+            "y": 120
           },
           "pins": [],
           "properties": {
@@ -54,8 +54,8 @@
           "component_id": "b723b959",
           "component_type": "Thumbwheel",
           "position": {
-            "x": 210,
-            "y": 210
+            "x": 230,
+            "y": 370
           },
           "pins": [
             {
@@ -108,7 +108,7 @@
             }
           ],
           "properties": {
-            "bus_name": "Data",
+            "bus_name": "Address",
             "start_pin": 0,
             "value": 0
           }
@@ -117,8 +117,8 @@
           "component_id": "697d7bd9",
           "component_type": "Thumbwheel",
           "position": {
-            "x": 150,
-            "y": 210
+            "x": 170,
+            "y": 190
           },
           "pins": [
             {
@@ -180,8 +180,8 @@
           "component_id": "617cd260",
           "component_type": "Thumbwheel",
           "position": {
-            "x": 90,
-            "y": 210
+            "x": 110,
+            "y": 190
           },
           "pins": [
             {
@@ -831,6 +831,432 @@
             "mode": "toggle",
             "label": "RLD",
             "label_position": "left",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "e7a44af6",
+          "component_type": "SevenSegmentDisplay",
+          "position": {
+            "x": 110,
+            "y": 300
+          },
+          "pins": [],
+          "properties": {
+            "bus_name": "Address",
+            "start_pin": 8,
+            "color": "red"
+          }
+        },
+        {
+          "component_id": "73f0e093",
+          "component_type": "SevenSegmentDisplay",
+          "position": {
+            "x": 230,
+            "y": 300
+          },
+          "pins": [],
+          "properties": {
+            "bus_name": "Address",
+            "start_pin": 0,
+            "color": "red"
+          }
+        },
+        {
+          "component_id": "6ae755d0",
+          "component_type": "SevenSegmentDisplay",
+          "position": {
+            "x": 170,
+            "y": 300
+          },
+          "pins": [],
+          "properties": {
+            "bus_name": "Address",
+            "start_pin": 4,
+            "color": "red"
+          }
+        },
+        {
+          "component_id": "97ebf57a",
+          "component_type": "Thumbwheel",
+          "position": {
+            "x": 170,
+            "y": 370
+          },
+          "pins": [
+            {
+              "pin_id": "97ebf57a.pin0",
+              "tabs": [
+                {
+                  "tab_id": "97ebf57a.pin0.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1000
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "97ebf57a.pin1",
+              "tabs": [
+                {
+                  "tab_id": "97ebf57a.pin1.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1020
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "97ebf57a.pin2",
+              "tabs": [
+                {
+                  "tab_id": "97ebf57a.pin2.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1040
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "97ebf57a.pin3",
+              "tabs": [
+                {
+                  "tab_id": "97ebf57a.pin3.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1060
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "bus_name": "Address",
+            "start_pin": 4,
+            "value": 0
+          }
+        },
+        {
+          "component_id": "591fa7dd",
+          "component_type": "Thumbwheel",
+          "position": {
+            "x": 110,
+            "y": 370
+          },
+          "pins": [
+            {
+              "pin_id": "591fa7dd.pin0",
+              "tabs": [
+                {
+                  "tab_id": "591fa7dd.pin0.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1000
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "591fa7dd.pin1",
+              "tabs": [
+                {
+                  "tab_id": "591fa7dd.pin1.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1020
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "591fa7dd.pin2",
+              "tabs": [
+                {
+                  "tab_id": "591fa7dd.pin2.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1040
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "591fa7dd.pin3",
+              "tabs": [
+                {
+                  "tab_id": "591fa7dd.pin3.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1060
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "bus_name": "Address",
+            "start_pin": 8,
+            "value": 0
+          }
+        },
+        {
+          "component_id": "2aebbf9b",
+          "component_type": "Thumbwheel",
+          "position": {
+            "x": 230,
+            "y": 190
+          },
+          "pins": [
+            {
+              "pin_id": "2aebbf9b.pin0",
+              "tabs": [
+                {
+                  "tab_id": "2aebbf9b.pin0.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1000
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "2aebbf9b.pin1",
+              "tabs": [
+                {
+                  "tab_id": "2aebbf9b.pin1.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1020
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "2aebbf9b.pin2",
+              "tabs": [
+                {
+                  "tab_id": "2aebbf9b.pin2.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1040
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "2aebbf9b.pin3",
+              "tabs": [
+                {
+                  "tab_id": "2aebbf9b.pin3.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1060
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "bus_name": "Data",
+            "start_pin": 0,
+            "value": 0
+          }
+        },
+        {
+          "component_id": "8ad2bd0b",
+          "component_type": "Switch",
+          "position": {
+            "x": 100,
+            "y": 460
+          },
+          "pins": [
+            {
+              "pin_id": "8ad2bd0b.pin1",
+              "tabs": [
+                {
+                  "tab_id": "8ad2bd0b.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "8ad2bd0b.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "8ad2bd0b.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "8ad2bd0b.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "link_name": "MEM_EN",
+          "properties": {
+            "mode": "toggle",
+            "label": "MEM_EN",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "e24c5b7b",
+          "component_type": "Switch",
+          "position": {
+            "x": 170,
+            "y": 460
+          },
+          "pins": [
+            {
+              "pin_id": "e24c5b7b.pin1",
+              "tabs": [
+                {
+                  "tab_id": "e24c5b7b.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "e24c5b7b.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "e24c5b7b.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "e24c5b7b.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "link_name": "MEM_WR",
+          "properties": {
+            "mode": "toggle",
+            "label": "MEM_WR",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "fe7ad3ac",
+          "component_type": "Switch",
+          "position": {
+            "x": 240,
+            "y": 460
+          },
+          "pins": [
+            {
+              "pin_id": "fe7ad3ac.pin1",
+              "tabs": [
+                {
+                  "tab_id": "fe7ad3ac.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "fe7ad3ac.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "fe7ad3ac.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "fe7ad3ac.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "link_name": "MEM_RD",
+          "properties": {
+            "mode": "toggle",
+            "label": "MEM_RD",
+            "label_position": "bottom",
             "color": "red",
             "on_color": [
               255,
@@ -22292,6 +22718,436 @@
             "y": 640
           },
           "child_wires": []
+        }
+      ]
+    },
+    {
+      "page_id": "78bfea40",
+      "name": "Memory",
+      "canvas_x": 0.0,
+      "canvas_y": 0.0,
+      "canvas_zoom": 1.0,
+      "components": [
+        {
+          "component_id": "94424d02",
+          "component_type": "Memory",
+          "position": {
+            "x": 720,
+            "y": 270
+          },
+          "pins": [
+            {
+              "pin_id": "94424d02.Enable",
+              "tabs": [
+                {
+                  "tab_id": "94424d02.Enable.tab",
+                  "position": {
+                    "x": -440,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "94424d02.Read",
+              "tabs": [
+                {
+                  "tab_id": "94424d02.Read.tab",
+                  "position": {
+                    "x": -440,
+                    "y": 30
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "94424d02.Write",
+              "tabs": [
+                {
+                  "tab_id": "94424d02.Write.tab",
+                  "position": {
+                    "x": -440,
+                    "y": 100
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "94424d02.DATA_0",
+              "tabs": [
+                {
+                  "tab_id": "94424d02.DATA_0.tab",
+                  "position": {
+                    "x": 360,
+                    "y": -110
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "94424d02.DATA_1",
+              "tabs": [
+                {
+                  "tab_id": "94424d02.DATA_1.tab",
+                  "position": {
+                    "x": 360,
+                    "y": -90
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "94424d02.DATA_2",
+              "tabs": [
+                {
+                  "tab_id": "94424d02.DATA_2.tab",
+                  "position": {
+                    "x": 360,
+                    "y": -70
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "94424d02.DATA_3",
+              "tabs": [
+                {
+                  "tab_id": "94424d02.DATA_3.tab",
+                  "position": {
+                    "x": 360,
+                    "y": -50
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "94424d02.DATA_4",
+              "tabs": [
+                {
+                  "tab_id": "94424d02.DATA_4.tab",
+                  "position": {
+                    "x": 360,
+                    "y": -30
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "94424d02.DATA_5",
+              "tabs": [
+                {
+                  "tab_id": "94424d02.DATA_5.tab",
+                  "position": {
+                    "x": 360,
+                    "y": -10
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "94424d02.DATA_6",
+              "tabs": [
+                {
+                  "tab_id": "94424d02.DATA_6.tab",
+                  "position": {
+                    "x": 360,
+                    "y": 10
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "94424d02.DATA_7",
+              "tabs": [
+                {
+                  "tab_id": "94424d02.DATA_7.tab",
+                  "position": {
+                    "x": 360,
+                    "y": 30
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "94424d02.DATA_8",
+              "tabs": [
+                {
+                  "tab_id": "94424d02.DATA_8.tab",
+                  "position": {
+                    "x": 360,
+                    "y": 50
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "94424d02.DATA_9",
+              "tabs": [
+                {
+                  "tab_id": "94424d02.DATA_9.tab",
+                  "position": {
+                    "x": 360,
+                    "y": 70
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "94424d02.DATA_10",
+              "tabs": [
+                {
+                  "tab_id": "94424d02.DATA_10.tab",
+                  "position": {
+                    "x": 360,
+                    "y": 90
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "94424d02.DATA_11",
+              "tabs": [
+                {
+                  "tab_id": "94424d02.DATA_11.tab",
+                  "position": {
+                    "x": 360,
+                    "y": 110
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "address_bits": 12,
+            "data_bits": 12,
+            "address_bus_name": "Address",
+            "data_bus_name": "Data",
+            "default_memory_file": "",
+            "is_volatile": false,
+            "label": "RAM",
+            "label_position": "bottom",
+            "visible_rows": 16
+          },
+          "memory": {
+            "0": 1365,
+            "1": 2730,
+            "2": 3276,
+            "3": 546,
+            "4": 4095
+          },
+          "scroll_offset": 0
+        },
+        {
+          "component_id": "f2780baf",
+          "component_type": "Switch",
+          "position": {
+            "x": 220,
+            "y": 230
+          },
+          "pins": [
+            {
+              "pin_id": "f2780baf.pin1",
+              "tabs": [
+                {
+                  "tab_id": "f2780baf.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "f2780baf.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "f2780baf.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "f2780baf.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "link_name": "MEM_EN",
+          "properties": {
+            "mode": "toggle",
+            "label": "MEM_EN",
+            "label_position": "left",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "6811eaa6",
+          "component_type": "Switch",
+          "position": {
+            "x": 220,
+            "y": 300
+          },
+          "pins": [
+            {
+              "pin_id": "6811eaa6.pin1",
+              "tabs": [
+                {
+                  "tab_id": "6811eaa6.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "6811eaa6.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "6811eaa6.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "6811eaa6.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "link_name": "MEM_RD",
+          "properties": {
+            "mode": "toggle",
+            "label": "MEM_RD",
+            "label_position": "left",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "74b7eab0",
+          "component_type": "Switch",
+          "position": {
+            "x": 220,
+            "y": 370
+          },
+          "pins": [
+            {
+              "pin_id": "74b7eab0.pin1",
+              "tabs": [
+                {
+                  "tab_id": "74b7eab0.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "74b7eab0.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "74b7eab0.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "74b7eab0.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "link_name": "MEM_WR",
+          "properties": {
+            "mode": "toggle",
+            "label": "MEM_WR",
+            "label_position": "left",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        }
+      ],
+      "wires": [
+        {
+          "wire_id": "ce3f2704",
+          "start_tab_id": "f2780baf.pin1.tab3",
+          "end_tab_id": "94424d02.Enable.tab"
+        },
+        {
+          "wire_id": "e5c8aceb",
+          "start_tab_id": "6811eaa6.pin1.tab3",
+          "end_tab_id": "94424d02.Read.tab"
+        },
+        {
+          "wire_id": "af4dc0d1",
+          "start_tab_id": "74b7eab0.pin1.tab3",
+          "end_tab_id": "94424d02.Write.tab"
         }
       ]
     }

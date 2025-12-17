@@ -798,6 +798,88 @@ class MainWindow:
 
         return True
 
+    def _handle_memory_cell_interaction(self, canvas_x: float, canvas_y: float) -> bool:
+        """Handle memory cell editing in simulation mode.
+        
+        Returns True if a memory cell was clicked and handled.
+        """
+        # Get active page
+        tab = self.file_tabs.get_active_tab()
+        if not tab or not tab.document:
+            return False
+        
+        active_page_id = self.page_tabs.get_active_page_id()
+        if not active_page_id:
+            return False
+        
+        page = tab.document.get_page(active_page_id)
+        if not page:
+            return False
+        
+        # Check each Memory component
+        for component in page.get_all_components():
+            if component.component_type != "Memory":
+                continue
+            
+            # Get renderer for this component
+            renderer = self.design_canvas.renderers.get(component.component_id)
+            if not renderer:
+                continue
+            
+            # Check if click is on a memory cell
+            try:
+                from gui.renderers.memory_renderer import MemoryRenderer
+                if isinstance(renderer, MemoryRenderer):
+                    zoom = getattr(self.design_canvas, 'zoom_level', 1.0)
+                    address = renderer.get_cell_at_position(canvas_x, canvas_y, zoom)
+                    
+                    if address is not None:
+                        # Cell was clicked - prompt for new value
+                        current_value = component.read_memory(address)
+                        data_bits = component._get_data_bits()
+                        addr_bits = component._get_address_bits()
+                        
+                        # Format current value as hex
+                        hex_digits = (data_bits + 3) // 4
+                        current_hex = f"{current_value:0{hex_digits}X}"
+                        
+                        # Prompt user for new value
+                        from tkinter import simpledialog
+                        addr_hex = f"{address:0{(addr_bits + 3) // 4}X}"
+                        new_value_str = simpledialog.askstring(
+                            "Edit Memory Cell",
+                            f"Enter hex value for address 0x{addr_hex}\n"
+                            f"(Current: 0x{current_hex}, Max: {(1 << data_bits) - 1:#X})",
+                            initialvalue=current_hex
+                        )
+                        
+                        if new_value_str is not None:
+                            try:
+                                # Parse hex value
+                                new_value = int(new_value_str.strip(), 16)
+                                
+                                # Validate range
+                                max_value = (1 << data_bits) - 1
+                                if 0 <= new_value <= max_value:
+                                    # Update memory
+                                    component.write_memory(address, new_value)
+                                    
+                                    # Update display
+                                    self._update_simulation_visuals()
+                                    self.set_status(f"Memory[0x{addr_hex}] = 0x{new_value:0{hex_digits}X}")
+                                else:
+                                    self.set_status(f"Error: Value must be 0-{max_value:#X}")
+                            except ValueError:
+                                self.set_status("Error: Invalid hex value")
+                        
+                        return True
+            except Exception as e:
+                print(f"Error editing memory cell: {e}")
+                import traceback
+                traceback.print_exc()
+        
+        return False
+
     def _handle_switch_interaction(self, canvas_x: float, canvas_y: float, action: str) -> None:
         """Handle switch press/toggle in simulation mode."""
         # Clear any previous press tracking; we only track the current mouse-down.
@@ -1210,6 +1292,10 @@ class MainWindow:
         self.is_dragging = False  # True when actively dragging components
         self._pending_drag_start = None  # (canvas_x, canvas_y) click start for potential drag
         self._pending_drag_page = None  # Active page snapshot at mouse-down
+
+        # Track Memory scrollbar dragging in simulation mode
+        self._memory_scrollbar_renderer = None
+        self._memory_scrollbar_zoom = 1.0
         
         # Track waypoint editing
         self.dragging_waypoint = None  # Waypoint being dragged (waypoint_id, wire_id)
@@ -1563,6 +1649,12 @@ class MainWindow:
             # Mouse-down: handle Thumbwheel buttons or Switch press/toggle.
             if self._handle_thumbwheel_interaction(canvas_x, canvas_y):
                 return
+            # Handle memory scrollbar interaction
+            if self._handle_memory_scrollbar_interaction(canvas_x, canvas_y):
+                return
+            # Handle memory cell editing
+            if self._handle_memory_cell_interaction(canvas_x, canvas_y):
+                return
             self._handle_switch_interaction(canvas_x, canvas_y, action='press')
             return
         
@@ -1786,34 +1878,21 @@ class MainWindow:
         # Create component
         component_id = tab.document.id_manager.generate_id()
         
-        # Import component classes
-        from components.switch import Switch
-        from components.indicator import Indicator
-        from components.dpdt_relay import DPDTRelay
-        from components.vcc import VCC
-        from components.bus import BUS
-        from components.seven_segment_display import SevenSegmentDisplay
-        from components.thumbwheel import Thumbwheel
-        from components.bus_display import BusDisplay
+        # Use ComponentFactory to create component
+        from components.factory import get_factory
         
-        # Create component instance based on type
+        factory = get_factory()
         component = None
-        if self.placement_component == 'Switch':
-            component = Switch(component_id, page.page_id)
-        elif self.placement_component == 'Indicator':
-            component = Indicator(component_id, page.page_id)
-        elif self.placement_component == 'DPDTRelay':
-            component = DPDTRelay(component_id, page.page_id)
-        elif self.placement_component == 'VCC':
-            component = VCC(component_id, page.page_id)
-        elif self.placement_component == 'BUS':
-            component = BUS(component_id, page.page_id)
-        elif self.placement_component == 'SevenSegmentDisplay':
-            component = SevenSegmentDisplay(component_id, page.page_id)
-        elif self.placement_component == 'Thumbwheel':
-            component = Thumbwheel(component_id, page.page_id)
-        elif self.placement_component == 'BusDisplay':
-            component = BusDisplay(component_id, page.page_id)
+        
+        try:
+            component = factory.create_component(
+                self.placement_component,
+                component_id,
+                page.page_id
+            )
+        except ValueError as e:
+            self.set_status(f"Error creating component: {e}")
+            return
         
         if component:
             # Set position and rotation
@@ -1848,6 +1927,21 @@ class MainWindow:
         # Get canvas coordinates
         canvas_x = self.design_canvas.canvas.canvasx(event.x)
         canvas_y = self.design_canvas.canvas.canvasy(event.y)
+
+        # Simulation mode: drag Memory scrollbar thumb
+        if self.simulation_mode and self._memory_scrollbar_renderer:
+            # Only while Button-1 is held
+            if (event.state & 0x0100) != 0:
+                try:
+                    changed = bool(self._memory_scrollbar_renderer.handle_scrollbar_drag(
+                        canvas_y,
+                        self._memory_scrollbar_zoom
+                    ))
+                except Exception:
+                    changed = False
+                if changed:
+                    self._update_simulation_visuals()
+                return
         
         # Update waypoint hover state (always check, even while dragging/drawing)
         # This allows waypoint markers to appear when hovering
@@ -2883,14 +2977,28 @@ class MainWindow:
         for component in page.components.values():
             comp_x, comp_y = component.position
             
-            # Get component bounds (simplified - assumes components are roughly 100x100)
-            # TODO: Get actual component bounds from renderer
-            half_size = 50
+            # Get component bounds - use renderer if available for accurate bounds
+            renderer = self.design_canvas.renderers.get(component.component_id)
+            if renderer and hasattr(renderer, 'get_bounds'):
+                # Use renderer's bounds if available
+                try:
+                    zoom = getattr(self.design_canvas, 'zoom_level', 1.0)
+                    bounds = renderer.get_bounds(zoom)
+                    if bounds:
+                        x1, y1, x2, y2 = bounds
+                        if x1 <= canvas_x <= x2 and y1 <= canvas_y <= y2:
+                            clicked_component = component
+                            break
+                except Exception:
+                    pass
             
-            if (comp_x - half_size <= canvas_x <= comp_x + half_size and
-                comp_y - half_size <= canvas_y <= comp_y + half_size):
-                clicked_component = component
-                break
+            # Fallback: simplified bounds check (assumes components are roughly 100x100)
+            if not clicked_component:
+                half_size = 50
+                if (comp_x - half_size <= canvas_x <= comp_x + half_size and
+                    comp_y - half_size <= canvas_y <= comp_y + half_size):
+                    clicked_component = component
+                    break
         
         if clicked_component:
             # Component clicked
@@ -2971,8 +3079,61 @@ class MainWindow:
         """
         # In simulation mode, mouse-up releases pushbutton switches
         if self.simulation_mode:
+            if self._memory_scrollbar_renderer:
+                try:
+                    self._memory_scrollbar_renderer.handle_scrollbar_release()
+                except Exception:
+                    pass
+                self._memory_scrollbar_renderer = None
             self._handle_switch_release()
             return
+
+    def _handle_memory_scrollbar_interaction(self, canvas_x: float, canvas_y: float) -> bool:
+        """Handle Memory scrollbar click/drag in simulation mode.
+
+        Returns True if a scrollbar interaction was started/handled.
+        """
+        tab = self.file_tabs.get_active_tab()
+        if not tab or not tab.document:
+            return False
+
+        active_page_id = self.page_tabs.get_active_page_id()
+        if not active_page_id:
+            return False
+
+        page = tab.document.get_page(active_page_id)
+        if not page:
+            return False
+
+        zoom = getattr(self.design_canvas, 'zoom_level', 1.0)
+
+        from gui.renderers.memory_renderer import MemoryRenderer
+
+        for component in page.get_all_components():
+            if component.component_type != "Memory":
+                continue
+
+            renderer = self.design_canvas.renderers.get(component.component_id)
+            if not renderer or not isinstance(renderer, MemoryRenderer):
+                continue
+
+            target = renderer.on_click(canvas_x, canvas_y, zoom, simulation_mode=True)
+            if target != 'scrollbar':
+                continue
+
+            handled = False
+            try:
+                handled = bool(renderer.handle_scrollbar_press(canvas_x, canvas_y, zoom))
+            except Exception:
+                handled = False
+
+            if handled:
+                self._memory_scrollbar_renderer = renderer
+                self._memory_scrollbar_zoom = zoom
+                self._update_simulation_visuals()
+                return True
+
+        return False
 
         # If we never crossed the drag threshold, clear pending drag state
         self._pending_drag_start = None

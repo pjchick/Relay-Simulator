@@ -336,6 +336,74 @@ PROPERTY_SCHEMAS: Dict[str, List[Dict[str, Any]]] = {
             'coerce': int,
         },
     ],
+
+    'Memory': [
+        {
+            'section': 'Advanced',
+            'key': 'address_bits',
+            'label': 'Address Bits',
+            'type': 'number',
+            'default': 8,
+            'min': 3,
+            'max': 16,
+            'target': 'prop',
+            'coerce': int,
+        },
+        {
+            'section': 'Advanced',
+            'key': 'data_bits',
+            'label': 'Data Bits',
+            'type': 'number',
+            'default': 8,
+            'min': 1,
+            'max': 16,
+            'target': 'prop',
+            'coerce': int,
+        },
+        {
+            'section': 'Advanced',
+            'key': 'address_bus_name',
+            'label': 'Address Bus',
+            'type': 'text',
+            'default': 'ADDR',
+            'target': 'prop',
+        },
+        {
+            'section': 'Advanced',
+            'key': 'data_bus_name',
+            'label': 'Data Bus',
+            'type': 'text',
+            'default': 'DATA',
+            'target': 'prop',
+        },
+        {
+            'section': 'Advanced',
+            'key': 'default_memory_file',
+            'label': 'Default File',
+            'type': 'text',
+            'default': '',
+            'target': 'prop',
+        },
+        {
+            'section': 'Advanced',
+            'key': 'is_volatile',
+            'label': 'Is Volatile',
+            'type': 'boolean',
+            'default': False,
+            'target': 'prop',
+        },
+        {
+            'section': 'Format',
+            'key': 'visible_rows',
+            'label': 'Visible Rows',
+            'type': 'number',
+            'default': 16,
+            'min': 1,
+            'max': 256,
+            'target': 'prop',
+            'coerce': int,
+        },
+    ],
 }
 
 
@@ -851,6 +919,10 @@ class PropertiesPanel:
             # Store editor for future reference
             self.property_editors[definition['key']] = editor
 
+        # Add custom controls for Memory component
+        if comp_type == 'Memory':
+            self._add_memory_actions()
+
     def _create_editor_for_definition(self, parent: tk.Widget, definition: Dict[str, Any]) -> Optional[PropertyEditor]:
         """Create and wire a property editor based on a schema definition."""
         ptype = definition.get('type', 'text').lower()
@@ -1010,6 +1082,113 @@ class PropertiesPanel:
         """Notify that a property has changed (trigger canvas redraw)."""
         # This will be connected to canvas refresh
         self.parent.event_generate('<<PropertyChanged>>')
+
+    def _add_memory_actions(self):
+        """Add Load/Save/Clear buttons for Memory component."""
+        if not self.current_component or self.current_component.__class__.__name__ != 'Memory':
+            return
+
+        section = self.sections.get('Advanced')
+        if not section:
+            return
+
+        # Add button row
+        button_frame = tk.Frame(section.content, bg=VSCodeTheme.BG_PRIMARY)
+        button_frame.pack(fill=tk.X, pady=5, padx=5)
+
+        # Load button
+        load_btn = tk.Button(
+            button_frame,
+            text="Load File",
+            command=self._memory_load_file,
+            bg=VSCodeTheme.BG_SECONDARY,
+            fg=VSCodeTheme.FG_PRIMARY,
+            font=("Segoe UI", 9),
+            relief=tk.FLAT,
+            cursor='hand2'
+        )
+        load_btn.pack(side=tk.LEFT, padx=2, fill=tk.X, expand=True)
+
+        # Save button
+        save_btn = tk.Button(
+            button_frame,
+            text="Save File",
+            command=self._memory_save_file,
+            bg=VSCodeTheme.BG_SECONDARY,
+            fg=VSCodeTheme.FG_PRIMARY,
+            font=("Segoe UI", 9),
+            relief=tk.FLAT,
+            cursor='hand2'
+        )
+        save_btn.pack(side=tk.LEFT, padx=2, fill=tk.X, expand=True)
+
+        # Clear button
+        clear_btn = tk.Button(
+            button_frame,
+            text="Clear",
+            command=self._memory_clear,
+            bg=VSCodeTheme.BG_SECONDARY,
+            fg=VSCodeTheme.FG_PRIMARY,
+            font=("Segoe UI", 9),
+            relief=tk.FLAT,
+            cursor='hand2'
+        )
+        clear_btn.pack(side=tk.LEFT, padx=2, fill=tk.X, expand=True)
+
+    def _memory_load_file(self):
+        """Load memory contents from file."""
+        if not self.current_component or self.current_component.__class__.__name__ != 'Memory':
+            return
+
+        from tkinter import filedialog
+        filepath = filedialog.askopenfilename(
+            title="Load Memory File",
+            filetypes=[
+                ("Memory files", "*.mem"),
+                ("Text files", "*.txt"),
+                ("All files", "*.*")
+            ]
+        )
+
+        if filepath:
+            if self.current_component.load_from_file(filepath):
+                self._notify_change()
+                print(f"Memory loaded from {filepath}")
+            else:
+                print(f"Failed to load memory from {filepath}")
+
+    def _memory_save_file(self):
+        """Save memory contents to file."""
+        if not self.current_component or self.current_component.__class__.__name__ != 'Memory':
+            return
+
+        from tkinter import filedialog
+        filepath = filedialog.asksaveasfilename(
+            title="Save Memory File",
+            defaultextension=".mem",
+            filetypes=[
+                ("Memory files", "*.mem"),
+                ("Text files", "*.txt"),
+                ("All files", "*.*")
+            ]
+        )
+
+        if filepath:
+            if self.current_component.save_to_file(filepath):
+                print(f"Memory saved to {filepath}")
+            else:
+                print(f"Failed to save memory to {filepath}")
+
+    def _memory_clear(self):
+        """Clear memory contents."""
+        if not self.current_component or self.current_component.__class__.__name__ != 'Memory':
+            return
+
+        from tkinter import messagebox
+        if messagebox.askyesno("Clear Memory", "Clear all memory contents?"):
+            self.current_component.clear_memory()
+            self._notify_change()
+            print("Memory cleared")
     
     def pack(self, **kwargs):
         """Pack the panel."""
