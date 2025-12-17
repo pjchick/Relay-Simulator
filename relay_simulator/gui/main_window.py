@@ -3088,6 +3088,36 @@ class MainWindow:
             self._handle_switch_release()
             return
 
+        # If we never crossed the drag threshold, clear pending drag state
+        self._pending_drag_start = None
+        self._pending_drag_page = None
+
+        # Handle junction drag end
+        if self.dragging_junction:
+            self._end_junction_drag()
+            return
+
+        # Handle waypoint drag end
+        if self.dragging_waypoint:
+            self._end_waypoint_drag()
+            return
+
+        # Handle component drag end
+        if self.is_dragging:
+            self._end_drag()
+            return
+
+        # Handle bounding box selection completion
+        if self.selection_start and self.selection_box:
+            # Get all components in selection box
+            self._finalize_box_selection()
+
+        # Clean up selection box
+        if self.selection_box:
+            self.design_canvas.canvas.delete(self.selection_box)
+            self.selection_box = None
+        self.selection_start = None
+
     def _handle_memory_scrollbar_interaction(self, canvas_x: float, canvas_y: float) -> bool:
         """Handle Memory scrollbar click/drag in simulation mode.
 
