@@ -16,6 +16,7 @@ from gui.renderers.thumbwheel_renderer import ThumbwheelRenderer
 from gui.renderers.bus_display_renderer import BusDisplayRenderer
 from gui.renderers.memory_renderer import MemoryRenderer
 from gui.renderers.diode_renderer import DiodeRenderer
+from gui.renderers.clock_renderer import ClockRenderer
 
 
 class RendererFactory:
@@ -37,6 +38,7 @@ class RendererFactory:
         'BusDisplay': BusDisplayRenderer,
         'Memory': MemoryRenderer,
         'Diode': DiodeRenderer,
+        'Clock': ClockRenderer,
     }
     
     @classmethod

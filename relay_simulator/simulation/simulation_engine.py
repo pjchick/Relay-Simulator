@@ -241,6 +241,10 @@ class SimulationEngine:
                     # Set callback for DPDT relays to trigger simulation restart when timer completes
                     if hasattr(component, 'set_on_contacts_switched_callback'):
                         component.set_on_contacts_switched_callback(self._on_relay_contacts_switched)
+
+                    # Set callback for Clock components to trigger simulation restart when they tick
+                    if hasattr(component, 'set_on_tick_callback'):
+                        component.set_on_tick_callback(self._on_clock_tick)
                 except Exception as e:
                     print(f"Error in sim_start for {component.component_id}: {e}")
                     # Continue with other components
@@ -279,6 +283,15 @@ class SimulationEngine:
             self._gui_restart_callback()
         else:
             pass
+
+    def _on_clock_tick(self):
+        """Callback for when a Clock toggles its output.
+
+        Called from the clock's background thread.
+        """
+        self.dirty_manager.mark_all_dirty()
+        if self._gui_restart_callback:
+            self._gui_restart_callback()
     
     def set_gui_restart_callback(self, callback):
         """

@@ -911,12 +911,12 @@ class MainWindow:
         if not clicked_component:
             return
         
-        # Check if it's a switch component
-        if clicked_component.component_type != "Switch":
+        # Check if it's an interactive simulation component (Switch/Clock)
+        if clicked_component.component_type not in ("Switch", "Clock"):
             return
 
-        # Remember the pressed switch so we can release it even if the mouse
-        # is released away from the component (pushbutton behavior).
+        # Remember the pressed component so we can release it for pushbutton switches.
+        # (Clock is toggle-only; release is a no-op.)
         try:
             self._pressed_switch_component = clicked_component
         except Exception:
@@ -933,7 +933,10 @@ class MainWindow:
                 changed = True
 
             if changed:
-                self.set_status("Switch updated")
+                if clicked_component.component_type == 'Clock':
+                    self.set_status("Clock updated")
+                else:
+                    self.set_status("Switch updated")
 
                 if self.simulation_engine:
                     # Propagate switch output changes

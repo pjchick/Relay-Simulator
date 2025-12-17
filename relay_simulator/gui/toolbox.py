@@ -94,6 +94,7 @@ class ToolboxPanel(tk.Frame):
     # Component types with display names
     COMPONENTS = [
         ('Switch', 'Switch'),
+        ('Clock', 'Clock'),
         ('Indicator', 'Indicator'),
         ('DPDTRelay', 'DPDT Relay'),
         ('VCC', 'VCC Source'),
