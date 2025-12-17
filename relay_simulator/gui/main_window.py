@@ -10,6 +10,9 @@ from tkinter import messagebox, filedialog
 from typing import Optional, Dict, Tuple
 from pathlib import Path
 import math
+import threading
+import time
+import traceback
 
 from gui.theme import VSCodeTheme, apply_theme
 from gui.menu_bar import MenuBar
@@ -28,6 +31,7 @@ from core.bridge import Bridge
 from fileio.document_loader import DocumentLoader
 from simulation.simulation_engine import SimulationEngine
 from components.base import Component
+from diagnostics import UiWatchdog, get_logger
 
 
 class MainWindow:
@@ -71,6 +75,18 @@ class MainWindow:
         # Track simulation mode (False = Design Mode, True = Simulation Mode)
         self.simulation_mode = False
         self.simulation_engine = None  # Will hold SimulationEngine instance when running
+
+        # Simulation threading (prevents GUI "Not Responding" during long runs)
+        self._simulation_stopping = False
+        self._sim_run_lock = threading.Lock()
+        self._sim_run_inflight = False
+        self._sim_run_requested = False
+        self._sim_thread: Optional[threading.Thread] = None
+
+        # Diagnostics
+        self._logger = get_logger()
+        self._ui_watchdog = UiWatchdog(self.root)
+        self._ui_watchdog.start()
 
         # Create menu bar (before setting up window close handler so Exit callback works)
         self.menu_bar = MenuBar(self.root)
@@ -448,6 +464,7 @@ class MainWindow:
         
         # Switch to Simulation Mode
         self.simulation_mode = True
+        self._simulation_stopping = False
         
         # Update UI for simulation mode
         self.toolbox.pack_forget()  # Hide toolbox
@@ -465,41 +482,25 @@ class MainWindow:
         # Disable canvas cursor
         self.design_canvas.canvas.config(cursor="")
         
-        # Start simulation in background
-        self.root.after(10, self._run_simulation_step)
+        # Start simulation without blocking the Tk event loop
+        self._run_simulation_step()
         
     def _menu_stop_simulation(self) -> None:
         """Handle Simulation > Stop Simulation (Shift+F5)."""
-        if not self.simulation_mode:
-            return  # Already in design mode
-        
-        # Stop and shutdown simulation engine
+        if not self.simulation_mode or self._simulation_stopping:
+            return
+
+        self._simulation_stopping = True
+        self.set_status("Stopping simulation...")
+
+        # Request stop; do NOT block the UI thread waiting for completion.
         if self.simulation_engine:
             try:
-                self.simulation_engine.shutdown()
-                stats = self.simulation_engine.get_statistics()
-                print(f"Simulation Statistics:")
-                print(f"  Iterations: {stats.iterations}")
-                print(f"  Components Updated: {stats.components_updated}")
-                print(f"  Time to Stability: {stats.time_to_stability:.3f}s")
-                print(f"  Total Time: {stats.total_time:.3f}s")
-                print(f"  Stable: {stats.stable}")
-            except Exception as e:
-                print(f"Error shutting down simulation: {e}")
-            finally:
-                self.simulation_engine = None
-        
-        # Switch back to Design Mode
-        self.simulation_mode = False
-        
-        # Restore UI for design mode - pack before design_canvas.frame
-        self.toolbox.pack(side=tk.LEFT, fill=tk.Y, padx=(0, 1), before=self.design_canvas.frame)
-        self.file_tabs.set_simulation_running(False)
-        self.menu_bar.enable_simulation_controls(is_running=False)
-        self.set_status("Design Mode - Ready")
-        
-        # Redraw canvas to clear powered state visual feedback
-        self._redraw_canvas()
+                self.simulation_engine.stop()
+            except Exception:
+                pass
+
+        self.root.after(50, self._poll_simulation_stopped)
     
     def _build_simulation_structures(self, document: Document):
         """
@@ -563,33 +564,144 @@ class MainWindow:
         Run one simulation step and schedule the next.
         This keeps the simulation running in the background.
         """
-        if not self.simulation_mode or not self.simulation_engine:
+        if not self.simulation_mode or not self.simulation_engine or self._simulation_stopping:
             return
-        
-        # Run one iteration of simulation
+
+        self._schedule_simulation_run()
+
+    def _schedule_simulation_run(self) -> None:
+        """Run SimulationEngine.run() off the Tk thread, serializing invocations."""
+        if not self.simulation_mode or not self.simulation_engine or self._simulation_stopping:
+            return
+
+        with self._sim_run_lock:
+            if self._sim_run_inflight:
+                self._sim_run_requested = True
+                return
+            self._sim_run_inflight = True
+            self._sim_run_requested = False
+
+        def worker():
+            engine = self.simulation_engine
+            if not engine:
+                self.root.after(0, self._on_simulation_run_complete, None, "engine missing")
+                return
+
+            start = time.perf_counter()
+            try:
+                stats = engine.run()
+                duration = time.perf_counter() - start
+                self._logger.info(
+                    "Simulation run complete: stable=%s iterations=%s total=%.3fs wall=%.3fs",
+                    getattr(stats, 'stable', None),
+                    getattr(stats, 'iterations', None),
+                    getattr(stats, 'total_time', None),
+                    duration,
+                )
+                self.root.after(0, self._on_simulation_run_complete, stats, None)
+            except Exception as e:
+                duration = time.perf_counter() - start
+                self._logger.error("Simulation run crashed after %.3fs: %s", duration, e)
+                self._logger.error("%s", traceback.format_exc())
+                self.root.after(0, self._on_simulation_run_complete, None, str(e))
+
+        self._sim_thread = threading.Thread(target=worker, name="SimulationRun", daemon=True)
+        self._sim_thread.start()
+
+    def _on_simulation_run_complete(self, stats, error: Optional[str]) -> None:
+        with self._sim_run_lock:
+            self._sim_run_inflight = False
+            run_again = self._sim_run_requested
+            self._sim_run_requested = False
+
+        if not self.simulation_mode or self._simulation_stopping:
+            return
+
+        if error:
+            self.set_status(f"Simulation Error: {error}")
+            return
+
+        if stats is None:
+            self.set_status("Simulation Error: no statistics")
+            return
+
+        # Update visual feedback (GUI thread)
         try:
-            stats = self.simulation_engine.run()
-            # (debug logging removed)
-            
-            # Update visual feedback
             self._update_simulation_visuals()
-            
-            # Check if simulation is stable
-            if stats.stable:
-                self.set_status(f"Simulation Stable - {stats.iterations} iterations in {stats.time_to_stability:.3f}s")
-            elif stats.max_iterations_reached:
-                self.set_status(f"Simulation Oscillating - Max iterations reached")
-            elif stats.timeout_reached:
+        except Exception as e:
+            self._logger.error("Failed to update simulation visuals: %s", e)
+
+        # Status
+        try:
+            if getattr(stats, 'stable', False):
+                self.set_status(
+                    f"Simulation Stable - {stats.iterations} iterations in {stats.time_to_stability:.3f}s"
+                )
+            elif getattr(stats, 'max_iterations_reached', False):
+                self.set_status("Simulation Oscillating - Max iterations reached")
+            elif getattr(stats, 'timeout_reached', False):
                 self.set_status(f"Simulation Timeout - {stats.total_time:.3f}s")
             else:
-                # Continue simulation
-                self.root.after(100, self._run_simulation_step)
-                
-        except Exception as e:
-            print(f"Simulation error: {e}")
-            import traceback
-            traceback.print_exc()
-            self.set_status(f"Simulation Error: {e}")
+                self.set_status("Simulation Running")
+        except Exception:
+            pass
+
+        if run_again:
+            self.root.after(10, self._run_simulation_step)
+
+    def _poll_simulation_stopped(self) -> None:
+        """Wait (without blocking the UI thread) for any in-flight simulation run to stop."""
+        engine = self.simulation_engine
+        if not engine:
+            self._finalize_simulation_stop()
+            return
+
+        with self._sim_run_lock:
+            inflight = self._sim_run_inflight
+
+        # If the background thread is still running, keep polling.
+        if inflight:
+            self.root.after(50, self._poll_simulation_stopped)
+            return
+
+        self._finalize_simulation_stop()
+
+    def _finalize_simulation_stop(self) -> None:
+        engine = self.simulation_engine
+        if engine:
+            try:
+                engine.shutdown()
+                stats = engine.get_statistics()
+                self._logger.info(
+                    "Simulation stopped: iterations=%s components=%s stable=%s total=%.3fs",
+                    stats.iterations,
+                    stats.components_updated,
+                    stats.stable,
+                    stats.total_time,
+                )
+                print("Simulation Statistics:")
+                print(f"  Iterations: {stats.iterations}")
+                print(f"  Components Updated: {stats.components_updated}")
+                print(f"  Time to Stability: {stats.time_to_stability:.3f}s")
+                print(f"  Total Time: {stats.total_time:.3f}s")
+                print(f"  Stable: {stats.stable}")
+            except Exception as e:
+                self._logger.error("Error shutting down simulation: %s", e)
+            finally:
+                self.simulation_engine = None
+
+        # Switch back to Design Mode
+        self.simulation_mode = False
+        self._simulation_stopping = False
+
+        # Restore UI for design mode - pack before design_canvas.frame
+        self.toolbox.pack(side=tk.LEFT, fill=tk.Y, padx=(0, 1), before=self.design_canvas.frame)
+        self.file_tabs.set_simulation_running(False)
+        self.menu_bar.enable_simulation_controls(is_running=False)
+        self.set_status("Design Mode - Ready")
+
+        # Redraw canvas to clear powered state visual feedback
+        self._redraw_canvas()
     
     def _update_simulation_visuals(self):
         """Update visual feedback for powered components and wires."""
@@ -602,7 +714,16 @@ class MainWindow:
                 page = tab.document.get_page(active_page_id)
                 if page:
                     # Re-render the entire page with simulation engine
+                    start = time.perf_counter()
                     self._set_canvas_page(page)
+                    elapsed = time.perf_counter() - start
+                    if elapsed >= 0.25:
+                        self._logger.warning(
+                            "Slow simulation render: page=%s elapsed=%.3fs components=%s",
+                            getattr(page, 'name', None),
+                            elapsed,
+                            len(page.get_all_components()) if hasattr(page, 'get_all_components') else None,
+                        )
         
         # (debug logging removed)
     
@@ -1166,6 +1287,19 @@ class MainWindow:
         
     def quit(self) -> None:
         """Quit the application."""
+        try:
+            if getattr(self, '_ui_watchdog', None):
+                self._ui_watchdog.stop()
+        except Exception:
+            pass
+
+        # Best-effort stop simulation without blocking exit.
+        try:
+            if getattr(self, 'simulation_engine', None):
+                self.simulation_engine.stop()
+        except Exception:
+            pass
+
         self.root.quit()
         self.root.destroy()
         

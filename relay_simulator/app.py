@@ -12,10 +12,12 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from gui.main_window import MainWindow
+from diagnostics import setup_diagnostics
 
 
 def main():
     """Main entry point for the application."""
+    setup_diagnostics()
     # Create and run the main window
     app = MainWindow()
     app.run()
