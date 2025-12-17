@@ -610,6 +610,73 @@ class MainWindow:
         """Backward-compatible wrapper for simulation switch click handling."""
         self._handle_switch_interaction(canvas_x, canvas_y, action='press')
 
+    def _handle_thumbwheel_interaction(self, canvas_x: float, canvas_y: float) -> bool:
+        """Handle Thumbwheel button clicks in simulation mode.
+
+        Returns True if a thumbwheel was clicked and handled.
+        """
+        # Get active page
+        tab = self.file_tabs.get_active_tab()
+        if not tab or not tab.document:
+            return False
+
+        active_page_id = self.page_tabs.get_active_page_id()
+        if not active_page_id:
+            return False
+
+        page = tab.document.get_page(active_page_id)
+        if not page:
+            return False
+
+        # Find a thumbwheel at click position
+        clicked_component = None
+        for component in page.get_all_components():
+            if getattr(component, 'component_type', None) != 'Thumbwheel':
+                continue
+
+            x, y = component.position
+            # Thumbwheel is 3x3 grid squares -> 60x60, so half-size is 30px
+            if abs(canvas_x - x) <= 30 and abs(canvas_y - y) <= 30:
+                clicked_component = component
+                break
+
+        if not clicked_component:
+            return False
+
+        # Determine which button row was clicked
+        rel_y = canvas_y - clicked_component.position[1]
+        if rel_y < -10:
+            action = 'inc'
+        elif rel_y > 10:
+            action = 'dec'
+        else:
+            action = 'clear'
+
+        try:
+            changed = False
+            if hasattr(clicked_component, 'interact') and callable(getattr(clicked_component, 'interact')):
+                changed = bool(clicked_component.interact(action))
+
+            if changed and self.simulation_engine:
+                self.set_status("Thumbwheel updated")
+
+                clicked_component.simulate_logic(
+                    self.simulation_engine.vnet_manager,
+                    self.simulation_engine.bridge_manager
+                )
+
+                self.simulation_engine.dirty_manager.mark_all_dirty()
+                self._update_simulation_visuals()
+                self.root.after(10, self._run_simulation_step)
+
+        except Exception as e:
+            print(f"Error interacting with thumbwheel: {e}")
+            import traceback
+            traceback.print_exc()
+            self.set_status(f"Error interacting with thumbwheel: {e}")
+
+        return True
+
     def _handle_switch_interaction(self, canvas_x: float, canvas_y: float, action: str) -> None:
         """Handle switch press/toggle in simulation mode."""
         # Clear any previous press tracking; we only track the current mouse-down.
@@ -1350,7 +1417,9 @@ class MainWindow:
         
         # In simulation mode, only allow switch toggling
         if self.simulation_mode:
-            # Mouse-down: toggle (toggle mode) or press (pushbutton mode)
+            # Mouse-down: handle Thumbwheel buttons or Switch press/toggle.
+            if self._handle_thumbwheel_interaction(canvas_x, canvas_y):
+                return
             self._handle_switch_interaction(canvas_x, canvas_y, action='press')
             return
         
@@ -1581,6 +1650,7 @@ class MainWindow:
         from components.vcc import VCC
         from components.bus import BUS
         from components.seven_segment_display import SevenSegmentDisplay
+        from components.thumbwheel import Thumbwheel
         
         # Create component instance based on type
         component = None
@@ -1596,6 +1666,8 @@ class MainWindow:
             component = BUS(component_id, page.page_id)
         elif self.placement_component == 'SevenSegmentDisplay':
             component = SevenSegmentDisplay(component_id, page.page_id)
+        elif self.placement_component == 'Thumbwheel':
+            component = Thumbwheel(component_id, page.page_id)
         
         if component:
             # Set position and rotation

@@ -244,6 +244,36 @@ PROPERTY_SCHEMAS: Dict[str, List[Dict[str, Any]]] = {
             'coerce': int,
         },
     ],
+
+    'Thumbwheel': [
+        {
+            'section': 'Advanced',
+            'key': 'bus_name',
+            'label': 'Bus Name',
+            'type': 'text',
+            'default': 'Data',
+            'target': 'prop',
+        },
+        {
+            'section': 'Advanced',
+            'key': 'link_ids',
+            'label': "Link ID's",
+            'type': 'text-readonly',
+            'default': '',
+            'target': 'attr',
+        },
+        {
+            'section': 'Advanced',
+            'key': 'start_pin',
+            'label': 'Start Pin',
+            'type': 'number',
+            'default': 0,
+            'min': -999999,
+            'max': 999999,
+            'target': 'prop',
+            'coerce': int,
+        },
+    ],
 }
 
 
