@@ -40,6 +40,13 @@ class PageTabBar:
         self.on_page_added: Optional[Callable[[str], None]] = None
         self.on_page_deleted: Optional[Callable[[str], None]] = None
         self.on_page_renamed: Optional[Callable[[str, str], None]] = None
+        self.on_pages_reordered: Optional[Callable[[List[str]], None]] = None
+
+        # Drag-to-reorder state
+        self._drag_page_id: Optional[str] = None
+        self._drag_start_x_root: int = 0
+        self._dragging: bool = False
+        self._drag_grab_widget: Optional[tk.Widget] = None
         
         self._create_widgets()
         
@@ -147,11 +154,17 @@ class PageTabBar:
             pady=VSCodeTheme.PADDING_SMALL
         )
         name_label.pack(side=tk.LEFT)
-        
-        # Bind click to select tab
-        name_label.bind('<Button-1>', lambda e: self.set_active_page(page.page_id))
-        
-        # Bind double-click to rename
+
+        # Bind interactions
+        tab_frame.bind('<ButtonPress-1>', lambda e: self._on_tab_press(e, page.page_id))
+        tab_frame.bind('<B1-Motion>', self._on_tab_motion)
+        tab_frame.bind('<ButtonRelease-1>', self._on_tab_release)
+
+        name_label.bind('<ButtonPress-1>', lambda e: self._on_tab_press(e, page.page_id))
+        name_label.bind('<B1-Motion>', self._on_tab_motion)
+        name_label.bind('<ButtonRelease-1>', self._on_tab_release)
+
+        # Double-click to rename
         name_label.bind('<Double-Button-1>', lambda e: self._start_rename(page.page_id))
         
         # Close button (only if not first page)
@@ -172,6 +185,107 @@ class PageTabBar:
         
         # Store reference
         self.tab_widgets[page.page_id] = tab_frame
+
+    def _on_tab_press(self, event, page_id: str) -> None:
+        """Begin potential drag (or click) on a page tab."""
+        if not self.current_document:
+            return
+
+        # Ensure we continue receiving motion/release events even if the
+        # cursor leaves the label/frame during the drag.
+        try:
+            self._drag_grab_widget = event.widget
+            self._drag_grab_widget.grab_set()
+        except Exception:
+            self._drag_grab_widget = None
+
+        self._drag_page_id = page_id
+        self._drag_start_x_root = int(getattr(event, 'x_root', 0))
+        self._dragging = False
+
+    def _on_tab_motion(self, event) -> None:
+        """Track movement to decide if this becomes a drag."""
+        if not self._drag_page_id:
+            return
+        dx = int(getattr(event, 'x_root', 0)) - self._drag_start_x_root
+        if abs(dx) >= 6:
+            self._dragging = True
+
+    def _compute_drop_index(self, x_root: int, page_ids: List[str]) -> int:
+        """Compute insertion index based on x_root compared to tab centers."""
+        centers: List[float] = []
+        for pid in page_ids:
+            tab = self.tab_widgets.get(pid)
+            if not tab:
+                continue
+            try:
+                tab.update_idletasks()
+                cx = tab.winfo_rootx() + (tab.winfo_width() / 2)
+                centers.append(cx)
+            except Exception:
+                centers.append(float('inf'))
+
+        # Default to end.
+        for idx, center in enumerate(centers):
+            if x_root < center:
+                return idx
+        return len(page_ids)
+
+    def _on_tab_release(self, event) -> None:
+        """Complete click or drag-to-reorder on release."""
+        if not self.current_document:
+            return
+
+        if self._drag_grab_widget is not None:
+            try:
+                self._drag_grab_widget.grab_release()
+            except Exception:
+                pass
+            self._drag_grab_widget = None
+
+        page_id = self._drag_page_id
+        dragging = self._dragging
+
+        # Reset drag state early.
+        self._drag_page_id = None
+        self._dragging = False
+
+        if not page_id:
+            return
+
+        if not dragging:
+            # Treat as a normal click.
+            self.set_active_page(page_id)
+            return
+
+        pages = self.current_document.get_all_pages()
+        page_ids = [p.page_id for p in pages]
+        if not page_ids or page_id not in page_ids:
+            return
+
+        # Do not allow moving before the first pinned page.
+        try:
+            from_index = page_ids.index(page_id)
+        except ValueError:
+            return
+
+        x_root = int(getattr(event, 'x_root', 0))
+        drop_index = self._compute_drop_index(x_root, page_ids)
+
+        # Convert insertion index to final index after removal.
+        new_index = drop_index
+        if drop_index > from_index:
+            new_index = drop_index - 1
+
+        if self.current_document.move_page(page_id, new_index):
+            # Refresh UI to reflect new order.
+            active = self.active_page_id
+            self._refresh_tabs()
+            if active:
+                self.set_active_page(active)
+
+            if self.on_pages_reordered:
+                self.on_pages_reordered([p.page_id for p in self.current_document.get_all_pages()])
         
     def set_active_page(self, page_id: str) -> None:
         """

@@ -23,6 +23,9 @@ class Document:
             'description': ''
         }
         self.pages: Dict[str, Page] = {}
+        # Explicit page ordering (tab order). This is the source of truth for
+        # get_all_pages() and serialization order.
+        self.page_order: List[str] = []
         self.id_manager = IDManager()
     
     # === Page Management ===
@@ -41,6 +44,8 @@ class Document:
             return False
         
         self.pages[page.page_id] = page
+        if page.page_id not in self.page_order:
+            self.page_order.append(page.page_id)
         self.id_manager.register_id(page.page_id)
         return True
     
@@ -71,8 +76,16 @@ class Document:
         """
         page = self.pages.pop(page_id, None)
         if page:
+            try:
+                self.page_order.remove(page_id)
+            except ValueError:
+                pass
             self.id_manager.release_id(page_id)
         return page
+
+    # Backwards-compatible alias used by the GUI.
+    def delete_page(self, page_id: str) -> Optional[Page]:
+        return self.remove_page(page_id)
     
     def get_page(self, page_id: str) -> Optional[Page]:
         """
@@ -93,7 +106,76 @@ class Document:
         Returns:
             list: List of pages
         """
-        return list(self.pages.values())
+        ordered: List[Page] = []
+
+        # Primary: explicit order list.
+        for page_id in self.page_order:
+            page = self.pages.get(page_id)
+            if page is not None:
+                ordered.append(page)
+
+        # Defensive: append any pages missing from page_order.
+        for page_id, page in self.pages.items():
+            if page_id not in self.page_order:
+                ordered.append(page)
+
+        return ordered
+
+    def move_page(self, page_id: str, new_index: int) -> bool:
+        """Move a page to a new index in the page_order list."""
+        if page_id not in self.pages:
+            return False
+
+        if page_id not in self.page_order:
+            self.page_order.append(page_id)
+
+        try:
+            old_index = self.page_order.index(page_id)
+        except ValueError:
+            old_index = None
+
+        if old_index is None:
+            return False
+
+        new_index = int(new_index)
+        if new_index < 0:
+            new_index = 0
+        if new_index >= len(self.page_order):
+            new_index = len(self.page_order) - 1
+
+        if old_index == new_index:
+            return True
+
+        self.page_order.pop(old_index)
+        self.page_order.insert(new_index, page_id)
+        return True
+
+    def reorder_pages(self, ordered_page_ids: List[str]) -> bool:
+        """Replace page_order with the provided ordered list (validated)."""
+        if not isinstance(ordered_page_ids, list):
+            return False
+
+        # Keep only valid page IDs, in provided order.
+        new_order: List[str] = []
+        seen = set()
+        for pid in ordered_page_ids:
+            if not isinstance(pid, str):
+                continue
+            if pid in seen:
+                continue
+            if pid not in self.pages:
+                continue
+            new_order.append(pid)
+            seen.add(pid)
+
+        # Append any missing pages (defensive).
+        for pid in self.pages.keys():
+            if pid not in seen:
+                new_order.append(pid)
+                seen.add(pid)
+
+        self.page_order = new_order
+        return True
     
     def get_page_count(self) -> int:
         """
@@ -211,7 +293,7 @@ class Document:
         
         result = {
             'version': SchemaVersion.to_string(),
-            'pages': [page.to_dict() for page in self.pages.values()]
+            'pages': [page.to_dict() for page in self.get_all_pages()]
         }
         
         # Optional metadata (only include if not empty)
@@ -249,6 +331,9 @@ class Document:
         for page_data in data.get('pages', []):
             page = Page.from_dict(page_data, component_factory)
             doc.add_page(page)
+
+        # Ensure page_order is consistent even if older code mutated pages.
+        doc.reorder_pages(doc.page_order)
         
         return doc
     

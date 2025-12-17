@@ -1025,6 +1025,7 @@ class MainWindow:
         self.page_tabs.on_page_added = self._on_page_added
         self.page_tabs.on_page_deleted = self._on_page_deleted
         self.page_tabs.on_page_renamed = self._on_page_renamed
+        self.page_tabs.on_pages_reordered = self._on_pages_reordered
         self.page_tabs.pack(side=tk.TOP, fill=tk.X)
         
         # Content area (for canvas, toolbars, etc.)
@@ -1360,6 +1361,13 @@ class MainWindow:
             # Mark document as modified
             self.file_tabs.set_tab_modified(tab.tab_id, True)
             self.set_status(f"Page renamed to: {new_name}")
+
+    def _on_pages_reordered(self, page_ids: list[str]) -> None:
+        """Handle drag-reorder of pages in the tab bar."""
+        tab = self.file_tabs.get_active_tab()
+        if tab:
+            self.file_tabs.set_tab_modified(tab.tab_id, True)
+        self.set_status("Pages reordered")
     
     def _update_window_title(self) -> None:
         """Update window title with active document name and modified indicator."""
