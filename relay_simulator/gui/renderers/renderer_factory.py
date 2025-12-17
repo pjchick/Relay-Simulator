@@ -15,6 +15,7 @@ from gui.renderers.seven_segment_display_renderer import SevenSegmentDisplayRend
 from gui.renderers.thumbwheel_renderer import ThumbwheelRenderer
 from gui.renderers.bus_display_renderer import BusDisplayRenderer
 from gui.renderers.memory_renderer import MemoryRenderer
+from gui.renderers.diode_renderer import DiodeRenderer
 
 
 class RendererFactory:
@@ -35,6 +36,7 @@ class RendererFactory:
         'Thumbwheel': ThumbwheelRenderer,
         'BusDisplay': BusDisplayRenderer,
         'Memory': MemoryRenderer,
+        'Diode': DiodeRenderer,
     }
     
     @classmethod

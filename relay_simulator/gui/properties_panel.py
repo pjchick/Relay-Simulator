@@ -404,6 +404,19 @@ PROPERTY_SCHEMAS: Dict[str, List[Dict[str, Any]]] = {
             'coerce': int,
         },
     ],
+
+    'Diode': [
+        {
+            'section': 'Format',
+            'key': 'rotation',
+            'label': 'Rotation',
+            'type': 'dropdown',
+            'options': ['0', '90', '180', '270'],
+            'default': 0,
+            'target': 'attr',
+            'coerce': int,
+        },
+    ],
 }
 
 
