@@ -17,6 +17,7 @@ from gui.renderers.bus_display_renderer import BusDisplayRenderer
 from gui.renderers.memory_renderer import MemoryRenderer
 from gui.renderers.diode_renderer import DiodeRenderer
 from gui.renderers.clock_renderer import ClockRenderer
+from gui.renderers.link_renderer import LinkRenderer
 
 
 class RendererFactory:
@@ -39,6 +40,7 @@ class RendererFactory:
         'Memory': MemoryRenderer,
         'Diode': DiodeRenderer,
         'Clock': ClockRenderer,
+        'Link': LinkRenderer,
     }
     
     @classmethod
