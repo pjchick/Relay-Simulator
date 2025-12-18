@@ -107,12 +107,12 @@ class MemoryRenderer(ComponentRenderer):
     def get_bounds(self, zoom: float = 1.0) -> tuple[float, float, float, float]:
         """Get the bounding box of the memory component.
         
-        Returns (x1, y1, x2, y2) in canvas coordinates.
+        Returns (x1, y1, x2, y2) in world/model coordinates.
         """
-        cx, cy = self.get_position()
+        cx, cy = self.component.position
         visible_rows = self._get_visible_rows()
-        viewer_width = (self.SIDE_HEADER_WIDTH + self.COLUMNS * self.CELL_WIDTH + self.SCROLLBAR_WIDTH) * zoom
-        viewer_height = (self.HEADER_HEIGHT + visible_rows * self.CELL_HEIGHT) * zoom
+        viewer_width = (self.SIDE_HEADER_WIDTH + self.COLUMNS * self.CELL_WIDTH + self.SCROLLBAR_WIDTH)
+        viewer_height = (self.HEADER_HEIGHT + visible_rows * self.CELL_HEIGHT)
 
         x1 = cx - (viewer_width / 2)
         y1 = cy - (viewer_height / 2)

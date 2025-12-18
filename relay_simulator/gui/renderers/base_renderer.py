@@ -92,7 +92,9 @@ class ComponentRenderer(ABC):
         Returns:
             (x, y) position tuple
         """
-        return self.component.position
+        zoom = getattr(self, 'zoom', 1.0) or 1.0
+        x, y = self.component.position
+        return (x * zoom, y * zoom)
         
     def get_rotation(self) -> int:
         """
@@ -258,13 +260,33 @@ class ComponentRenderer(ABC):
         Returns:
             Canvas item ID
         """
+        zoom = getattr(self, 'zoom', 1.0) or 1.0
+
         if fill is None:
             fill = VSCodeTheme.COMPONENT_TEXT
-        if font is None:
+
+        if font is not None:
+            # Attempt to scale the font size element if present
+            try:
+                if isinstance(font, (tuple, list)) and len(font) >= 2 and isinstance(font[1], (int, float)):
+                    scaled = max(6, int(round(float(font[1]) * zoom)))
+                    font = (font[0], scaled, *font[2:])
+            except Exception:
+                pass
+        else:
             if font_size is not None:
-                font = ('Arial', font_size)
+                scaled = max(6, int(round(float(font_size) * zoom)))
+                font = ('Arial', scaled)
             else:
-                font = VSCodeTheme.get_font('small')
+                base_font = VSCodeTheme.get_font('small')
+                try:
+                    if isinstance(base_font, (tuple, list)) and len(base_font) >= 2 and isinstance(base_font[1], (int, float)):
+                        scaled = max(6, int(round(float(base_font[1]) * zoom)))
+                        font = (base_font[0], scaled, *base_font[2:])
+                    else:
+                        font = base_font
+                except Exception:
+                    font = base_font
             
         item_id = self.canvas.create_text(
             x, y,
@@ -292,6 +314,8 @@ class ComponentRenderer(ABC):
             for tab in pin.tabs.values():
                 # Get tab position relative to component
                 tx, ty = tab.relative_position
+                tx *= zoom
+                ty *= zoom
                 
                 # Rotate tab position
                 if rotation != 0:

@@ -144,11 +144,11 @@ class DesignCanvas:
         # Grid color (subtle dark gray)
         grid_color = "#2d2d2d"
         
-        # Calculate visible region
+        # Draw in zoomed (canvas) coordinates
         x1, y1 = 0, 0
-        x2, y2 = self.canvas_width, self.canvas_height
-        
-        # Adjust grid size based on zoom
+        x2 = int(self.canvas_width * self.zoom_level)
+        y2 = int(self.canvas_height * self.zoom_level)
+
         effective_grid_size = self.grid_size * self.zoom_level
         
         # Don't draw grid if too small (would be too dense)
@@ -165,7 +165,7 @@ class DesignCanvas:
                 tags="grid"
             )
             self.grid_items.append(item)
-            x += self.grid_size
+            x += effective_grid_size
         
         # Draw horizontal lines
         y = 0
@@ -177,7 +177,7 @@ class DesignCanvas:
                 tags="grid"
             )
             self.grid_items.append(item)
-            y += self.grid_size
+            y += effective_grid_size
         
         # Lower grid to background
         self.canvas.tag_lower("grid")
@@ -189,10 +189,6 @@ class DesignCanvas:
         Args:
             event: Mouse wheel event
         """
-        # Get mouse position in canvas coordinates
-        canvas_x = self.canvas.canvasx(event.x)
-        canvas_y = self.canvas.canvasy(event.y)
-        
         # Determine zoom direction
         if event.num == 4 or event.delta > 0:
             # Zoom in
@@ -208,26 +204,34 @@ class DesignCanvas:
         if new_zoom < self.min_zoom or new_zoom > self.max_zoom:
             return "break"  # Stop event propagation
         
-        # Apply zoom
-        self._apply_zoom(zoom_factor, canvas_x, canvas_y)
+        # Apply zoom (centered on mouse position)
+        self._apply_zoom(zoom_factor, event.x, event.y)
         
         # Return "break" to stop event propagation
         return "break"
     
-    def _apply_zoom(self, zoom_factor: float, center_x: float, center_y: float) -> None:
+    def _apply_zoom(self, zoom_factor: float, center_screen_x: float, center_screen_y: float) -> None:
         """
         Apply zoom transformation centered on given point.
         
         Args:
             zoom_factor: Zoom multiplier
-            center_x: Center X in canvas coordinates
-            center_y: Center Y in canvas coordinates
+            center_screen_x: Center X in widget/screen coordinates
+            center_screen_y: Center Y in widget/screen coordinates
         """
+        old_zoom = self.zoom_level
+        new_zoom = old_zoom * zoom_factor
+
+        # Canvas coords under the cursor (old zoom)
+        center_canvas_x_old = self.canvas.canvasx(center_screen_x)
+        center_canvas_y_old = self.canvas.canvasy(center_screen_y)
+
+        # Convert to world coords (unzoomed model space)
+        center_world_x = center_canvas_x_old / old_zoom
+        center_world_y = center_canvas_y_old / old_zoom
+
         # Update zoom level
-        self.zoom_level *= zoom_factor
-        
-        # Scale all canvas items except grid
-        self.canvas.scale("all", center_x, center_y, zoom_factor, zoom_factor)
+        self.zoom_level = new_zoom
         
         # Update scroll region
         new_width = int(self.canvas_width * self.zoom_level)
@@ -239,25 +243,35 @@ class DesignCanvas:
         
         # Re-render all components at new zoom level
         for renderer in self.renderers.values():
+            setattr(renderer, 'zoom', self.zoom_level)
             renderer.render(self.zoom_level)
         
         # Re-render all wires at new zoom level
         for wire_renderer in self.wire_renderers.values():
             wire_renderer.render(self.zoom_level)
-        
-        # Adjust scroll position to keep center point in view
-        # Calculate the new position of the center point after scaling
-        new_center_x = center_x * zoom_factor
-        new_center_y = center_y * zoom_factor
-        
-        # Get current view size
-        view_width = self.canvas.winfo_width()
-        view_height = self.canvas.winfo_height()
-        
-        # Calculate new scroll position to keep center in same screen position
-        scroll_x = (new_center_x - view_width / 2) / new_width
-        scroll_y = (new_center_y - view_height / 2) / new_height
-        
+
+        # Re-render page-level junction markers
+        self.render_junctions(self.simulation_engine)
+
+        # Adjust scroll to keep the world point under the cursor fixed
+        target_canvas_x = center_world_x * self.zoom_level
+        target_canvas_y = center_world_y * self.zoom_level
+
+        view_width = max(1, self.canvas.winfo_width())
+        view_height = max(1, self.canvas.winfo_height())
+
+        desired_left = target_canvas_x - center_screen_x
+        desired_top = target_canvas_y - center_screen_y
+
+        max_left = max(0, new_width - view_width)
+        max_top = max(0, new_height - view_height)
+
+        desired_left = max(0, min(max_left, desired_left))
+        desired_top = max(0, min(max_top, desired_top))
+
+        scroll_x = desired_left / new_width if new_width else 0
+        scroll_y = desired_top / new_height if new_height else 0
+
         self.canvas.xview_moveto(max(0, min(1, scroll_x)))
         self.canvas.yview_moveto(max(0, min(1, scroll_y)))
     
@@ -313,8 +327,8 @@ class DesignCanvas:
         # Get canvas center
         view_width = self.canvas.winfo_width()
         view_height = self.canvas.winfo_height()
-        center_x = self.canvas.canvasx(view_width / 2)
-        center_y = self.canvas.canvasy(view_height / 2)
+        center_x = view_width / 2
+        center_y = view_height / 2
         
         if self.zoom_level * 1.25 <= self.max_zoom:
             self._apply_zoom(1.25, center_x, center_y)
@@ -324,8 +338,8 @@ class DesignCanvas:
         # Get canvas center
         view_width = self.canvas.winfo_width()
         view_height = self.canvas.winfo_height()
-        center_x = self.canvas.canvasx(view_width / 2)
-        center_y = self.canvas.canvasy(view_height / 2)
+        center_x = view_width / 2
+        center_y = view_height / 2
         
         if self.zoom_level * 0.8 >= self.min_zoom:
             self._apply_zoom(0.8, center_x, center_y)
@@ -335,8 +349,8 @@ class DesignCanvas:
         # Get canvas center
         view_width = self.canvas.winfo_width()
         view_height = self.canvas.winfo_height()
-        center_x = self.canvas.canvasx(view_width / 2)
-        center_y = self.canvas.canvasy(view_height / 2)
+        center_x = view_width / 2
+        center_y = view_height / 2
         
         # Calculate zoom factor to return to 1.0
         zoom_factor = 1.0 / self.zoom_level
@@ -391,8 +405,9 @@ class DesignCanvas:
         Returns:
             Tuple of (screen_x, screen_y)
         """
-        screen_x = self.canvas.canvasx(0) + (x - self.canvas.canvasx(0)) * self.zoom_level
-        screen_y = self.canvas.canvasy(0) + (y - self.canvas.canvasy(0)) * self.zoom_level
+        # Convert canvas coordinates to widget coordinates.
+        screen_x = x - self.canvas.canvasx(0)
+        screen_y = y - self.canvas.canvasy(0)
         return (screen_x, screen_y)
     
     def screen_to_canvas(self, x: float, y: float) -> Tuple[float, float]:
@@ -409,6 +424,18 @@ class DesignCanvas:
         canvas_x = self.canvas.canvasx(x)
         canvas_y = self.canvas.canvasy(y)
         return (canvas_x, canvas_y)
+
+    def screen_to_world(self, x: float, y: float) -> Tuple[float, float]:
+        """Convert widget coordinates to world/model coordinates (unzoomed)."""
+        canvas_x = self.canvas.canvasx(x)
+        canvas_y = self.canvas.canvasy(y)
+        zoom = self.zoom_level or 1.0
+        return (canvas_x / zoom, canvas_y / zoom)
+
+    def world_to_canvas(self, x: float, y: float) -> Tuple[float, float]:
+        """Convert world/model coordinates to canvas coordinates (zoomed)."""
+        zoom = self.zoom_level or 1.0
+        return (x * zoom, y * zoom)
     
     def pack(self, **kwargs) -> None:
         """Pack the canvas frame."""
@@ -461,16 +488,16 @@ class DesignCanvas:
             zoom_factor = 1.0 / self.zoom_level
             view_width = self.canvas.winfo_width()
             view_height = self.canvas.winfo_height()
-            center_x = self.canvas.canvasx(view_width / 2)
-            center_y = self.canvas.canvasy(view_height / 2)
+            center_x = view_width / 2
+            center_y = view_height / 2
             self._apply_zoom(zoom_factor, center_x, center_y)
         
         # Apply target zoom
         if zoom != 1.0:
             view_width = self.canvas.winfo_width()
             view_height = self.canvas.winfo_height()
-            center_x = self.canvas.canvasx(view_width / 2)
-            center_y = self.canvas.canvasy(view_height / 2)
+            center_x = view_width / 2
+            center_y = view_height / 2
             self._apply_zoom(zoom, center_x, center_y)
         
         # Restore scroll position
@@ -519,6 +546,7 @@ class DesignCanvas:
                     renderer.set_powered(is_powered)
                 
                 self.renderers[component.component_id] = renderer
+                setattr(renderer, 'zoom', self.zoom_level)
                 renderer.render(self.zoom_level)
             except Exception as e:
                 print(f"Error rendering component {component.component_id}: {e}")
@@ -545,6 +573,7 @@ class DesignCanvas:
         """
         renderer = self.renderers.get(component_id)
         if renderer:
+            setattr(renderer, 'zoom', self.zoom_level)
             renderer.render(self.zoom_level)
     
     def set_component_selected(self, component_id: str, selected: bool) -> None:
@@ -558,6 +587,7 @@ class DesignCanvas:
         renderer = self.renderers.get(component_id)
         if renderer:
             renderer.set_selected(selected)
+            setattr(renderer, 'zoom', self.zoom_level)
             renderer.render(self.zoom_level)
     
     def set_component_powered(self, component_id: str, powered: bool) -> None:
@@ -571,6 +601,7 @@ class DesignCanvas:
         renderer = self.renderers.get(component_id)
         if renderer:
             renderer.set_powered(powered)
+            setattr(renderer, 'zoom', self.zoom_level)
             renderer.render(self.zoom_level)
     
     # === WIRE RENDERING ===
@@ -686,6 +717,8 @@ class DesignCanvas:
         # Draw each junction as a circle
         for junction in self.current_page.junctions.values():
             x, y = junction.position
+            x *= self.zoom_level
+            y *= self.zoom_level
             radius = 5 * self.zoom_level
             
             # Determine junction color based on selection/powered state

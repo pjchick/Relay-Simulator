@@ -155,7 +155,7 @@ class BusDisplayRenderer(ComponentRenderer):
         start_pin = self._get_start_pin()
 
         spacing_px = self._get_pin_spacing_px()
-        start_y = -(span / 2)
+        start_y = -(span / 2) * zoom
         radius = (self.INDICATOR_DIAMETER_PX / 2) * zoom
 
         off_fill = VSCodeTheme.INDICATOR_OFF
@@ -166,7 +166,7 @@ class BusDisplayRenderer(ComponentRenderer):
             is_on = self._read_link_state(link_name) if link_name else False
 
             dx = 0
-            dy = start_y + (i * spacing_px)
+            dy = start_y + (i * spacing_px * zoom)
 
             # Rotate indicator position with component.
             px, py = (cx + dx, cy + dy)

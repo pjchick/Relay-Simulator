@@ -831,7 +831,7 @@ class MainWindow:
                 from gui.renderers.memory_renderer import MemoryRenderer
                 if isinstance(renderer, MemoryRenderer):
                     zoom = getattr(self.design_canvas, 'zoom_level', 1.0)
-                    address = renderer.get_cell_at_position(canvas_x, canvas_y, zoom)
+                    address = renderer.get_cell_at_position(canvas_x * zoom, canvas_y * zoom, zoom)
                     
                     if address is not None:
                         # Cell was clicked - prompt for new value
@@ -1063,9 +1063,8 @@ class MainWindow:
         Args:
             event: Right-click event
         """
-        # Get canvas coordinates
-        canvas_x = self.design_canvas.canvas.canvasx(event.x)
-        canvas_y = self.design_canvas.canvas.canvasy(event.y)
+        # Get world coordinates
+        canvas_x, canvas_y = self.design_canvas.screen_to_world(event.x, event.y)
         
         # Check if right-clicked on a waypoint
         waypoint_info = self._find_waypoint_at_position(canvas_x, canvas_y)
@@ -1528,6 +1527,15 @@ class MainWindow:
         tab = self.file_tabs.get_active_tab()
         if not tab or not tab.document:
             return
+
+        # Save current canvas state to the outgoing page before switching.
+        # This lets each page remember its own zoom + scroll position.
+        outgoing_page = getattr(self.design_canvas, 'current_page', None)
+        if outgoing_page is not None and getattr(outgoing_page, 'page_id', None) and outgoing_page.page_id != page_id:
+            canvas_x, canvas_y, zoom = self.design_canvas.save_canvas_state()
+            outgoing_page.canvas_x = canvas_x
+            outgoing_page.canvas_y = canvas_y
+            outgoing_page.canvas_zoom = zoom
             
         # Get the page
         page = tab.document.get_page(page_id)
@@ -1644,9 +1652,8 @@ class MainWindow:
         Args:
             event: Click event
         """
-        # Convert screen coordinates to canvas coordinates (needed for all modes)
-        canvas_x = self.design_canvas.canvas.canvasx(event.x)
-        canvas_y = self.design_canvas.canvas.canvasy(event.y)
+        # Convert widget coordinates to world/model coordinates (unzoomed)
+        canvas_x, canvas_y = self.design_canvas.screen_to_world(event.x, event.y)
         
         # In simulation mode, only allow switch toggling
         if self.simulation_mode:
@@ -1871,9 +1878,8 @@ class MainWindow:
         if not page:
             return
         
-        # Convert screen coordinates to canvas coordinates
-        canvas_x = self.design_canvas.canvas.canvasx(event.x)
-        canvas_y = self.design_canvas.canvas.canvasy(event.y)
+        # Convert widget coordinates to world/model coordinates (unzoomed)
+        canvas_x, canvas_y = self.design_canvas.screen_to_world(event.x, event.y)
         
         # Snap to grid
         grid_size = self.settings.get_grid_size()
@@ -1930,9 +1936,10 @@ class MainWindow:
         Args:
             event: Motion event
         """
-        # Get canvas coordinates
-        canvas_x = self.design_canvas.canvas.canvasx(event.x)
-        canvas_y = self.design_canvas.canvas.canvasy(event.y)
+        # Get world coordinates
+        canvas_x, canvas_y = self.design_canvas.screen_to_world(event.x, event.y)
+        zoom = getattr(self.design_canvas, 'zoom_level', 1.0) or 1.0
+        drag_threshold = 3.0 / zoom  # ~3 screen pixels
 
         # Junction click-vs-drag: if the user is holding Button-1 and moves enough,
         # treat it as a drag to move the junction.
@@ -1940,7 +1947,7 @@ class MainWindow:
             # Tk state bit for Button1 is 0x0100
             if (event.state & 0x0100) != 0:
                 junction_id, start_x, start_y = self._pending_junction_drag
-                if abs(canvas_x - start_x) >= 3 or abs(canvas_y - start_y) >= 3:
+                if abs(canvas_x - start_x) >= drag_threshold or abs(canvas_y - start_y) >= drag_threshold:
                     self._pending_junction_drag = None
                     self._start_junction_drag(junction_id, start_x, start_y)
                     if self.dragging_junction:
@@ -1952,8 +1959,9 @@ class MainWindow:
             # Only while Button-1 is held
             if (event.state & 0x0100) != 0:
                 try:
+                    zoom = getattr(self.design_canvas, 'zoom_level', 1.0) or 1.0
                     changed = bool(self._memory_scrollbar_renderer.handle_scrollbar_drag(
-                        canvas_y,
+                        canvas_y * zoom,
                         self._memory_scrollbar_zoom
                     ))
                 except Exception:
@@ -1988,7 +1996,7 @@ class MainWindow:
                 start_x, start_y = self._pending_drag_start
                 delta_x = canvas_x - start_x
                 delta_y = canvas_y - start_y
-                if abs(delta_x) >= 3 or abs(delta_y) >= 3:
+                if abs(delta_x) >= drag_threshold or abs(delta_y) >= drag_threshold:
                     page = self._pending_drag_page
                     self._pending_drag_start = None
                     self._pending_drag_page = None
@@ -2004,16 +2012,19 @@ class MainWindow:
         
         # Handle bounding box selection drawing
         if self.selection_start:
-            canvas_x = self.design_canvas.canvas.canvasx(event.x)
-            canvas_y = self.design_canvas.canvas.canvasy(event.y)
+            # Draw selection box in canvas coords (zoomed)
+            draw_x = canvas_x * zoom
+            draw_y = canvas_y * zoom
             
             # Update or create selection box
             if self.selection_box:
                 self.design_canvas.canvas.delete(self.selection_box)
             
-            start_x, start_y = self.selection_start
+            start_world_x, start_world_y = self.selection_start
+            start_x = start_world_x * zoom
+            start_y = start_world_y * zoom
             self.selection_box = self.design_canvas.canvas.create_rectangle(
-                start_x, start_y, canvas_x, canvas_y,
+                start_x, start_y, draw_x, draw_y,
                 outline=VSCodeTheme.ACCENT_BLUE,
                 width=2,
                 dash=(5, 5)
@@ -2024,9 +2035,9 @@ class MainWindow:
         if not self.wire_start_tab:
             return
         
-        # Get canvas coordinates
-        canvas_x = self.design_canvas.canvas.canvasx(event.x)
-        canvas_y = self.design_canvas.canvas.canvasy(event.y)
+        # Draw wire preview in canvas coords (zoomed)
+        cursor_x = canvas_x * zoom
+        cursor_y = canvas_y * zoom
         
         # Clear old preview lines
         for line in self.wire_preview_lines:
@@ -2036,8 +2047,10 @@ class MainWindow:
         # Get start position from tab
         start_pos = self._get_tab_canvas_position(self.wire_start_tab)
         if start_pos:
+            start_pos = (start_pos[0] * zoom, start_pos[1] * zoom)
             # Build path: start -> waypoints -> cursor
-            path_points = [start_pos] + self.wire_temp_waypoints + [(canvas_x, canvas_y)]
+            scaled_waypoints = [(wx * zoom, wy * zoom) for (wx, wy) in self.wire_temp_waypoints]
+            path_points = [start_pos] + scaled_waypoints + [(cursor_x, cursor_y)]
             
             # Draw segments
             for i in range(len(path_points) - 1):
@@ -2052,7 +2065,7 @@ class MainWindow:
                 self.wire_preview_lines.append(line)
             
             # Draw waypoint markers
-            for wx, wy in self.wire_temp_waypoints:
+            for wx, wy in scaled_waypoints:
                 marker = self.design_canvas.canvas.create_oval(
                     wx - 3, wy - 3, wx + 3, wy + 3,
                     fill=VSCodeTheme.WIRE_SELECTED,
@@ -2090,9 +2103,8 @@ class MainWindow:
         if self.simulation_mode:
             return
         
-        # Get canvas coordinates
-        canvas_x = self.design_canvas.canvas.canvasx(event.x)
-        canvas_y = self.design_canvas.canvas.canvasy(event.y)
+        # Get world coordinates
+        canvas_x, canvas_y = self.design_canvas.screen_to_world(event.x, event.y)
         
         # Find tab at click location
         tab_id = self._find_tab_at_position(canvas_x, canvas_y)
@@ -2153,9 +2165,6 @@ class MainWindow:
         if not page:
             return None
         
-        # Get current zoom level for accurate hit detection
-        zoom = self.design_canvas.zoom_level
-        
         # Check all components and their tabs
         for component in page.components.values():
             comp_x, comp_y = component.position
@@ -2168,8 +2177,8 @@ class MainWindow:
                     if rotation:
                         tab_x, tab_y = self._rotate_point(tab_x, tab_y, comp_x, comp_y, rotation)
                     
-                    # Check if click is within tab area (scale hit radius with zoom)
-                    hit_radius = VSCodeTheme.TAB_SIZE * 0.8 * zoom  # Reduced radius for easier component selection
+                    # x,y are world coordinates; keep a reasonable world hit radius.
+                    hit_radius = VSCodeTheme.TAB_SIZE * 0.8  # Reduced radius for easier component selection
                     if abs(x - tab_x) <= hit_radius and abs(y - tab_y) <= hit_radius:
                         return tab_obj.tab_id
         
@@ -2491,7 +2500,8 @@ class MainWindow:
         if not page:
             return None
 
-        hit_distance = 8.0  # Pixels from wire line to be considered a click
+        zoom = getattr(self.design_canvas, 'zoom_level', 1.0) or 1.0
+        hit_distance = 8.0 / zoom  # Keep hit tolerance ~constant in screen pixels
         best: Optional[Tuple[str, int, Tuple[float, float], float]] = None  # (wire_id, seg_index, (cx,cy), dist)
 
         for wire in page.wires.values():
@@ -2593,9 +2603,8 @@ class MainWindow:
         if not wire:
             return
         
-        # Get canvas coordinates
-        canvas_x = self.design_canvas.canvas.canvasx(event.x)
-        canvas_y = self.design_canvas.canvas.canvasy(event.y)
+        # Get world coordinates
+        canvas_x, canvas_y = self.design_canvas.screen_to_world(event.x, event.y)
         
         # Snap to grid
         snap_size = self.settings.get_snap_size()
@@ -2641,7 +2650,8 @@ class MainWindow:
         if not page:
             return None
         
-        hit_radius = 6.0  # Pixels from waypoint center to be considered a click
+        zoom = getattr(self.design_canvas, 'zoom_level', 1.0) or 1.0
+        hit_radius = 6.0 / zoom  # Keep hit tolerance ~constant in screen pixels
         
         for wire in page.wires.values():
             for waypoint in wire.waypoints.values():
@@ -2676,7 +2686,8 @@ class MainWindow:
         if not page:
             return None
         
-        hit_radius = 8.0  # Pixels from junction center to be considered a click
+        zoom = getattr(self.design_canvas, 'zoom_level', 1.0) or 1.0
+        hit_radius = 8.0 / zoom  # Keep hit tolerance ~constant in screen pixels
         
         for junction in page.junctions.values():
             jx, jy = junction.position
@@ -2968,9 +2979,8 @@ class MainWindow:
         if self.simulation_mode:
             return
         
-        # Get canvas coordinates
-        canvas_x = self.design_canvas.canvas.canvasx(event.x)
-        canvas_y = self.design_canvas.canvas.canvasy(event.y)
+        # Get world coordinates
+        canvas_x, canvas_y = self.design_canvas.screen_to_world(event.x, event.y)
         
         # Check if Ctrl is held for multi-selection
         ctrl_held = (event.state & 0x0004) != 0
@@ -3166,6 +3176,8 @@ class MainWindow:
             return False
 
         zoom = getattr(self.design_canvas, 'zoom_level', 1.0)
+        canvas_xz = canvas_x * zoom
+        canvas_yz = canvas_y * zoom
 
         from gui.renderers.memory_renderer import MemoryRenderer
 
@@ -3177,13 +3189,13 @@ class MainWindow:
             if not renderer or not isinstance(renderer, MemoryRenderer):
                 continue
 
-            target = renderer.on_click(canvas_x, canvas_y, zoom, simulation_mode=True)
+            target = renderer.on_click(canvas_xz, canvas_yz, zoom, simulation_mode=True)
             if target != 'scrollbar':
                 continue
 
             handled = False
             try:
-                handled = bool(renderer.handle_scrollbar_press(canvas_x, canvas_y, zoom))
+                handled = bool(renderer.handle_scrollbar_press(canvas_xz, canvas_yz, zoom))
             except Exception:
                 handled = False
 
@@ -3240,12 +3252,17 @@ class MainWindow:
         if not page:
             return
         
-        # Get bounding box coordinates
+        # Get bounding box coordinates (canvas coords) and convert to world coords
         bbox = self.design_canvas.canvas.coords(self.selection_box)
         if len(bbox) != 4:
             return
         
+        zoom = getattr(self.design_canvas, 'zoom_level', 1.0) or 1.0
         x1, y1, x2, y2 = bbox
+        x1 /= zoom
+        y1 /= zoom
+        x2 /= zoom
+        y2 /= zoom
         # Normalize coordinates
         min_x, max_x = min(x1, x2), max(x1, x2)
         min_y, max_y = min(y1, y2), max(y1, y2)

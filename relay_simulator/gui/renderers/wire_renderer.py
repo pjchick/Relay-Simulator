@@ -64,10 +64,14 @@ class WireRenderer:
         """
         self.clear()
         
-        # Get wire path points
+        # Get wire path points (world coords)
         points = self._get_wire_path()
         if len(points) < 2:
             return  # Need at least 2 points to draw a wire
+
+        def to_canvas(pt: Tuple[float, float]) -> Tuple[float, float]:
+            x, y = pt
+            return (x * zoom, y * zoom)
         
         # Determine wire color
         if self.selected:
@@ -79,8 +83,8 @@ class WireRenderer:
         
         # Draw wire segments
         for i in range(len(points) - 1):
-            x1, y1 = points[i]
-            x2, y2 = points[i + 1]
+            x1, y1 = to_canvas(points[i])
+            x2, y2 = to_canvas(points[i + 1])
             
             item = self.canvas.create_line(
                 x1, y1, x2, y2,
@@ -223,6 +227,8 @@ class WireRenderer:
             return
         
         x, y = waypoint.position
+        x *= zoom
+        y *= zoom
         size = 4 * zoom  # Waypoint size
         
         fill = VSCodeTheme.WIRE_SELECTED if (self.selected or is_selected) else VSCodeTheme.COMPONENT_OUTLINE
@@ -248,6 +254,8 @@ class WireRenderer:
             zoom: Current zoom level
         """
         x, y = junction.position
+        x *= zoom
+        y *= zoom
         radius = 5 * zoom  # Junction radius
         
         # Determine junction color: red if powered, gray if unpowered, blue if selected

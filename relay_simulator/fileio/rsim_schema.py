@@ -244,6 +244,24 @@ PAGE_SCHEMA = {
         "required": True,
         "description": "Display name of page"
     },
+    "canvas_x": {
+        "type": FieldType.FLOAT,
+        "required": False,
+        "description": "Saved canvas X scroll position for this page (in canvas pixels at current zoom)",
+        "default": 0.0
+    },
+    "canvas_y": {
+        "type": FieldType.FLOAT,
+        "required": False,
+        "description": "Saved canvas Y scroll position for this page (in canvas pixels at current zoom)",
+        "default": 0.0
+    },
+    "canvas_zoom": {
+        "type": FieldType.FLOAT,
+        "required": False,
+        "description": "Saved zoom level for this page",
+        "default": 1.0
+    },
     "components": {
         "type": FieldType.ARRAY,
         "required": False,
@@ -256,6 +274,13 @@ PAGE_SCHEMA = {
         "required": False,
         "description": "Wires on this page",
         "item_schema": WIRE_SCHEMA,
+        "default": []
+    },
+    "junctions": {
+        "type": FieldType.ARRAY,
+        "required": False,
+        "description": "Page-level junctions (for wire branching)",
+        "item_schema": JUNCTION_SCHEMA,
         "default": []
     }
 }
