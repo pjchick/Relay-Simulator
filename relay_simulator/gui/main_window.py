@@ -1308,6 +1308,7 @@ class MainWindow:
         # Track junction editing
         self.dragging_junction = None  # Junction ID being dragged
         self.junction_drag_start = None  # Original position of junction being dragged
+        self._pending_junction_drag = None  # (junction_id, start_x, start_y) for click-vs-drag handling
         
         # Track right-click for context menu vs pan
         self.right_click_start = None  # Position where right-click started
@@ -1674,8 +1675,10 @@ class MainWindow:
                 self._complete_wire_to_junction(junction_id)
                 return
             else:
-                # Not drawing a wire - start dragging the junction
-                self._start_junction_drag(junction_id, canvas_x, canvas_y)
+                # Not drawing a wire - allow either drag-to-move or click-to-start-wire.
+                # We defer the decision until motion/release so a simple click can start a wire.
+                self._pending_junction_drag = (junction_id, canvas_x, canvas_y)
+                self.set_status("Junction: drag to move, release to start wire.")
                 return
         
         # Check if clicked on a waypoint
@@ -1930,6 +1933,19 @@ class MainWindow:
         # Get canvas coordinates
         canvas_x = self.design_canvas.canvas.canvasx(event.x)
         canvas_y = self.design_canvas.canvas.canvasy(event.y)
+
+        # Junction click-vs-drag: if the user is holding Button-1 and moves enough,
+        # treat it as a drag to move the junction.
+        if self._pending_junction_drag and not self.dragging_junction:
+            # Tk state bit for Button1 is 0x0100
+            if (event.state & 0x0100) != 0:
+                junction_id, start_x, start_y = self._pending_junction_drag
+                if abs(canvas_x - start_x) >= 3 or abs(canvas_y - start_y) >= 3:
+                    self._pending_junction_drag = None
+                    self._start_junction_drag(junction_id, start_x, start_y)
+                    if self.dragging_junction:
+                        self._update_junction_drag(canvas_x, canvas_y)
+                    return
 
         # Simulation mode: drag Memory scrollbar thumb
         if self.simulation_mode and self._memory_scrollbar_renderer:
@@ -3090,6 +3106,17 @@ class MainWindow:
                 self._memory_scrollbar_renderer = None
             self._handle_switch_release()
             return
+
+        # If the user clicked a junction and released without dragging, start a wire from it.
+        if self._pending_junction_drag and not self.dragging_junction and not self.wire_start_tab:
+            junction_id, _, _ = self._pending_junction_drag
+            self._pending_junction_drag = None
+            self.wire_start_tab = junction_id
+            self.set_status("Wire started. Click on a tab or junction to complete the wire.")
+            return
+
+        # Clear any pending junction click if it didn't become a drag.
+        self._pending_junction_drag = None
 
         # If we never crossed the drag threshold, clear pending drag state
         self._pending_drag_start = None
