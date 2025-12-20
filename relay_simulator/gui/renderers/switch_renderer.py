@@ -21,6 +21,12 @@ class SwitchRenderer(ComponentRenderer):
     
     DIAMETER = 40  # Switch diameter in pixels
 
+    def get_bounds(self, zoom: float = 1.0):
+        """Return world-space bounds for selection hit testing (button circle only, no label)."""
+        cx, cy = self.component.position
+        radius = self.DIAMETER / 2
+        return (cx - radius, cy - radius, cx + radius, cy + radius)
+
     @staticmethod
     def _to_hex(color) -> str:
         """Convert (r,g,b) or [r,g,b] to '#rrggbb'. Pass through hex strings."""

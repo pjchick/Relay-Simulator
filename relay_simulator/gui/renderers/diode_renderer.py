@@ -21,6 +21,21 @@ class DiodeRenderer(ComponentRenderer):
     WIDTH = 70
     HEIGHT = 30
 
+    def get_bounds(self, zoom: float = 1.0):
+        """Return world-space bounds for selection hit testing (diode body only, no label)."""
+        cx, cy = self.component.position
+        rotation = int(getattr(self.component, 'rotation', 0) or 0) % 360
+        
+        # Account for rotation swapping width/height
+        if rotation in (90, 270):
+            half_w = self.HEIGHT / 2
+            half_h = self.WIDTH / 2
+        else:
+            half_w = self.WIDTH / 2
+            half_h = self.HEIGHT / 2
+        
+        return (cx - half_w, cy - half_h, cx + half_w, cy + half_h)
+
     def _draw_polygon(self, points: list[tuple[float, float]], fill: str, outline: str, width_px: int, tags: tuple[str, ...]):
         cx, cy = self.get_position()
         rotation = self.get_rotation()

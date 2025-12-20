@@ -20,6 +20,12 @@ class VCCRenderer(ComponentRenderer):
     
     DIAMETER = 22  # VCC symbol diameter in pixels
     
+    def get_bounds(self, zoom: float = 1.0):
+        """Return world-space bounds for selection hit testing (circle only, no label)."""
+        cx, cy = self.component.position
+        radius = self.DIAMETER / 2
+        return (cx - radius, cy - radius, cx + radius, cy + radius)
+    
     def render(self, zoom: float = 1.0) -> None:
         """
         Render the VCC component.

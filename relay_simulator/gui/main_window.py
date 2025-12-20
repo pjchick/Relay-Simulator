@@ -1913,12 +1913,21 @@ class MainWindow:
             
             # Add to page
             page.add_component(component)
+
+            # Newly placed component becomes the active selection
+            self._clear_selection()
             
             # Mark document as modified
             self.file_tabs.set_tab_modified(tab.tab_id, True)
             
             # Re-render components on canvas
             self.design_canvas.set_page(page)
+
+            # Apply selection highlight (after re-render)
+            self.selected_components.add(component_id)
+            self.design_canvas.set_component_selected(component_id, True)
+            self.properties_panel.set_component(component)
+            self.menu_bar.enable_edit_menu(has_selection=True)
             
             # Return to normal mode
             self.toolbox.deselect_all()
@@ -3067,6 +3076,15 @@ class MainWindow:
         else:
             # No component clicked
             if not ctrl_held:
+                # Clicked on empty canvas: deselect everything (and allow box selection)
+                if (
+                    self.selected_components
+                    or self.selected_wires
+                    or self.selected_junctions
+                    or self.selected_waypoints
+                ):
+                    self._clear_selection()
+
                 # Start bounding box selection
                 self.selection_start = (canvas_x, canvas_y)
                 # Clear any pending component drag

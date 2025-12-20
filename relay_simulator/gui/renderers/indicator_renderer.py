@@ -23,6 +23,12 @@ class IndicatorRenderer(ComponentRenderer):
     DIAMETER = 30  # Indicator diameter in pixels
     LABEL_PADDING_PX = 20  # Extra gap between LED edge and label
 
+    def get_bounds(self, zoom: float = 1.0):
+        """Return world-space bounds for selection hit testing (LED circle only, no label)."""
+        cx, cy = self.component.position
+        radius = self.DIAMETER / 2
+        return (cx - radius, cy - radius, cx + radius, cy + radius)
+
     @staticmethod
     def _to_hex(color) -> str:
         """Convert (r,g,b) or [r,g,b] to '#rrggbb'. Pass through hex strings."""

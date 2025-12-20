@@ -11,6 +11,12 @@ from gui.theme import VSCodeTheme
 class ClockRenderer(ComponentRenderer):
     SIZE = 40
 
+    def get_bounds(self, zoom: float = 1.0):
+        """Return world-space bounds for selection hit testing (square only, no label)."""
+        cx, cy = self.component.position
+        half = self.SIZE / 2
+        return (cx - half, cy - half, cx + half, cy + half)
+
     @staticmethod
     def _to_hex(color) -> str:
         """Convert (r,g,b) or [r,g,b] to '#rrggbb'. Pass through hex strings."""

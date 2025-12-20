@@ -25,6 +25,21 @@ class RelayRenderer(ComponentRenderer):
     WIDTH = 60   # Relay width in pixels
     HEIGHT = 200  # Relay height in pixels
     
+    def get_bounds(self, zoom: float = 1.0):
+        """Return world-space bounds for selection hit testing (relay body only, no label)."""
+        cx, cy = self.component.position
+        rotation = int(getattr(self.component, 'rotation', 0) or 0) % 360
+        
+        # Account for rotation swapping width/height
+        if rotation in (90, 270):
+            half_w = self.HEIGHT / 2
+            half_h = self.WIDTH / 2
+        else:
+            half_w = self.WIDTH / 2
+            half_h = self.HEIGHT / 2
+        
+        return (cx - half_w, cy - half_h, cx + half_w, cy + half_h)
+    
     def _apply_flip(self, x: float, y: float, cx: float, cy: float) -> tuple:
         """
         Apply flip transformations to a coordinate (rotation is handled by base renderer).

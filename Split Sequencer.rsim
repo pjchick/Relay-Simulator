@@ -4,9 +4,9 @@
     {
       "page_id": "daf23555",
       "name": "Page 1",
-      "canvas_x": 0.0,
-      "canvas_y": 0.0,
-      "canvas_zoom": 1.0,
+      "canvas_x": 2125.0,
+      "canvas_y": 673.0,
+      "canvas_zoom": 1.1,
       "components": [
         {
           "component_id": "437655da",
@@ -4471,7 +4471,7 @@
             }
           ],
           "rotation": 180,
-          "link_name": "Ybg",
+          "link_name": "Yb",
           "properties": {
             "label": "Yb",
             "label_position": "right"
@@ -4499,6 +4499,7 @@
             }
           ],
           "rotation": 180,
+          "link_name": "AT08Zi",
           "properties": {
             "label": "AT08Zi",
             "label_position": "right"
@@ -4747,6 +4748,7 @@
             }
           ],
           "rotation": 180,
+          "link_name": "AT08Zo",
           "properties": {
             "label": "AT08Zo",
             "label_position": "right"
@@ -4774,6 +4776,7 @@
             }
           ],
           "rotation": 180,
+          "link_name": "RESET",
           "properties": {
             "label": "RESET",
             "label_position": "right"
@@ -5076,6 +5079,7 @@
               ]
             }
           ],
+          "link_name": "Yb",
           "properties": {
             "label": "Yb",
             "label_position": "left"
@@ -5102,7 +5106,6 @@
               ]
             }
           ],
-          "rotation": 180,
           "link_name": "C9",
           "properties": {
             "label": "C9",
@@ -5767,6 +5770,7 @@
             }
           ],
           "rotation": 180,
+          "link_name": "AT10Zi",
           "properties": {
             "label": "AT10Zi",
             "label_position": "right"
@@ -6852,6 +6856,7 @@
               ]
             }
           ],
+          "link_name": "S8'",
           "properties": {
             "label": "S8'",
             "label_position": "top",
@@ -8237,11 +8242,6 @@
           "end_tab_id": "625317f4.COM1.tab0"
         },
         {
-          "wire_id": "75740785",
-          "start_tab_id": "75070661.pin1.tab1",
-          "end_tab_id": "e47f49cf.COM2.tab0"
-        },
-        {
           "wire_id": "d5e38d18",
           "start_tab_id": "06ebb182.pin1.tab1",
           "end_tab_id": "625317f4.NO2.tab0"
@@ -9520,6 +9520,11 @@
           "wire_id": "aabeb79f",
           "start_tab_id": "b473df2b.pin1.tab1",
           "end_tab_id": "2920b6f2.NO2.tab0"
+        },
+        {
+          "wire_id": "f391f9cb",
+          "start_tab_id": "75070661.pin1.tab1",
+          "end_tab_id": "e47f49cf.COM2.tab0"
         }
       ],
       "junctions": [

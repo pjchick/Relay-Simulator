@@ -25,6 +25,26 @@ class BusDisplayRenderer(ComponentRenderer):
 
     INDICATOR_DIAMETER_PX = 10
 
+    def get_bounds(self, zoom: float = 1.0):
+        """Return world-space bounds for selection hit testing (display body only, no label)."""
+        cx, cy = self.component.position
+        rotation = int(getattr(self.component, 'rotation', 0) or 0) % 360
+        
+        pin_count = self._get_pin_count()
+        span = (pin_count - 1) * self._get_pin_spacing_px()
+        height = span + (2 * self.BODY_MARGIN_PX)
+        width = self.BODY_WIDTH_PX
+        
+        # Account for rotation swapping width/height
+        if rotation in (90, 270):
+            half_w = height / 2
+            half_h = width / 2
+        else:
+            half_w = width / 2
+            half_h = height / 2
+        
+        return (cx - half_w, cy - half_h, cx + half_w, cy + half_h)
+
     def _get_pin_count(self) -> int:
         try:
             count = int(self.component.properties.get('number_of_pins', 1))
