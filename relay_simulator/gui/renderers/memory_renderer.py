@@ -302,6 +302,10 @@ class MemoryRenderer(ComponentRenderer):
             if '.DATA_' in pin_id:
                 continue
 
+            # Hide internal per-bit ADDR tabs (used for simulation dependency tracking).
+            if '.ADDR_' in pin_id:
+                continue
+
             for tab in pin.tabs.values():
                 tx, ty = tab.relative_position
 

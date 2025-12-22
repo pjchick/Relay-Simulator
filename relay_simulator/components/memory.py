@@ -70,8 +70,8 @@ class Memory(Component):
         self.properties = {
             'address_bits': 8,      # 3-16 bits
             'data_bits': 8,         # 1-16 bits
-            'address_bus_name': 'ADDR',
-            'data_bus_name': 'DATA',
+            'address_bus_name': 'Address',
+            'data_bus_name': 'Data',
             'default_memory_file': '',  # Optional file path
             'is_volatile': False,        # If True, clears on sim start and not saved to .rsim
             'label': 'RAM',
@@ -155,6 +155,26 @@ class Memory(Component):
         """Create the control pins (Enable, Read, Write) and data bus pins."""
         self.pins.clear()
 
+        # Create hidden address bus pins so the simulation engine knows this
+        # component depends on the address bus VNETs (and will re-run
+        # simulate_logic when the address changes).
+        # These tabs are not intended for user wiring (renderer hides them).
+        addr_bits = self._get_address_bits()
+        addr_pin_spacing = 18
+        addr_start_y = -(addr_bits - 1) * addr_pin_spacing // 2
+        addr_pin_x = self.PIN_OFFSET_X  # left side
+
+        for bit_index in range(addr_bits):
+            pin_id = f"{self.component_id}.ADDR_{bit_index}"
+            pin = Pin(pin_id, self)
+
+            tab_id = f"{pin_id}.tab"
+            tab_x = addr_pin_x
+            tab_y = addr_start_y + (bit_index * addr_pin_spacing)
+            tab = Tab(tab_id, pin, (tab_x, tab_y))
+            pin.add_tab(tab)
+            self.add_pin(pin)
+
         # Control pin positions (relative to component center, on left side)
         control_pins = [
             ('Enable', 0),
@@ -207,11 +227,27 @@ class Memory(Component):
 
     def get_link_mappings(self) -> Dict[str, list[str]]:
         """Return link mappings for Address and Data buses."""
+        mappings: Dict[str, list[str]] = {}
+
+        # Map our ADDR_* input pins to the configured ADDR bus link names.
+        # Even though the Memory reads bus values via VNET link states, having
+        # actual tabs in those VNETs ensures the simulation engine queues this
+        # component when the address bus changes.
+        addr_bus = self._get_address_bus_name()
+        if addr_bus:
+            addr_bits = self._get_address_bits()
+            for bit_index in range(addr_bits):
+                link_name = f"{addr_bus}_{bit_index}"
+                pin = self.pins.get(f"{self.component_id}.ADDR_{bit_index}")
+                if not pin:
+                    continue
+                tab_ids = [tab.tab_id for tab in pin.tabs.values()]
+                if tab_ids:
+                    mappings[link_name] = tab_ids
+
         # Map our DATA_* output pins to the configured DATA bus link names.
         # This lets us drive the bus by setting pin states (HIGH/FLOAT), and the
         # link resolver will tie together VNETs that share the same link name.
-        mappings: Dict[str, list[str]] = {}
-
         data_bus = self._get_data_bus_name()
         if not data_bus:
             return mappings

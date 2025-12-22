@@ -2179,6 +2179,13 @@ class MainWindow:
             comp_x, comp_y = component.position
             rotation = getattr(component, 'rotation', 0) or 0
             for pin in component.pins.values():
+                # Memory uses internal per-bit bus pins that are intentionally hidden
+                # from the user (renderer does not draw them). Exclude them from
+                # tab hit-testing so wires can't accidentally connect to them.
+                if getattr(component, 'component_type', None) == 'Memory':
+                    pin_id = getattr(pin, 'pin_id', '')
+                    if isinstance(pin_id, str) and ('.DATA_' in pin_id or '.ADDR_' in pin_id):
+                        continue
                 for tab_obj in pin.tabs.values():
                     tab_dx, tab_dy = tab_obj.relative_position
                     tab_x = comp_x + tab_dx
