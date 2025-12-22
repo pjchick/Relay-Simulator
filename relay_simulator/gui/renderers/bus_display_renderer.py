@@ -57,7 +57,7 @@ class BusDisplayRenderer(ComponentRenderer):
             spacing = int(self.component.properties.get('pin_spacing', 1))
         except Exception:
             spacing = 1
-        spacing = max(1, min(15, spacing))
+        spacing = max(1, min(20, spacing))
         return self.GRID_SQUARE_PX * spacing
 
     def _get_bus_name(self) -> str:

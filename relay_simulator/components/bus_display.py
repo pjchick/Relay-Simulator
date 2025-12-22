@@ -69,7 +69,7 @@ class BusDisplay(Component):
             spacing = int(self.properties.get('pin_spacing', 1))
         except Exception:
             spacing = 1
-        return max(1, min(15, spacing))
+        return max(1, min(20, spacing))
 
     @property
     def link_ids(self) -> str:

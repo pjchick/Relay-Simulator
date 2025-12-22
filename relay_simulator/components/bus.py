@@ -65,12 +65,12 @@ class BUS(Component):
         return self._clamp_pin_count(self.properties.get('number_of_pins', 1))
 
     def _get_pin_spacing(self) -> int:
-        """Pin spacing in grid squares (1..15)."""
+        """Pin spacing in grid squares (1..20)."""
         try:
             spacing = int(self.properties.get('pin_spacing', 1))
         except Exception:
             spacing = 1
-        return max(1, min(15, spacing))
+        return max(1, min(20, spacing))
 
     @property
     def link_ids(self) -> str:
