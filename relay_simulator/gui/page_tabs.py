@@ -59,13 +59,53 @@ class PageTabBar:
             height=35
         )
         self.frame.pack_propagate(False)
-        
-        # Container for tabs (scrollable if needed)
-        self.tabs_container = tk.Frame(
+
+        # Left scroll button
+        self.scroll_left_button = tk.Button(
             self.frame,
-            bg=VSCodeTheme.BG_SECONDARY
+            text="<",
+            font=VSCodeTheme.get_font('normal'),
+            bg=VSCodeTheme.BG_SECONDARY,
+            fg=VSCodeTheme.FG_PRIMARY,
+            activebackground=VSCodeTheme.BG_ACTIVE,
+            activeforeground=VSCodeTheme.FG_PRIMARY,
+            relief=tk.FLAT,
+            padx=VSCodeTheme.PADDING_SMALL,
+            command=lambda: self._scroll_tabs(-1),
         )
-        self.tabs_container.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.scroll_left_button.pack(side=tk.LEFT, padx=(VSCodeTheme.PADDING_SMALL, 0))
+
+        # Scrollable canvas for tabs
+        self.tabs_canvas = tk.Canvas(
+            self.frame,
+            bg=VSCodeTheme.BG_SECONDARY,
+            highlightthickness=0,
+            bd=0,
+        )
+        self.tabs_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        # Container frame inside the canvas
+        self.tabs_container = tk.Frame(self.tabs_canvas, bg=VSCodeTheme.BG_SECONDARY)
+        self._tabs_window_id = self.tabs_canvas.create_window(
+            (0, 0),
+            window=self.tabs_container,
+            anchor='nw'
+        )
+
+        # Right scroll button
+        self.scroll_right_button = tk.Button(
+            self.frame,
+            text=">",
+            font=VSCodeTheme.get_font('normal'),
+            bg=VSCodeTheme.BG_SECONDARY,
+            fg=VSCodeTheme.FG_PRIMARY,
+            activebackground=VSCodeTheme.BG_ACTIVE,
+            activeforeground=VSCodeTheme.FG_PRIMARY,
+            relief=tk.FLAT,
+            padx=VSCodeTheme.PADDING_SMALL,
+            command=lambda: self._scroll_tabs(1),
+        )
+        self.scroll_right_button.pack(side=tk.LEFT, padx=(0, VSCodeTheme.PADDING_SMALL))
         
         # Add page button
         self.add_button = tk.Button(
@@ -84,6 +124,50 @@ class PageTabBar:
         
         # Dictionary to store tab widgets
         self.tab_widgets: dict[str, tk.Frame] = {}
+
+        # Keep scrollregion up to date
+        self.tabs_container.bind('<Configure>', self._on_tabs_container_configure)
+        self.tabs_canvas.bind('<Configure>', self._on_tabs_canvas_configure)
+
+    def _on_tabs_container_configure(self, event=None) -> None:
+        """Update scroll region when tabs are added/removed/resized."""
+        try:
+            self.tabs_canvas.configure(scrollregion=self.tabs_canvas.bbox('all'))
+        except Exception:
+            pass
+
+    def _on_tabs_canvas_configure(self, event=None) -> None:
+        """Keep the tabs window height aligned to the canvas height."""
+        try:
+            self.tabs_canvas.itemconfigure(self._tabs_window_id, height=self.tabs_canvas.winfo_height())
+        except Exception:
+            pass
+
+    def _scroll_tabs(self, direction: int) -> None:
+        """Scroll the tab strip left/right."""
+        # Scroll by ~80% of visible width to make navigation fast.
+        try:
+            width = max(1, int(self.tabs_canvas.winfo_width()))
+            delta = int(width * 0.8)
+
+            x0 = int(self.tabs_canvas.canvasx(0))
+            x1 = x0 + width
+            content = self.tabs_canvas.bbox('all')
+            if not content:
+                return
+            content_width = int(content[2] - content[0])
+            if content_width <= width:
+                return
+
+            target_left = x0 + (delta * direction)
+            target_left = max(0, min(target_left, content_width - width))
+            self.tabs_canvas.xview_moveto(target_left / max(1, content_width))
+        except Exception:
+            # Fallback: small unit scroll
+            try:
+                self.tabs_canvas.xview_scroll(10 * direction, 'units')
+            except Exception:
+                pass
         
     def pack(self, **kwargs) -> None:
         """Pack the page tab bar."""
@@ -125,6 +209,9 @@ class PageTabBar:
             # Re-activate the current page to update visual state
             if self.active_page_id:
                 self.set_active_page(self.active_page_id)
+
+        # Ensure scrolling region matches new contents
+        self._on_tabs_container_configure()
             
     def _create_page_tab(self, page: Page, is_first: bool = False) -> None:
         """

@@ -5,8 +5,8 @@
       "page_id": "a00bb4cb",
       "name": "Front Page",
       "canvas_x": 0.0,
-      "canvas_y": 0.0,
-      "canvas_zoom": 0.754719287203635,
+      "canvas_y": 1.0,
+      "canvas_zoom": 1.0,
       "components": [
         {
           "component_id": "4536e515",
@@ -27286,7 +27286,9 @@
             "1": 3754,
             "2": 274,
             "0": 3925,
-            "3": 323
+            "3": 323,
+            "4": 273,
+            "5": 324
           },
           "scroll_offset": 0
         },
@@ -61136,7 +61138,7 @@
       "page_id": "e9f88e57",
       "name": "Controller",
       "canvas_x": 0.0,
-      "canvas_y": 914.0,
+      "canvas_y": 1076.0,
       "canvas_zoom": 1.0,
       "components": [
         {

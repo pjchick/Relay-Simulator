@@ -92,10 +92,92 @@ class FileTabBar:
         self.frame = tk.Frame(self.parent, bg=VSCodeTheme.BG_SECONDARY, height=32)
         self.frame.pack(side=tk.TOP, fill=tk.X)
         self.frame.pack_propagate(False)  # Prevent frame from shrinking
-        
-        # Tab container (for individual tabs)
-        self.tab_container = tk.Frame(self.frame, bg=VSCodeTheme.BG_SECONDARY)
-        self.tab_container.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        # Left scroll button
+        self.scroll_left_button = tk.Button(
+            self.frame,
+            text="<",
+            font=VSCodeTheme.get_font('normal'),
+            bg=VSCodeTheme.BG_SECONDARY,
+            fg=VSCodeTheme.FG_PRIMARY,
+            activebackground=VSCodeTheme.BG_ACTIVE,
+            activeforeground=VSCodeTheme.FG_PRIMARY,
+            relief=tk.FLAT,
+            padx=VSCodeTheme.PADDING_SMALL,
+            command=lambda: self._scroll_tabs(-1),
+        )
+        self.scroll_left_button.pack(side=tk.LEFT, padx=(VSCodeTheme.PADDING_SMALL, 0))
+
+        # Scrollable canvas for file tabs
+        self.tabs_canvas = tk.Canvas(
+            self.frame,
+            bg=VSCodeTheme.BG_SECONDARY,
+            highlightthickness=0,
+            bd=0,
+        )
+        self.tabs_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        # Tab container (inside canvas)
+        self.tab_container = tk.Frame(self.tabs_canvas, bg=VSCodeTheme.BG_SECONDARY)
+        self._tabs_window_id = self.tabs_canvas.create_window(
+            (0, 0),
+            window=self.tab_container,
+            anchor='nw'
+        )
+
+        # Right scroll button
+        self.scroll_right_button = tk.Button(
+            self.frame,
+            text=">",
+            font=VSCodeTheme.get_font('normal'),
+            bg=VSCodeTheme.BG_SECONDARY,
+            fg=VSCodeTheme.FG_PRIMARY,
+            activebackground=VSCodeTheme.BG_ACTIVE,
+            activeforeground=VSCodeTheme.FG_PRIMARY,
+            relief=tk.FLAT,
+            padx=VSCodeTheme.PADDING_SMALL,
+            command=lambda: self._scroll_tabs(1),
+        )
+        self.scroll_right_button.pack(side=tk.LEFT, padx=(0, VSCodeTheme.PADDING_SMALL))
+
+        # Keep scrollregion up to date
+        self.tab_container.bind('<Configure>', self._on_tabs_container_configure)
+        self.tabs_canvas.bind('<Configure>', self._on_tabs_canvas_configure)
+
+    def _on_tabs_container_configure(self, event=None) -> None:
+        try:
+            self.tabs_canvas.configure(scrollregion=self.tabs_canvas.bbox('all'))
+        except Exception:
+            pass
+
+    def _on_tabs_canvas_configure(self, event=None) -> None:
+        try:
+            self.tabs_canvas.itemconfigure(self._tabs_window_id, height=self.tabs_canvas.winfo_height())
+        except Exception:
+            pass
+
+    def _scroll_tabs(self, direction: int) -> None:
+        """Scroll the file tab strip left/right."""
+        try:
+            width = max(1, int(self.tabs_canvas.winfo_width()))
+            delta = int(width * 0.8)
+
+            x0 = int(self.tabs_canvas.canvasx(0))
+            content = self.tabs_canvas.bbox('all')
+            if not content:
+                return
+            content_width = int(content[2] - content[0])
+            if content_width <= width:
+                return
+
+            target_left = x0 + (delta * direction)
+            target_left = max(0, min(target_left, content_width - width))
+            self.tabs_canvas.xview_moveto(target_left / max(1, content_width))
+        except Exception:
+            try:
+                self.tabs_canvas.xview_scroll(10 * direction, 'units')
+            except Exception:
+                pass
         
     def add_tab(self, filename: str, filepath: Optional[str] = None, 
                 document=None) -> str:
@@ -121,6 +203,9 @@ class FileTabBar:
         
         # Create tab widget
         self._create_tab_widget(tab_id)
+
+        # Update scroll region
+        self._on_tabs_container_configure()
         
         # Set as active if first tab
         if len(self.tabs) == 1:
@@ -311,6 +396,9 @@ class FileTabBar:
                 self.set_active_tab(self.tab_order[idx])
             else:
                 self.active_tab_id = None
+
+        # Update scroll region after removal
+        self._on_tabs_container_configure()
         
         return True
     
