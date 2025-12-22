@@ -193,6 +193,20 @@ class WireRenderer:
         rotation = getattr(component, 'rotation', 0) or 0
         tab_dx, tab_dy = tab.relative_position
 
+        # Apply component flips in local space (around component center) before rotation.
+        try:
+            props = getattr(component, 'properties', {}) or {}
+            flip_h = bool(props.get('flip_horizontal', False))
+            flip_v = bool(props.get('flip_vertical', False))
+        except Exception:
+            flip_h = False
+            flip_v = False
+
+        if flip_h:
+            tab_dx = -tab_dx
+        if flip_v:
+            tab_dy = -tab_dy
+
         x = comp_x + tab_dx
         y = comp_y + tab_dy
         if rotation:

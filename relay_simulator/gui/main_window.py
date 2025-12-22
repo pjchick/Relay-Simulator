@@ -1032,7 +1032,7 @@ class MainWindow:
         self.context_menu.add_command(
             label="Paste",
             accelerator="Ctrl+V",
-            command=self._paste_clipboard
+            command=self._paste_clipboard_from_context_menu
         )
         
         self.context_menu.add_separator()
@@ -1065,6 +1065,9 @@ class MainWindow:
         """
         # Get world coordinates
         canvas_x, canvas_y = self.design_canvas.screen_to_world(event.x, event.y)
+
+        # Remember where the context menu was opened, so "Paste" can anchor to the mouse.
+        self._last_context_menu_world = (float(canvas_x), float(canvas_y))
         
         # Check if right-clicked on a waypoint
         waypoint_info = self._find_waypoint_at_position(canvas_x, canvas_y)
@@ -1110,6 +1113,15 @@ class MainWindow:
         
         # Let canvas handle pan start
         self.design_canvas._on_pan_start(event)
+
+    def _paste_clipboard_from_context_menu(self) -> None:
+        """Paste using the last context-menu mouse location as the anchor."""
+        anchor = getattr(self, '_last_context_menu_world', None)
+        try:
+            self._paste_clipboard(anchor_world=anchor)
+        finally:
+            # Avoid stale anchors being accidentally reused elsewhere.
+            self._last_context_menu_world = None
     
     def _on_right_release(self, event) -> None:
         """
@@ -2178,6 +2190,8 @@ class MainWindow:
         for component in page.components.values():
             comp_x, comp_y = component.position
             rotation = getattr(component, 'rotation', 0) or 0
+            flip_h = bool(getattr(component, 'properties', {}).get('flip_horizontal', False))
+            flip_v = bool(getattr(component, 'properties', {}).get('flip_vertical', False))
             for pin in component.pins.values():
                 # Memory uses internal per-bit bus pins that are intentionally hidden
                 # from the user (renderer does not draw them). Exclude them from
@@ -2188,6 +2202,13 @@ class MainWindow:
                         continue
                 for tab_obj in pin.tabs.values():
                     tab_dx, tab_dy = tab_obj.relative_position
+
+                    # Apply flip in local space (around component center) before rotation.
+                    if flip_h:
+                        tab_dx = -tab_dx
+                    if flip_v:
+                        tab_dy = -tab_dy
+
                     tab_x = comp_x + tab_dx
                     tab_y = comp_y + tab_dy
                     if rotation:
@@ -2251,7 +2272,16 @@ class MainWindow:
         
         comp_x, comp_y = component.position
         rotation = getattr(component, 'rotation', 0) or 0
+        flip_h = bool(getattr(component, 'properties', {}).get('flip_horizontal', False))
+        flip_v = bool(getattr(component, 'properties', {}).get('flip_vertical', False))
         tab_dx, tab_dy = tab_obj.relative_position
+
+        # Apply flip in local space (around component center) before rotation.
+        if flip_h:
+            tab_dx = -tab_dx
+        if flip_v:
+            tab_dy = -tab_dy
+
         x = comp_x + tab_dx
         y = comp_y + tab_dy
         if rotation:
@@ -3769,7 +3799,7 @@ class MainWindow:
         except Exception:
             return
 
-    def _remap_wire_dict(self, wire_data: dict, *, id_manager, endpoint_map: dict[str, str], offset: float) -> Optional[dict]:
+    def _remap_wire_dict(self, wire_data: dict, *, id_manager, endpoint_map: dict[str, str], dx: float, dy: float) -> Optional[dict]:
         """Return a remapped+offset wire dict suitable for Wire.from_dict()."""
         if not isinstance(wire_data, dict):
             return None
@@ -3811,7 +3841,7 @@ class MainWindow:
                     'waypoint_id': id_manager.generate_id(),
                     'position': dict((wp.get('position') or {})),
                 }
-                self._offset_point_dict(wp_new['position'], offset, offset)
+                self._offset_point_dict(wp_new['position'], dx, dy)
                 new_wps.append(wp_new)
             if new_wps:
                 new_wire['waypoints'] = new_wps
@@ -3829,7 +3859,7 @@ class MainWindow:
                     'junction_id': j_new_id,
                     'position': dict((j.get('position') or {})),
                 }
-                self._offset_point_dict(j_new['position'], offset, offset)
+                self._offset_point_dict(j_new['position'], dx, dy)
 
                 # Recurse child wires
                 child_wires = j.get('child_wires', [])
@@ -3844,7 +3874,8 @@ class MainWindow:
                             cw,
                             id_manager=id_manager,
                             endpoint_map=extended_map,
-                            offset=offset,
+                            dx=dx,
+                            dy=dy,
                         )
                         if remapped:
                             new_children.append(remapped)
@@ -3943,7 +3974,7 @@ class MainWindow:
         
         self.set_status("Cut selection")
     
-    def _paste_clipboard(self) -> None:
+    def _paste_clipboard(self, *, anchor_world: Optional[tuple[float, float]] = None) -> None:
         """
         Paste items from clipboard with new IDs and offset position.
         """
@@ -3969,9 +4000,18 @@ class MainWindow:
         
         # Clear current selection
         self._clear_selection()
-        
-        # Paste offset (20px right and down from original)
-        paste_offset = 20
+
+        # Default paste offset: 2 snap units right and down from original.
+        # This keeps pasted items aligned with the configured snap/grid size.
+        try:
+            snap_size = int(self.settings.get_snap_size())
+        except Exception:
+            snap_size = 10
+        if snap_size <= 0:
+            snap_size = 10
+
+        dx: float = float(2 * snap_size)
+        dy: float = float(2 * snap_size)
 
         clip = self.clipboard
         # Backward compatibility: old clipboard stored just a list of component dicts
@@ -3980,6 +4020,66 @@ class MainWindow:
         if not isinstance(clip, dict):
             self.set_status("Clipboard format not recognized")
             return
+
+        # If an anchor is provided (context-menu paste), compute dx/dy so the pasted
+        # selection's origin (top-left of its bounding box) lands at the anchor.
+        if anchor_world is not None:
+            try:
+                ax, ay = float(anchor_world[0]), float(anchor_world[1])
+            except Exception:
+                ax, ay = None, None
+
+            if ax is not None and ay is not None:
+                # Snap the anchor to the same snap grid used for placement.
+                try:
+                    ax = round(ax / snap_size) * snap_size
+                    ay = round(ay / snap_size) * snap_size
+                except Exception:
+                    pass
+
+                min_x = None
+                min_y = None
+
+                for component_data in (clip.get('components', []) or []):
+                    if not isinstance(component_data, dict):
+                        continue
+                    position_data = component_data.get('position', {'x': 0, 'y': 0})
+                    try:
+                        if isinstance(position_data, dict):
+                            x0 = float(position_data.get('x', 0.0))
+                            y0 = float(position_data.get('y', 0.0))
+                        else:
+                            x0 = float(position_data[0])
+                            y0 = float(position_data[1])
+                    except Exception:
+                        continue
+                    min_x = x0 if min_x is None else min(min_x, x0)
+                    min_y = y0 if min_y is None else min(min_y, y0)
+
+                for junction_data in (clip.get('junctions', []) or []):
+                    if not isinstance(junction_data, dict):
+                        continue
+                    pos = junction_data.get('position', {})
+                    if not isinstance(pos, dict):
+                        continue
+                    try:
+                        x0 = float(pos.get('x', 0.0))
+                        y0 = float(pos.get('y', 0.0))
+                    except Exception:
+                        continue
+                    min_x = x0 if min_x is None else min(min_x, x0)
+                    min_y = y0 if min_y is None else min(min_y, y0)
+
+                if min_x is not None and min_y is not None:
+                    dx = ax - min_x
+                    dy = ay - min_y
+
+                    # Snap the delta so all pasted items stay aligned.
+                    try:
+                        dx = round(dx / snap_size) * snap_size
+                        dy = round(dy / snap_size) * snap_size
+                    except Exception:
+                        pass
 
         factory = get_factory()
         id_manager = tab.document.id_manager
@@ -4018,7 +4118,7 @@ class MainWindow:
                 original_y = position_data.get('y', 0)
             else:
                 original_x, original_y = position_data
-            component.position = (original_x + paste_offset, original_y + paste_offset)
+            component.position = (original_x + dx, original_y + dy)
 
             if hasattr(component, 'on_property_changed') and callable(getattr(component, 'on_property_changed')):
                 try:
@@ -4056,8 +4156,8 @@ class MainWindow:
             if not isinstance(pos, dict):
                 continue
             try:
-                x = float(pos.get('x', 0.0)) + paste_offset
-                y = float(pos.get('y', 0.0)) + paste_offset
+                x = float(pos.get('x', 0.0)) + dx
+                y = float(pos.get('y', 0.0)) + dy
             except Exception:
                 x, y = 0.0, 0.0
 
@@ -4083,7 +4183,7 @@ class MainWindow:
                     if src_id in seen_source_wire_ids:
                         continue
                     seen_source_wire_ids.add(src_id)
-            remapped = self._remap_wire_dict(wire_data, id_manager=id_manager, endpoint_map=endpoint_map, offset=paste_offset)
+                remapped = self._remap_wire_dict(wire_data, id_manager=id_manager, endpoint_map=endpoint_map, dx=dx, dy=dy)
             if not remapped:
                 continue
             try:
