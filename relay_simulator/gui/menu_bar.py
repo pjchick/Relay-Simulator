@@ -53,6 +53,8 @@ class MenuBar:
             'settings': None,
             'exit': None,
             'select_all': None,
+            'undo': None,
+            'redo': None,
             'cut': None,
             'copy': None,
             'paste': None,
@@ -137,6 +139,20 @@ class MenuBar:
         """Create the Edit menu."""
         self.edit_menu = tk.Menu(self.menubar, tearoff=0)
         self.menubar.add_cascade(label="Edit", menu=self.edit_menu)
+
+        self.edit_menu.add_command(
+            label="Undo",
+            accelerator="Ctrl+Z",
+            command=self._on_undo
+        )
+
+        self.edit_menu.add_command(
+            label="Redo",
+            accelerator="Ctrl+Y",
+            command=self._on_redo
+        )
+
+        self.edit_menu.add_separator()
         
         self.edit_menu.add_command(
             label="Select All",
@@ -165,6 +181,10 @@ class MenuBar:
         )
         
         # Bind keyboard shortcuts
+        self.parent.bind('<Control-z>', lambda e: self._on_undo() or 'break')
+        self.parent.bind('<Control-Z>', lambda e: self._on_undo() or 'break')
+        self.parent.bind('<Control-y>', lambda e: self._on_redo() or 'break')
+        self.parent.bind('<Control-Y>', lambda e: self._on_redo() or 'break')
         self.parent.bind('<Control-a>', lambda e: self._on_select_all() or 'break')
         self.parent.bind('<Control-A>', lambda e: self._on_select_all() or 'break')
         self.parent.bind('<Control-x>', lambda e: self._on_cut() or 'break')
@@ -270,6 +290,16 @@ class MenuBar:
         """Handle Select All command."""
         if self.callbacks['select_all']:
             self.callbacks['select_all']()
+
+    def _on_undo(self) -> None:
+        """Handle Undo command."""
+        if self.callbacks.get('undo'):
+            self.callbacks['undo']()
+
+    def _on_redo(self) -> None:
+        """Handle Redo command."""
+        if self.callbacks.get('redo'):
+            self.callbacks['redo']()
             
     def _on_cut(self) -> None:
         """Handle Cut command."""
@@ -457,6 +487,11 @@ class MenuBar:
         """
         self.set_menu_state('edit', 'Cut', has_selection)
         self.set_menu_state('edit', 'Copy', has_selection)
+
+    def enable_undo_redo(self, can_undo: bool, can_redo: bool) -> None:
+        """Enable/disable Undo/Redo menu items."""
+        self.set_menu_state('edit', 'Undo', can_undo)
+        self.set_menu_state('edit', 'Redo', can_redo)
         
     def enable_simulation_controls(self, is_running: bool) -> None:
         """

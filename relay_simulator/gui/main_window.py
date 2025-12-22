@@ -7,12 +7,13 @@ including initialization, lifecycle, and basic window operations.
 
 import tkinter as tk
 from tkinter import messagebox, filedialog
-from typing import Optional, Dict, Tuple
+from typing import Optional, Dict, Tuple, Any
 from pathlib import Path
 import math
 import threading
 import time
 import traceback
+import copy
 
 from gui.theme import VSCodeTheme, apply_theme
 from gui.menu_bar import MenuBar
@@ -71,6 +72,10 @@ class MainWindow:
 
         # Track if there are unsaved changes
         self.has_unsaved_changes = False
+
+        # Single-step undo/redo (per tab): store one undo snapshot and one redo snapshot.
+        self._undo_redo_state: Dict[str, Dict[str, Optional[Dict[str, Any]]]] = {}
+        self._restoring_undo_redo = False
 
         # Track simulation mode (False = Design Mode, True = Simulation Mode)
         self.simulation_mode = False
@@ -141,6 +146,8 @@ class MainWindow:
         self.menu_bar.set_callback('exit', self._on_closing)
         
         # Edit menu
+        self.menu_bar.set_callback('undo', self._menu_undo)
+        self.menu_bar.set_callback('redo', self._menu_redo)
         self.menu_bar.set_callback('select_all', self._menu_select_all)
         self.menu_bar.set_callback('cut', self._menu_cut)
         self.menu_bar.set_callback('copy', self._menu_copy)
@@ -159,7 +166,154 @@ class MainWindow:
         
         # Initialize menu states
         self.menu_bar.enable_edit_menu(has_selection=False)
+        self.menu_bar.enable_undo_redo(can_undo=False, can_redo=False)
         self.menu_bar.enable_simulation_controls(is_running=False)
+
+    def _ensure_undo_state_for_tab(self, tab_id: str) -> None:
+        if tab_id not in self._undo_redo_state:
+            self._undo_redo_state[tab_id] = {'undo': None, 'redo': None}
+
+    def _get_active_tab_undo_state(self) -> Optional[Dict[str, Optional[Dict[str, Any]]]]:
+        tab = self.file_tabs.get_active_tab()
+        if not tab:
+            return None
+        self._ensure_undo_state_for_tab(tab.tab_id)
+        return self._undo_redo_state.get(tab.tab_id)
+
+    def _make_snapshot_for_tab(self, tab) -> Dict[str, Any]:
+        active_page_id = None
+        try:
+            active_page_id = self.page_tabs.get_active_page_id()
+        except Exception:
+            active_page_id = None
+
+        return {
+            'document': copy.deepcopy(tab.document.to_dict()) if tab and tab.document else None,
+            'active_page_id': active_page_id,
+            'is_modified': bool(getattr(tab, 'is_modified', False)),
+        }
+
+    def _update_undo_redo_menu_state(self) -> None:
+        if self.simulation_mode:
+            self.menu_bar.enable_undo_redo(can_undo=False, can_redo=False)
+            return
+        state = self._get_active_tab_undo_state()
+        if not state:
+            self.menu_bar.enable_undo_redo(can_undo=False, can_redo=False)
+            return
+        can_undo = state.get('undo') is not None
+        can_redo = state.get('redo') is not None
+        self.menu_bar.enable_undo_redo(can_undo=can_undo, can_redo=can_redo)
+
+    def _capture_undo_checkpoint(self) -> None:
+        """Capture a pre-change snapshot for the active tab and clear redo."""
+        if self.simulation_mode or self._restoring_undo_redo:
+            return
+
+        tab = self.file_tabs.get_active_tab()
+        if not tab or not tab.document:
+            return
+
+        self._ensure_undo_state_for_tab(tab.tab_id)
+        state = self._undo_redo_state[tab.tab_id]
+        state['undo'] = self._make_snapshot_for_tab(tab)
+        state['redo'] = None
+        self._update_undo_redo_menu_state()
+
+    def _restore_snapshot_to_active_tab(self, snapshot: Dict[str, Any]) -> None:
+        """Restore a document snapshot into the currently active tab and refresh UI."""
+        tab = self.file_tabs.get_active_tab()
+        if not tab:
+            return
+
+        doc_dict = snapshot.get('document')
+        if not isinstance(doc_dict, dict):
+            return
+
+        from components.factory import get_factory
+
+        self._restoring_undo_redo = True
+        try:
+            restored_doc = Document.from_dict(doc_dict, component_factory=get_factory())
+            tab.document = restored_doc
+
+            # Rebind page tabs and restore active page if possible
+            self.page_tabs.set_document(restored_doc)
+            preferred_page_id = snapshot.get('active_page_id')
+            if preferred_page_id and restored_doc.get_page(preferred_page_id):
+                self.page_tabs.set_active_page(preferred_page_id)
+
+            active_page_id = self.page_tabs.get_active_page_id()
+            if active_page_id:
+                page = restored_doc.get_page(active_page_id)
+                if page:
+                    self._set_canvas_page(page)
+                    self.design_canvas.restore_canvas_state(page.canvas_x, page.canvas_y, page.canvas_zoom)
+
+            # Restore modified marker
+            if 'is_modified' in snapshot:
+                self.file_tabs.set_tab_modified(tab.tab_id, bool(snapshot.get('is_modified')))
+
+            # Clear selection/properties (selection ids may not exist after restore)
+            self._clear_selection()
+            self.properties_panel.set_component(None)
+            self.menu_bar.enable_edit_menu(has_selection=False)
+
+        finally:
+            self._restoring_undo_redo = False
+
+    def _on_undo_checkpoint_event(self, event=None) -> None:
+        self._capture_undo_checkpoint()
+
+    def _menu_undo(self) -> None:
+        if self.simulation_mode:
+            return
+
+        tab = self.file_tabs.get_active_tab()
+        if not tab or not tab.document:
+            return
+
+        self._ensure_undo_state_for_tab(tab.tab_id)
+        state = self._undo_redo_state[tab.tab_id]
+        snapshot = state.get('undo')
+        if not snapshot:
+            return
+
+        # Save redo snapshot from current state
+        state['redo'] = self._make_snapshot_for_tab(tab)
+
+        # Restore undo snapshot
+        self._restore_snapshot_to_active_tab(snapshot)
+
+        # Single-step: undo is now consumed
+        state['undo'] = None
+        self._update_undo_redo_menu_state()
+        self.set_status("Undo")
+
+    def _menu_redo(self) -> None:
+        if self.simulation_mode:
+            return
+
+        tab = self.file_tabs.get_active_tab()
+        if not tab or not tab.document:
+            return
+
+        self._ensure_undo_state_for_tab(tab.tab_id)
+        state = self._undo_redo_state[tab.tab_id]
+        snapshot = state.get('redo')
+        if not snapshot:
+            return
+
+        # Save undo snapshot from current state
+        state['undo'] = self._make_snapshot_for_tab(tab)
+
+        # Restore redo snapshot
+        self._restore_snapshot_to_active_tab(snapshot)
+
+        # Single-step: redo is now consumed
+        state['redo'] = None
+        self._update_undo_redo_menu_state()
+        self.set_status("Redo")
         
     # Menu callback implementations
     
@@ -470,6 +624,7 @@ class MainWindow:
         self.toolbox.pack_forget()  # Hide toolbox
         self.file_tabs.set_simulation_running(True)
         self.menu_bar.enable_simulation_controls(is_running=True)
+        self._update_undo_redo_menu_state()
         self.set_status("Simulation Mode - Click switches to toggle. Press Shift+F5 to stop.")
         
         # Clear any active editing states
@@ -698,6 +853,7 @@ class MainWindow:
         self.toolbox.pack(side=tk.LEFT, fill=tk.Y, padx=(0, 1), before=self.design_canvas.frame)
         self.file_tabs.set_simulation_running(False)
         self.menu_bar.enable_simulation_controls(is_running=False)
+        self._update_undo_redo_menu_state()
         self.set_status("Design Mode - Ready")
 
         # Redraw canvas to clear powered state visual feedback
@@ -1277,6 +1433,10 @@ class MainWindow:
         
         # Bind property change events to update canvas
         self.content_frame.bind('<<PropertyChanged>>', self._on_property_changed)
+
+        # Bind undo checkpoint events (emitted by editors before mutations)
+        self.content_frame.bind('<<UndoCheckpoint>>', self._on_undo_checkpoint_event)
+        self.root.bind('<<UndoCheckpoint>>', self._on_undo_checkpoint_event)
         
         # Track component placement mode
         self.placement_component = None  # Component type being placed
@@ -1345,7 +1505,9 @@ class MainWindow:
         # Create initial untitled document (after canvas is created)
         initial_doc = Document()
         initial_doc.create_page("Page 1")
-        self.file_tabs.add_untitled_tab(initial_doc)
+        initial_tab_id = self.file_tabs.add_untitled_tab(initial_doc)
+        self._ensure_undo_state_for_tab(initial_tab_id)
+        self._update_undo_redo_menu_state()
         
     def _on_closing(self) -> None:
         """
@@ -1475,6 +1637,10 @@ class MainWindow:
             
             # Track last active tab for next switch
             self._last_active_tab_id = tab_id
+
+        # Update undo/redo enabled state for the new active tab
+        self._ensure_undo_state_for_tab(tab_id)
+        self._update_undo_redo_menu_state()
     
     def _on_tab_close(self, tab_id: str) -> bool:
         """
@@ -1514,6 +1680,14 @@ class MainWindow:
         
         # Update window title after close
         self.root.after(10, self._update_window_title)
+
+        # Drop undo/redo state for closed tab
+        if tab_id in self._undo_redo_state:
+            try:
+                del self._undo_redo_state[tab_id]
+            except Exception:
+                pass
+        self._update_undo_redo_menu_state()
         return True
     
     def _on_tab_modified(self, tab_id: str, modified: bool) -> None:
@@ -1771,6 +1945,9 @@ class MainWindow:
         if not waypoint:
             return
 
+        # Snapshot state before mutating the document
+        self._capture_undo_checkpoint()
+
         # Create a new junction at waypoint position
         from core.wire import Junction, Wire, Waypoint
         junction_id = tab.document.id_manager.generate_id()
@@ -1919,6 +2096,9 @@ class MainWindow:
             return
         
         if component:
+            # Snapshot state before mutating the document
+            self._capture_undo_checkpoint()
+
             # Set position and rotation
             component.position = (snapped_x, snapped_y)
             component.rotation = self.placement_rotation
@@ -2311,6 +2491,9 @@ class MainWindow:
         junction = page.get_junction(junction_id)
         if not junction:
             return
+
+        # Snapshot state before mutating the document
+        self._capture_undo_checkpoint()
         
         # Create wire from start tab to junction
         from core.wire import Wire, Waypoint
@@ -2366,6 +2549,9 @@ class MainWindow:
         clicked_wire = page.get_wire(wire_id)
         if not clicked_wire:
             return
+
+        # Snapshot state before mutating the document
+        self._capture_undo_checkpoint()
         
         # Snap junction position to grid
         snap_size = self.settings.get_snap_size()
@@ -2479,6 +2665,9 @@ class MainWindow:
         page = tab.document.get_page(active_page_id)
         if not page:
             return
+
+        # Snapshot state before mutating the document
+        self._capture_undo_checkpoint()
         
         # Import Wire class
         from core.wire import Wire
@@ -3997,6 +4186,9 @@ class MainWindow:
         
         from components.factory import get_factory
         from core.wire import Wire, Junction
+
+        # Snapshot state before mutating the document
+        self._capture_undo_checkpoint()
         
         # Clear current selection
         self._clear_selection()
@@ -4299,6 +4491,9 @@ class MainWindow:
         if not result:
             self.set_status("Deletion cancelled")
             return
+
+        # Snapshot state before mutating the document
+        self._capture_undo_checkpoint()
         
         def _tab_id_to_component_id(tab_id):
             if not tab_id:

@@ -364,6 +364,12 @@ class PageTabBar:
         if drop_index > from_index:
             new_index = drop_index - 1
 
+        # Snapshot before mutating the document
+        try:
+            self.parent.event_generate('<<UndoCheckpoint>>')
+        except Exception:
+            pass
+
         if self.current_document.move_page(page_id, new_index):
             # Refresh UI to reflect new order.
             active = self.active_page_id
@@ -414,6 +420,12 @@ class PageTabBar:
         """Handle add page button click."""
         if not self.current_document:
             return
+
+        # Snapshot before mutating the document
+        try:
+            self.parent.event_generate('<<UndoCheckpoint>>')
+        except Exception:
+            pass
             
         # Generate page name
         pages = self.current_document.get_all_pages()
@@ -463,6 +475,12 @@ class PageTabBar:
         
         if not result:
             return
+
+        # Snapshot before mutating the document
+        try:
+            self.parent.event_generate('<<UndoCheckpoint>>')
+        except Exception:
+            pass
             
         # If deleting active page, switch to another page first
         if page_id == self.active_page_id:
@@ -531,6 +549,10 @@ class PageTabBar:
             new_name = entry.get().strip()
             if new_name and new_name != page.name:
                 # Update page name
+                try:
+                    self.parent.event_generate('<<UndoCheckpoint>>')
+                except Exception:
+                    pass
                 page.name = new_name
                 
                 # Trigger callback

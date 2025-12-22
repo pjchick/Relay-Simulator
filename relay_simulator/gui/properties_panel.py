@@ -1067,6 +1067,13 @@ class PropertiesPanel:
     def _set_property_value(self, key: str, target: str, value: Any, coerce_fn=None):
         if not self.current_component:
             return
+
+        # Allow the main window to snapshot state before a mutation.
+        try:
+            self.parent.event_generate('<<UndoCheckpoint>>')
+        except Exception:
+            pass
+
         if coerce_fn:
             try:
                 value = coerce_fn(value)
@@ -1140,6 +1147,12 @@ class PropertiesPanel:
         """
         if not self.current_component:
             return
+
+        # Allow the main window to snapshot state before a mutation.
+        try:
+            self.parent.event_generate('<<UndoCheckpoint>>')
+        except Exception:
+            pass
         
         # Validate ID is not empty
         if not new_id or not new_id.strip():
@@ -1229,6 +1242,11 @@ class PropertiesPanel:
         )
 
         if filepath:
+            # Snapshot before mutating the memory contents.
+            try:
+                self.parent.event_generate('<<UndoCheckpoint>>')
+            except Exception:
+                pass
             if self.current_component.load_from_file(filepath):
                 self._notify_change()
                 print(f"Memory loaded from {filepath}")
@@ -1264,6 +1282,11 @@ class PropertiesPanel:
 
         from tkinter import messagebox
         if messagebox.askyesno("Clear Memory", "Clear all memory contents?"):
+            # Snapshot before mutating the memory contents.
+            try:
+                self.parent.event_generate('<<UndoCheckpoint>>')
+            except Exception:
+                pass
             self.current_component.clear_memory()
             self._notify_change()
             print("Memory cleared")
