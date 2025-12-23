@@ -108,6 +108,11 @@ class BUSRenderer(ComponentRenderer):
         cx, cy = self.get_position()
         tab_dx, tab_dy = rel
 
+        # Tab.relative_position is defined in unzoomed (world) coordinates.
+        # Apply zoom so the marker stays aligned with the rendered tabs/body.
+        tab_dx *= zoom
+        tab_dy *= zoom
+
         # Use unrotated coordinates; draw_rectangle applies component rotation.
         tab_x = cx + tab_dx
         tab_y = cy + tab_dy

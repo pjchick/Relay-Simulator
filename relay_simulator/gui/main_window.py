@@ -3214,8 +3214,11 @@ class MainWindow:
         if self.simulation_mode:
             return
         
-        # Get world coordinates
+        # Get world coordinates (for selection box / dragging) and canvas coordinates
+        # (for precise hit-testing against drawn shapes).
         canvas_x, canvas_y = self.design_canvas.screen_to_world(event.x, event.y)
+        hit_canvas_x = self.design_canvas.canvas.canvasx(event.x)
+        hit_canvas_y = self.design_canvas.canvas.canvasy(event.y)
         
         # Check if Ctrl is held for multi-selection
         ctrl_held = (event.state & 0x0004) != 0
@@ -3236,32 +3239,37 @@ class MainWindow:
             self._clear_selection()
             return
         
-        # Find component at click position
+        # Find component at click position using the actual drawn canvas items.
+        # This avoids selecting a nearby component just because its bounding box overlaps.
         clicked_component = None
-        for component in page.components.values():
-            comp_x, comp_y = component.position
-            
-            # Get component bounds - use renderer if available for accurate bounds
-            renderer = self.design_canvas.renderers.get(component.component_id)
-            if renderer and hasattr(renderer, 'get_bounds'):
-                # Use renderer's bounds if available
+        try:
+            items = self.design_canvas.canvas.find_overlapping(
+                hit_canvas_x, hit_canvas_y, hit_canvas_x, hit_canvas_y
+            )
+        except Exception:
+            items = ()
+
+        if items:
+            # Prefer the top-most rendered item.
+            for item_id in reversed(items):
                 try:
-                    zoom = getattr(self.design_canvas, 'zoom_level', 1.0)
-                    bounds = renderer.get_bounds(zoom)
-                    if bounds:
-                        x1, y1, x2, y2 = bounds
-                        if x1 <= canvas_x <= x2 and y1 <= canvas_y <= y2:
-                            clicked_component = component
-                            break
+                    tags = set(self.design_canvas.canvas.gettags(item_id))
                 except Exception:
-                    pass
-            
-            # Fallback: simplified bounds check (assumes components are roughly 100x100)
-            if not clicked_component:
-                half_size = 50
-                if (comp_x - half_size <= canvas_x <= comp_x + half_size and
-                    comp_y - half_size <= canvas_y <= comp_y + half_size):
-                    clicked_component = component
+                    continue
+
+                # Only treat clicks on actual component body graphics as selection hits.
+                # Labels and other non-body items should not steal selection.
+                if 'component' not in tags:
+                    continue
+
+                comp_tag = next((t for t in tags if isinstance(t, str) and t.startswith('component_')), None)
+                if not comp_tag:
+                    continue
+
+                comp_id = comp_tag[len('component_'):]
+                candidate = page.components.get(comp_id)
+                if candidate:
+                    clicked_component = candidate
                     break
         
         if clicked_component:
