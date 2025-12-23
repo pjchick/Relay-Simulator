@@ -955,7 +955,7 @@ class MainWindow:
         return True
 
     def _handle_memory_cell_interaction(self, canvas_x: float, canvas_y: float) -> bool:
-        """Handle memory cell editing in simulation mode.
+        """Handle memory cell editing in design mode and simulation mode.
         
         Returns True if a memory cell was clicked and handled.
         """
@@ -1017,11 +1017,34 @@ class MainWindow:
                                 # Validate range
                                 max_value = (1 << data_bits) - 1
                                 if 0 <= new_value <= max_value:
+                                    # In design mode, capture an undo checkpoint.
+                                    self._capture_undo_checkpoint()
+
                                     # Update memory
                                     component.write_memory(address, new_value)
-                                    
-                                    # Update display
-                                    self._update_simulation_visuals()
+
+                                    # Update display / propagate
+                                    if self.simulation_mode and self.simulation_engine:
+                                        try:
+                                            component.simulate_logic(
+                                                self.simulation_engine.vnet_manager,
+                                                self.simulation_engine.bridge_manager
+                                            )
+                                        except Exception:
+                                            pass
+                                        try:
+                                            self.simulation_engine.dirty_manager.mark_all_dirty()
+                                        except Exception:
+                                            pass
+                                        self._update_simulation_visuals()
+                                        self.root.after(10, self._run_simulation_step)
+                                    else:
+                                        # Design mode: mark document modified and redraw.
+                                        try:
+                                            self.file_tabs.set_tab_modified(tab.tab_id, True)
+                                        except Exception:
+                                            pass
+                                        self.design_canvas.set_page(page)
                                     self.set_status(f"Memory[0x{addr_hex}] = 0x{new_value:0{hex_digits}X}")
                                 else:
                                     self.set_status(f"Error: Value must be 0-{max_value:#X}")
@@ -1858,6 +1881,11 @@ class MainWindow:
         # Design mode only - handle component placement mode
         if self.placement_component:
             self._handle_component_placement(event)
+            return
+
+        # Design mode: allow editing Memory cells by clicking in the grid.
+        # Do this before selection/wiring hit-testing so the cell click isn't stolen.
+        if self._handle_memory_cell_interaction(canvas_x, canvas_y):
             return
         
         # Check if clicked on a junction
