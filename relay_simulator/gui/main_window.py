@@ -4447,7 +4447,6 @@ class MainWindow:
     def _delete_selected(self) -> None:
         """
         Delete selected components and connected wires.
-        Shows confirmation dialog before deletion.
         """
         # Block delete in simulation mode
         if self.simulation_mode:
@@ -4475,47 +4474,6 @@ class MainWindow:
         if not page:
             return
         
-        # Count items to delete (note: wires may be expanded below)
-        delete_components_count = len(self.selected_components)
-        delete_wires_count = len(self.selected_wires)
-        delete_junctions_count = len(self.selected_junctions)
-
-        # Show confirmation dialog
-        if delete_components_count and not delete_wires_count and not delete_junctions_count:
-            component_word = "component" if delete_components_count == 1 else "components"
-            message = f"Delete {delete_components_count} {component_word}?"
-            if delete_components_count == 1:
-                component_id = next(iter(self.selected_components))
-                component = page.components.get(component_id)
-                if component:
-                    message = f"Delete {component.__class__.__name__} ({component_id})?"
-        elif delete_wires_count and not delete_components_count and not delete_junctions_count:
-            if delete_wires_count == 1:
-                wire_id = next(iter(self.selected_wires))
-                message = f"Delete wire ({wire_id})?"
-            else:
-                message = f"Delete {delete_wires_count} wires?"
-        elif delete_junctions_count and not delete_components_count and not delete_wires_count:
-            if delete_junctions_count == 1:
-                junction_id = next(iter(self.selected_junctions))
-                message = f"Delete junction ({junction_id}) and its connected wire(s)?"
-            else:
-                message = f"Delete {delete_junctions_count} junctions and their connected wire(s)?"
-        else:
-            message = (
-                f"Delete {delete_components_count} component(s), {delete_wires_count} wire(s), and {delete_junctions_count} junction(s)?"
-            )
-        
-        result = messagebox.askyesno(
-            "Confirm Deletion",
-            message,
-            icon=messagebox.WARNING
-        )
-        
-        if not result:
-            self.set_status("Deletion cancelled")
-            return
-
         # Snapshot state before mutating the document
         self._capture_undo_checkpoint()
         
