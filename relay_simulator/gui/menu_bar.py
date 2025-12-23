@@ -50,6 +50,9 @@ class MenuBar:
             'open': None,
             'save': None,
             'save_as': None,
+            'export_png': None,
+            'export_full_png': None,
+            'print_canvas': None,
             'settings': None,
             'exit': None,
             'select_all': None,
@@ -102,6 +105,24 @@ class MenuBar:
             accelerator="Ctrl+Shift+S",
             command=self._on_save_as
         )
+
+        self.file_menu.add_separator()
+
+        self.file_menu.add_command(
+            label="Export Visible Canvas as PNG...",
+            command=self._on_export_png
+        )
+        
+        self.file_menu.add_command(
+            label="Export Full Canvas as PNG (1:1)...",
+            command=self._on_export_full_png
+        )
+
+        self.file_menu.add_command(
+            label="Print Canvas...",
+            accelerator="Ctrl+P",
+            command=self._on_print_canvas
+        )
         
         self.file_menu.add_separator()
         
@@ -134,6 +155,8 @@ class MenuBar:
         self.parent.bind('<Control-S>', lambda e: self._on_save())
         self.parent.bind('<Control-Shift-S>', lambda e: self._on_save_as())
         self.parent.bind('<Control-Shift-s>', lambda e: self._on_save_as())
+        self.parent.bind('<Control-p>', lambda e: self._on_print_canvas() or 'break')
+        self.parent.bind('<Control-P>', lambda e: self._on_print_canvas() or 'break')
         
     def _create_edit_menu(self) -> None:
         """Create the Edit menu."""
@@ -275,6 +298,21 @@ class MenuBar:
         """Handle Save As command."""
         if self.callbacks['save_as']:
             self.callbacks['save_as']()
+
+    def _on_export_png(self) -> None:
+        """Handle Export Visible Canvas as PNG command."""
+        if self.callbacks.get('export_png'):
+            self.callbacks['export_png']()
+    
+    def _on_export_full_png(self) -> None:
+        """Handle Export Full Canvas as PNG command."""
+        if self.callbacks.get('export_full_png'):
+            self.callbacks['export_full_png']()
+
+    def _on_print_canvas(self) -> None:
+        """Handle Print Canvas command."""
+        if self.callbacks.get('print_canvas'):
+            self.callbacks['print_canvas']()
             
     def _on_settings(self) -> None:
         """Handle Settings command."""

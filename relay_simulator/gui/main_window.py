@@ -9,6 +9,8 @@ import tkinter as tk
 from tkinter import messagebox, filedialog
 from typing import Optional, Dict, Tuple, Any
 from pathlib import Path
+import os
+import tempfile
 import math
 import threading
 import time
@@ -142,6 +144,9 @@ class MainWindow:
         self.menu_bar.set_callback('open', self._menu_open)
         self.menu_bar.set_callback('save', self._menu_save)
         self.menu_bar.set_callback('save_as', self._menu_save_as)
+        self.menu_bar.set_callback('export_png', self._menu_export_canvas_png)
+        self.menu_bar.set_callback('export_full_png', self._menu_export_full_canvas_png)
+        self.menu_bar.set_callback('print_canvas', self._menu_print_canvas)
         self.menu_bar.set_callback('settings', self._menu_settings)
         self.menu_bar.set_callback('exit', self._on_closing)
         
@@ -489,6 +494,629 @@ class MainWindow:
                 parent=self.root
             )
             self.set_status("Failed to save file")
+
+    def _capture_visible_canvas_image(self):
+        """Capture the currently visible canvas viewport as an image.
+
+        Uses Pillow's ImageGrab, which is available on Windows/macOS.
+        """
+        try:
+            from PIL import ImageGrab  # type: ignore
+        except Exception as e:
+            raise RuntimeError(
+                "Export/Print requires Pillow. Install it with: pip install Pillow"
+            ) from e
+
+        canvas = self.design_canvas.canvas
+        
+        # Ensure the window is fully updated and rendered
+        try:
+            # Force complete window update (not just idle tasks)
+            self.root.update()
+            canvas.update()
+        except Exception:
+            pass
+
+        # Get canvas position on screen
+        x0 = canvas.winfo_rootx()
+        y0 = canvas.winfo_rooty()
+        x1 = x0 + canvas.winfo_width()
+        y1 = y0 + canvas.winfo_height()
+        
+        # Validate coordinates
+        if x1 <= x0 or y1 <= y0:
+            raise RuntimeError(
+                f"Invalid canvas dimensions: width={x1-x0}, height={y1-y0}. "
+                f"Canvas may not be visible or properly initialized."
+            )
+        
+        # Capture the screen region
+        image = ImageGrab.grab(bbox=(x0, y0, x1, y1))
+        
+        # Validate that we didn't capture a blank/black image
+        # Sample pixels to check average brightness
+        pixels = list(image.getdata())
+        if pixels:
+            # Sample every nth pixel for efficiency
+            sample_step = max(1, len(pixels) // 100)
+            sample_pixels = pixels[::sample_step]
+            
+            # Calculate average brightness
+            total_brightness = 0
+            for pixel in sample_pixels:
+                if isinstance(pixel, tuple):
+                    # RGB or RGBA
+                    total_brightness += sum(pixel[:3]) / 3
+                else:
+                    # Grayscale
+                    total_brightness += pixel
+            
+            avg_brightness = total_brightness / len(sample_pixels)
+            
+            # If image is very dark, it's likely a capture issue
+            if avg_brightness < 5:
+                raise RuntimeError(
+                    "Captured image appears to be blank or black.\n\n"
+                    "Possible causes:\n"
+                    "- Canvas window is minimized or hidden\n"
+                    "- Another window is covering the canvas\n"
+                    "- Graphics driver issue\n\n"
+                    "Try:\n"
+                    "- Ensure the canvas is visible and not obscured\n"
+                    "- Maximize the window\n"
+                    "- Try exporting again"
+                )
+        
+        return image
+
+    def _menu_export_canvas_png(self) -> None:
+        """Handle File > Export Canvas as PNG..."""
+        active_tab = self.file_tabs.get_active_tab()
+
+        suggested = "canvas"
+        if active_tab and getattr(active_tab, 'filename', None):
+            try:
+                suggested = Path(active_tab.filename).stem
+            except Exception:
+                suggested = "canvas"
+
+        filepath = filedialog.asksaveasfilename(
+            parent=self.root,
+            title="Export Canvas as PNG",
+            filetypes=[("PNG Image", "*.png"), ("All Files", "*.*")],
+            defaultextension=".png",
+            initialfile=f"{suggested}.png",
+        )
+        if not filepath:
+            return
+
+        try:
+            image = self._capture_visible_canvas_image()
+            image.save(filepath, format="PNG")
+            self.set_status(f"Exported PNG: {Path(filepath).name}")
+        except Exception as e:
+            messagebox.showerror(
+                "Export Failed",
+                str(e),
+                parent=self.root,
+            )
+            self.set_status("Export failed")
+
+    def _menu_export_full_canvas_png(self) -> None:
+        """Handle File > Export Full Canvas as PNG (1:1)..."""
+        active_tab = self.file_tabs.get_active_tab()
+        if not active_tab or not hasattr(active_tab, 'document'):
+            messagebox.showinfo(
+                "No Document",
+                "No document is open to export.",
+                parent=self.root,
+            )
+            return
+
+        current_page = self.design_canvas.current_page
+        if not current_page:
+            messagebox.showinfo(
+                "No Page",
+                "No page is active to export.",
+                parent=self.root,
+            )
+            return
+
+        suggested = "canvas"
+        if active_tab and getattr(active_tab, 'filename', None):
+            try:
+                suggested = Path(active_tab.filename).stem
+            except Exception:
+                suggested = "canvas"
+
+        filepath = filedialog.asksaveasfilename(
+            parent=self.root,
+            title="Export Full Canvas as PNG (1:1 Scale)",
+            filetypes=[("PNG Image", "*.png"), ("All Files", "*.*")],
+            defaultextension=".png",
+            initialfile=f"{suggested}_full.png",
+        )
+        if not filepath:
+            return
+
+        try:
+            image = self._render_full_canvas_image()
+            image.save(filepath, format="PNG")
+            self.set_status(f"Exported full canvas PNG: {Path(filepath).name}")
+        except Exception as e:
+            messagebox.showerror(
+                "Export Failed",
+                str(e),
+                parent=self.root,
+            )
+            self.set_status("Export failed")
+
+    def _get_canvas_bounds(self, padding=40):
+        """Calculate the bounding box of all canvas items.
+        
+        Args:
+            padding: Padding around content in pixels
+            
+        Returns:
+            Tuple of (min_x, min_y, width, height) or None if no content
+        """
+        import math
+        
+        # Get bounding box of all canvas items
+        # Tags used by renderers: component IDs, wire IDs, etc.
+        bbox = self.design_canvas.canvas.bbox('all')
+        if not bbox:
+            return None
+        
+        min_x, min_y, max_x, max_y = bbox
+        min_x = min_x - padding
+        min_y = min_y - padding
+        max_x += padding
+        max_y += padding
+        
+        width = max(1, int(math.ceil(max_x - min_x)))
+        height = max(1, int(math.ceil(max_y - min_y)))
+        
+        return (int(math.floor(min_x)), int(math.floor(min_y)), width, height)
+    
+    def _prepare_export_state(self):
+        """Snapshot canvas state so it can be restored after exporting."""
+        state = {
+            "zoom": self.design_canvas.zoom_level,
+            "xview": self.design_canvas.canvas.xview(),
+            "yview": self.design_canvas.canvas.yview(),
+            "scrollregion": self.design_canvas.canvas.cget('scrollregion'),
+            "grid_items_state": [],
+            "label_colors": []
+        }
+        
+        # Hide grid items for export
+        for item in self.design_canvas.grid_items:
+            item_state = self.design_canvas.canvas.itemcget(item, 'state')
+            state["grid_items_state"].append((item, item_state))
+            self.design_canvas.canvas.itemconfig(item, state='hidden')
+        
+        # Change all label colors to black for export
+        label_items = self.design_canvas.canvas.find_withtag('component_label')
+        for item in label_items:
+            original_fill = self.design_canvas.canvas.itemcget(item, 'fill')
+            state["label_colors"].append((item, original_fill))
+            self.design_canvas.canvas.itemconfig(item, fill='black')
+        
+        # Set to zoom 1.0 for export
+        self.design_canvas.zoom_level = 1.0
+        self.design_canvas.render_components()
+        self.design_canvas.render_wires()
+        self.design_canvas.render_junctions()
+        self.design_canvas.canvas.xview_moveto(0)
+        self.design_canvas.canvas.yview_moveto(0)
+        
+        return state
+    
+    def _restore_export_state(self, state):
+        """Restore canvas state after an export attempt."""
+        # Restore grid items visibility
+        for item, item_state in state.get("grid_items_state", []):
+            try:
+                self.design_canvas.canvas.itemconfig(item, state=item_state)
+            except:
+                pass
+        
+        # Restore label colors
+        for item, original_fill in state.get("label_colors", []):
+            try:
+                self.design_canvas.canvas.itemconfig(item, fill=original_fill)
+            except:
+                pass
+        
+        self.design_canvas.zoom_level = state.get("zoom", 1.0)
+        
+        xview = state.get("xview", (0, 1))
+        yview = state.get("yview", (0, 1))
+        self.design_canvas.canvas.xview_moveto(xview[0])
+        self.design_canvas.canvas.yview_moveto(yview[0])
+        
+        scrollregion = state.get("scrollregion")
+        if scrollregion:
+            self.design_canvas.canvas.config(scrollregion=scrollregion)
+        
+        # Re-render at original zoom
+        self.design_canvas.render_components()
+        self.design_canvas.render_wires()
+        self.design_canvas.render_junctions()
+        
+        self.root.update_idletasks()
+    
+    def _normalize_png_path(self, filename):
+        """Ensure the output path ends with .png and directory exists."""
+        path = Path(filename).expanduser()
+        if path.suffix.lower() != '.png':
+            path = path.with_suffix('.png')
+        
+        if path.parent and not path.parent.exists():
+            path.parent.mkdir(parents=True, exist_ok=True)
+        
+        return str(path)
+    
+    def _extract_ps_bbox(self, ps_content):
+        """Extract BoundingBox from PostScript content."""
+        import re
+        match = re.search(r"%%BoundingBox:\s*(-?\d+)\s+(-?\d+)\s+(-?\d+)\s+(-?\d+)", ps_content)
+        if match:
+            return tuple(int(part) for part in match.groups())
+        return None
+    
+    def _normalize_postscript_bbox(self, ps_content, bbox):
+        """Translate PostScript so bounding box starts at (0,0).
+        
+        Returns:
+            Tuple of (modified_ps_content, (shift_x, shift_y) or None)
+        """
+        import re
+        
+        min_x, min_y, max_x, max_y = bbox
+        shift_x = -min(0, min_x)
+        shift_y = -min(0, min_y)
+        
+        if shift_x == 0 and shift_y == 0:
+            return ps_content, None
+        
+        # Inject translate command after %%EndProlog
+        injection = f"{shift_x} {shift_y} translate\n"
+        marker = "%%EndProlog\n"
+        idx = ps_content.find(marker)
+        if idx != -1:
+            idx += len(marker)
+            ps_content = ps_content[:idx] + injection + ps_content[idx:]
+        else:
+            ps_content = injection + ps_content
+        
+        # Update BoundingBox
+        new_bbox = (min_x + shift_x, min_y + shift_y, max_x + shift_x, max_y + shift_y)
+        ps_content = re.sub(
+            r"%%BoundingBox:\s*-?\d+\s+-?\d+\s+-?\d+\s+-?\d+",
+            f"%%BoundingBox: {new_bbox[0]} {new_bbox[1]} {new_bbox[2]} {new_bbox[3]}",
+            ps_content,
+            count=1
+        )
+        ps_content = re.sub(
+            r"%%HiResBoundingBox:\s*-?[\d\.]+\s+-?[\d\.]+\s+-?[\d\.]+\s+-?[\d\.]+",
+            f"%%HiResBoundingBox: {float(new_bbox[0]):.3f} {float(new_bbox[1]):.3f} {float(new_bbox[2]):.3f} {float(new_bbox[3]):.3f}",
+            ps_content,
+            count=1
+        )
+        
+        return ps_content, (shift_x, shift_y)
+    
+    def _postscript_to_png(self, ps_data, output_path, width, height, ghostscript_hint=None):
+        """Convert PostScript data to PNG using Ghostscript."""
+        import subprocess
+        
+        ghostscript_executable = self._find_ghostscript_executable(ghostscript_hint)
+        
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.ps', mode='w', encoding='utf-8') as temp_ps:
+            temp_ps.write(ps_data)
+            ps_path = temp_ps.name
+        
+        try:
+            cmd = [
+                ghostscript_executable,
+                '-dSAFER',
+                '-dBATCH',
+                '-dNOPAUSE',
+                '-sDEVICE=pngalpha',
+                '-dGraphicsAlphaBits=4',
+                '-dTextAlphaBits=4',
+                '-r72',
+                f'-g{width}x{height}',
+                f'-sOutputFile={output_path}',
+                ps_path
+            ]
+            subprocess.run(cmd, check=True, capture_output=True)
+        except subprocess.CalledProcessError as exc:
+            stderr = exc.stderr.decode('utf-8', errors='ignore') if exc.stderr else ''
+            raise RuntimeError(
+                f"Ghostscript conversion failed.\n\n"
+                f"Error: {stderr.strip()}\n\n"
+                f"Please ensure Ghostscript is properly installed."
+            ) from exc
+        finally:
+            if os.path.exists(ps_path):
+                os.remove(ps_path)
+    
+    def _find_ghostscript_executable(self, user_hint=None):
+        """Locate a Ghostscript executable using several strategies."""
+        import shutil
+        
+        candidates = []
+        seen = set()
+        
+        def add_candidate(path_like):
+            if not path_like:
+                return
+            resolved = Path(path_like)
+            if resolved.is_file():
+                seen_key = resolved.resolve()
+                if seen_key not in seen:
+                    candidates.append(resolved)
+                    seen.add(seen_key)
+        
+        def add_directory(directory):
+            if not directory:
+                return
+            dir_path = Path(directory)
+            if dir_path.is_dir():
+                for exe_name in ('gswin64c.exe', 'gswin32c.exe', 'gs.exe'):
+                    add_candidate(dir_path / 'bin' / exe_name)
+                    add_candidate(dir_path / exe_name)
+        
+        # Try user hint first
+        add_directory(user_hint)
+        
+        # Try environment variables
+        add_directory(os.environ.get('GHOSTSCRIPT_PATH'))
+        add_directory(os.environ.get('GHOSTSCRIPT_HOME'))
+        
+        # Try PATH
+        for exe_name in ('gswin64c', 'gswin32c', 'gs'):
+            which_path = shutil.which(exe_name)
+            if which_path:
+                add_candidate(which_path)
+        
+        # Try common installation directories
+        possible_roots = [
+            Path(os.environ.get('ProgramFiles', r'C:\Program Files')) / 'gs',
+            Path(os.environ.get('ProgramFiles(x86)', r'C:\Program Files (x86)')) / 'gs'
+        ]
+        
+        for root in possible_roots:
+            if root.exists():
+                for version_dir in sorted(root.iterdir(), reverse=True):
+                    add_directory(version_dir)
+        
+        # Return first valid candidate
+        for candidate in candidates:
+            if candidate.is_file():
+                return str(candidate)
+        
+        raise FileNotFoundError(
+            "Ghostscript executable not found.\n\n"
+            "Please install Ghostscript from:\n"
+            "https://www.ghostscript.com/releases/gsdnld.html\n\n"
+            "After installation, ensure the executable is in your PATH,\n"
+            "or set the GHOSTSCRIPT_PATH environment variable."
+        )
+    
+    def _render_full_canvas_image(self):
+        """Render the full canvas content at 1:1 scale as an image.
+        
+        Exports the current canvas to PNG using PostScript conversion.
+        """
+        try:
+            from PIL import Image
+        except Exception as e:
+            raise RuntimeError(
+                "Export requires Pillow. Install it with: pip install Pillow"
+            ) from e
+        
+        current_page = self.design_canvas.current_page
+        if not current_page:
+            raise RuntimeError("No active page to export")
+        
+        # Save current state
+        export_state = self._prepare_export_state()
+        
+        bg_id = None
+        try:
+            # Update canvas
+            self.root.update_idletasks()
+            
+            # Get bounds of all content
+            bounds = self._get_canvas_bounds(padding=20)
+            if not bounds:
+                raise RuntimeError("No content found on current page to export")
+            
+            min_x, min_y, width, height = bounds
+            
+            # Limit size
+            max_dimension = 10000
+            if width > max_dimension or height > max_dimension:
+                raise RuntimeError(
+                    f"Canvas is too large to export: {width}x{height}\n"
+                    f"Maximum dimension is {max_dimension} pixels."
+                )
+            
+            # Add white background for export
+            bg_id = self.design_canvas.canvas.create_rectangle(
+                min_x, min_y,
+                min_x + width, min_y + height,
+                fill='white',
+                outline='',
+                tags='export_bg'
+            )
+            self.design_canvas.canvas.tag_lower(bg_id)
+            self.design_canvas.canvas.update_idletasks()
+            
+            # Generate PostScript
+            ps_data = self.design_canvas.canvas.postscript(
+                colormode='color',
+                x=min_x,
+                y=min_y,
+                width=width,
+                height=height,
+                pagewidth=f"{width}p",
+                pageheight=f"{height}p"
+            )
+            
+            # Normalize PostScript bounding box
+            bbox = self._extract_ps_bbox(ps_data)
+            if bbox:
+                ps_data, adjusted = self._normalize_postscript_bbox(ps_data, bbox)
+            
+        finally:
+            # Clean up
+            if bg_id is not None:
+                self.design_canvas.canvas.delete(bg_id)
+            self._restore_export_state(export_state)
+        
+        # Convert to PNG
+        with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as temp_png:
+            png_path = temp_png.name
+        
+        try:
+            self._postscript_to_png(ps_data, png_path, width, height)
+            image = Image.open(png_path)
+            image_copy = image.copy()
+            image.close()
+            return image_copy
+        finally:
+            try:
+                os.unlink(png_path)
+            except:
+                pass
+
+    def _calculate_content_bounds(self):
+        """Calculate the bounding box of all content on the current page.
+        
+        Returns:
+            Tuple of (min_x, min_y, max_x, max_y) or (None, None, None, None) if no content
+        """
+        current_page = self.design_canvas.current_page
+        if not current_page:
+            return None, None, None, None
+
+        min_x = min_y = float('inf')
+        max_x = max_y = float('-inf')
+        found_content = False
+
+        # Check all components
+        for component in current_page.components.values():
+            found_content = True
+            comp_x, comp_y = component.position
+            
+            # Get component dimensions (approximate)
+            # Most components are around 40x40, but we'll use renderer if available
+            width = height = 40
+            renderer = self.design_canvas.renderers.get(component.component_id)
+            if renderer and hasattr(renderer, 'get_bounds'):
+                try:
+                    bounds = renderer.get_bounds()
+                    if bounds:
+                        width, height = bounds
+                except:
+                    pass
+            
+            min_x = min(min_x, comp_x)
+            min_y = min(min_y, comp_y)
+            max_x = max(max_x, comp_x + width)
+            max_y = max(max_y, comp_y + height)
+
+        # Check all wires
+        for wire in current_page.wires.values():
+            found_content = True
+            
+            # Check waypoints
+            if hasattr(wire, 'waypoints') and wire.waypoints:
+                for waypoint in wire.waypoints.values():
+                    wp_x, wp_y = waypoint.position
+                    min_x = min(min_x, wp_x)
+                    min_y = min(min_y, wp_y)
+                    max_x = max(max_x, wp_x)
+                    max_y = max(max_y, wp_y)
+            
+            # Check junctions
+            if hasattr(wire, 'junctions') and wire.junctions:
+                for junction in wire.junctions.values():
+                    junc_x, junc_y = junction.position
+                    min_x = min(min_x, junc_x)
+                    min_y = min(min_y, junc_y)
+                    max_x = max(max_x, junc_x)
+                    max_y = max(max_y, junc_y)
+            
+            # Check start and end tab positions
+            # We need to get the actual component positions for the tabs
+            if hasattr(wire, 'start_tab_id') and wire.start_tab_id:
+                # Find component that owns this tab
+                for component in current_page.components.values():
+                    if hasattr(component, 'pins'):
+                        for pin in component.pins.values():
+                            if hasattr(pin, 'tab_id') and pin.tab_id == wire.start_tab_id:
+                                comp_x, comp_y = component.position
+                                min_x = min(min_x, comp_x)
+                                min_y = min(min_y, comp_y)
+                                max_x = max(max_x, comp_x)
+                                max_y = max(max_y, comp_y)
+                                break
+            
+            if hasattr(wire, 'end_tab_id') and wire.end_tab_id:
+                # Find component that owns this tab
+                for component in current_page.components.values():
+                    if hasattr(component, 'pins'):
+                        for pin in component.pins.values():
+                            if hasattr(pin, 'tab_id') and pin.tab_id == wire.end_tab_id:
+                                comp_x, comp_y = component.position
+                                min_x = min(min_x, comp_x)
+                                min_y = min(min_y, comp_y)
+                                max_x = max(max_x, comp_x)
+                                max_y = max(max_y, comp_y)
+                                break
+
+        if not found_content:
+            return None, None, None, None
+
+        return min_x, min_y, max_x, max_y
+
+    def _menu_print_canvas(self) -> None:
+        """Handle File > Print Canvas..."""
+        if os.name != 'nt':
+            messagebox.showinfo(
+                "Print Not Supported",
+                "Printing is currently implemented for Windows only.\n\n"
+                "You can still use File > Export Canvas as PNG... and print the image file.",
+                parent=self.root,
+            )
+            return
+
+        try:
+            # Use the same rendering approach as full canvas export
+            # This ensures white background, hidden grid, and black labels
+            image = self._render_full_canvas_image()
+            tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
+            tmp_path = tmp.name
+            tmp.close()
+
+            image.save(tmp_path, format="PNG")
+
+            # Ask the default associated app to print the image.
+            os.startfile(tmp_path, "print")
+            self.set_status("Sent canvas to printer")
+        except Exception as e:
+            messagebox.showerror(
+                "Print Failed",
+                str(e),
+                parent=self.root,
+            )
+            self.set_status("Print failed")
         
     def _menu_settings(self) -> None:
         """Handle File > Settings."""
