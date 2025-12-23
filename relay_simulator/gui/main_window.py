@@ -4393,6 +4393,15 @@ class MainWindow:
             page.add_wire(wire_obj)
             pasted_wire_ids.append(wire_obj.wire_id)
             self.selected_wires.add(wire_obj.wire_id)
+
+            # Select all waypoints on pasted wires so they are visible/highlighted.
+            try:
+                for waypoint in getattr(wire_obj, 'waypoints', {}).values():
+                    wid = getattr(waypoint, 'waypoint_id', None)
+                    if wid:
+                        self.selected_waypoints.add((wire_obj.wire_id, wid))
+            except Exception:
+                pass
         
         # Mark document as modified
         self.file_tabs.set_tab_modified(tab.tab_id, True)
@@ -4404,6 +4413,13 @@ class MainWindow:
         for cid in pasted_component_ids:
             try:
                 self.design_canvas.set_component_selected(cid, True)
+            except Exception:
+                pass
+
+        # Ensure pasted wires render in selected state immediately.
+        for wid in pasted_wire_ids:
+            try:
+                self.design_canvas.set_wire_selected(wid, True)
             except Exception:
                 pass
         
