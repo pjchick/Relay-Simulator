@@ -31,6 +31,7 @@ from core.vnet_builder import VnetBuilder
 from core.vnet import VNET
 from core.tab import Tab
 from core.bridge import Bridge
+from core.state import PinState
 from fileio.document_loader import DocumentLoader
 from simulation.simulation_engine import SimulationEngine
 from components.base import Component
@@ -89,6 +90,9 @@ class MainWindow:
         self._sim_run_inflight = False
         self._sim_run_requested = False
         self._sim_thread: Optional[threading.Thread] = None
+        
+        # Track wire info dialog
+        self._wire_info_dialog = None
 
         # Diagnostics
         self._logger = get_logger()
@@ -1305,9 +1309,14 @@ class MainWindow:
             for component in page.get_all_components():
                 components[component.component_id] = component
                 
-                # Collect all tabs from component pins
+                # Collect all tabs from component pins and RESET THEIR STATE
+                # This ensures no state persists from previous simulation runs
                 for pin in component.get_all_pins().values():
+                    # Reset pin state to FLOAT
+                    pin._state = PinState.FLOAT
                     for tab in pin.tabs.values():
+                        # Reset tab state to FLOAT
+                        tab._state = PinState.FLOAT
                         tabs[tab.tab_id] = tab
         
         # Build VNETs for each page
@@ -2494,6 +2503,7 @@ class MainWindow:
         
         # In simulation mode, only allow switch toggling
         if self.simulation_mode:
+            print(f"Canvas click in simulation mode at ({canvas_x}, {canvas_y})")
             # Mouse-down: handle Thumbwheel buttons or Switch press/toggle.
             if self._handle_thumbwheel_interaction(canvas_x, canvas_y):
                 return
@@ -2503,6 +2513,15 @@ class MainWindow:
             # Handle memory cell editing
             if self._handle_memory_cell_interaction(canvas_x, canvas_y):
                 return
+            
+            # Check if clicked on a wire
+            wire_clicked = self._find_wire_at_position(canvas_x, canvas_y)
+            print(f"Wire at position: {wire_clicked}")
+            if wire_clicked:
+                print(f"Calling _handle_wire_selection for wire: {wire_clicked}")
+                self._handle_wire_selection(event, wire_clicked)
+                return
+            
             self._handle_switch_interaction(canvas_x, canvas_y, action='press')
             return
         
@@ -2663,8 +2682,13 @@ class MainWindow:
         self.set_status("Converted waypoint to junction and connected wire.")
 
     def _handle_wire_selection(self, event, wire_id: str) -> None:
-        """Handle clicking on a wire to select it (design mode only)."""
+        """Handle clicking on a wire to select it (design mode only) or show info (simulation mode)."""
+        print(f"_handle_wire_selection called: wire_id={wire_id}, simulation_mode={self.simulation_mode}")
+        
         if self.simulation_mode:
+            # In simulation mode, show wire VNET information
+            print("Calling _show_wire_vnet_info")
+            self._show_wire_vnet_info(wire_id)
             return
 
         ctrl_held = (event.state & 0x0004) != 0
@@ -2698,6 +2722,462 @@ class MainWindow:
             self.set_status(f"Selected wire ({wire_id})")
         elif len(self.selected_wires) > 1 and len(self.selected_components) == 0:
             self.set_status(f"Selected {len(self.selected_wires)} wires")
+    
+    def _show_wire_vnet_info(self, wire_id: str) -> None:
+        """
+        Show VNET information for a clicked wire in simulation mode.
+        
+        Args:
+            wire_id: ID of the wire that was clicked
+        """
+        try:
+            if not self.simulation_mode or not self.simulation_engine:
+                print(f"Cannot show wire info: simulation_mode={self.simulation_mode}, engine={self.simulation_engine}")
+                return
+            
+            # Get the active page and wire
+            tab = self.file_tabs.get_active_tab()
+            if not tab or not tab.document:
+                print("No active tab or document")
+                return
+            
+            active_page_id = self.page_tabs.get_active_page_id()
+            if not active_page_id:
+                print("No active page")
+                return
+            
+            page = tab.document.get_page(active_page_id)
+            if not page:
+                print(f"Page not found: {active_page_id}")
+                return
+            
+            wire = page.get_wire(wire_id)
+            if not wire:
+                print(f"Wire not found: {wire_id}")
+                return
+            
+            print(f"Found wire: {wire_id}")
+            
+            # Get wire's connected tabs to find its VNET
+            connected_tabs = wire.get_all_connected_tabs()
+            if not connected_tabs:
+                self.set_status("Wire has no connected tabs")
+                print("Wire has no connected tabs")
+                return
+            
+            print(f"Wire has {len(connected_tabs)} connected tabs: {connected_tabs}")
+            
+            # Get VNET for one of the wire's tabs
+            first_tab_id = next(iter(connected_tabs))
+            print(f"Looking up VNET for tab: {first_tab_id}")
+            vnet = self.simulation_engine.vnet_manager.get_vnet_for_tab(first_tab_id)
+            
+            if not vnet:
+                self.set_status("Wire is not connected to any VNET")
+                print("VNET not found for tab")
+                return
+            
+            print(f"Found VNET: {vnet.vnet_id} with {len(vnet.get_all_tabs())} tabs")
+            
+            # Check what's making this VNET HIGH
+            if self.simulation_engine and hasattr(self.simulation_engine, 'bridge_manager'):
+                # Check for bridges connecting to this VNET
+                for bridge_id in vnet.get_all_bridges():
+                    print(f"  VNET has bridge: {bridge_id}")
+                    bridge = self.simulation_engine.bridge_manager.bridges.get(bridge_id)
+                    if bridge:
+                        print(f"    Bridge connects VNETs: {bridge.vnet_id1} <-> {bridge.vnet_id2}")
+                        # Find the other VNET
+                        other_vnet_id = bridge.vnet_id1 if bridge.vnet_id2 == vnet.vnet_id else bridge.vnet_id2
+                        other_vnet = self.simulation_engine.vnet_manager.vnets.get(other_vnet_id)
+                        if other_vnet:
+                            from core.state import PinState
+                            print(f"    Other VNET state: {other_vnet.state}")
+                            if other_vnet.state == PinState.HIGH:
+                                print(f"    ** This VNET is being driven via bridge from VNET {other_vnet_id} **")
+            
+            # Build VNET information dictionary
+            vnet_info = self._build_vnet_info_dict(vnet, tab.document)
+            
+            print(f"Built VNET info with {len(vnet_info.get('components', []))} components")
+            
+            # If VNET is HIGH but no component is driving, check bridges
+            from core.state import PinState
+            if vnet.state == PinState.HIGH:
+                has_driver = any(c.get('is_driving') for c in vnet_info.get('components', []))
+                if not has_driver:
+                    print("** VNET is HIGH but no direct driver found - checking bridges **")
+                    if self.simulation_engine and hasattr(self.simulation_engine, 'bridge_manager'):
+                        self._find_bridge_drivers(vnet, vnet_info, set())
+            
+            # Close existing dialog if any
+            if self._wire_info_dialog and hasattr(self._wire_info_dialog, 'dialog'):
+                try:
+                    self._wire_info_dialog.dialog.destroy()
+                except:
+                    pass
+                self._wire_info_dialog = None
+            
+            # Show dialog
+            from gui.wire_info_dialog import WireInfoDialog
+            print("Creating dialog...")
+            self._wire_info_dialog = WireInfoDialog(self.root, wire_id, vnet_info)
+            print("Dialog created")
+            
+        except Exception as e:
+            print(f"Error showing wire VNET info: {e}")
+            import traceback
+            traceback.print_exc()
+            self.set_status(f"Error: {e}")
+    
+    def _build_vnet_info_dict(self, vnet: VNET, document: Document) -> Dict[str, Any]:
+        """
+        Build a dictionary with VNET information for display.
+        
+        Args:
+            vnet: VNET to get information about
+            document: Document containing components
+            
+        Returns:
+            Dictionary with VNET information
+        """
+        from core.state import PinState
+        
+        # Get VNET state
+        state = vnet.state == PinState.HIGH
+        
+        # Collect component information for each tab in the VNET
+        components_info = []
+        seen_components = set()  # Track components we've already added
+        
+        all_tabs = vnet.get_all_tabs()
+        print(f"VNET has {len(all_tabs)} tabs: {all_tabs}")
+        
+        # Check for links
+        all_links = vnet.get_all_links()
+        print(f"VNET has {len(all_links)} links: {all_links}")
+        
+        # Check for bridges
+        all_bridges = vnet.get_all_bridges()
+        print(f"VNET has {len(all_bridges)} bridges: {all_bridges}")
+        
+        for tab_id in all_tabs:
+            print(f"Processing tab: {tab_id}")
+            # Parse tab ID to get component ID
+            # Tab ID format: component_id.pin_id.tab_id
+            parts = tab_id.split('.')
+            print(f"  Parts: {parts}, length: {len(parts)}")
+            if len(parts) < 1:
+                print(f"  Skipping - not enough parts")
+                continue
+            
+            component_id = parts[0]
+            print(f"  Component ID: {component_id}")
+            
+            # Skip if we've already processed this component
+            if component_id in seen_components:
+                print(f"  Skipping - already processed")
+                continue
+            
+            seen_components.add(component_id)
+            
+            # Get component
+            component = document.get_component(component_id)
+            print(f"  Component found: {component}")
+            if not component:
+                print(f"  Skipping - component not found")
+                continue
+            
+            # Get page information
+            # Note: component.page_id might be outdated, so find the actual page containing this component
+            page = None
+            page_id = None
+            for p in document.get_all_pages():
+                if p.get_component(component_id):
+                    page = p
+                    page_id = p.page_id
+                    break
+            
+            print(f"  Found component on page: {page_id if page else 'None'}")
+            if page:
+                print(f"  Page name: {page.name}")
+            
+            page_name = page.name if page else (component.page_id if hasattr(component, 'page_id') else 'Unknown')
+            
+            # Get component label
+            label = component.properties.get('label', '')
+            
+            # Determine if component is driving the VNET
+            # A component drives the VNET if any of its pins are in output mode and HIGH
+            is_driving = self._is_component_driving_vnet(component, vnet)
+            
+            components_info.append({
+                'page_id': page_id,
+                'page_name': page_name,
+                'component_id': component_id,
+                'component_type': component.component_type,
+                'label': label,
+                'is_driving': is_driving
+            })
+        
+        # Also add components connected via links
+        for link_name in all_links:
+            print(f"Processing link: {link_name}")
+            linked_components = document.get_components_with_link_name(link_name)
+            print(f"  Found {len(linked_components)} components with link '{link_name}'")
+            
+            for component in linked_components:
+                component_id = component.component_id
+                
+                # Skip if we've already added this component via tabs
+                if component_id in seen_components:
+                    print(f"  Skipping {component_id} - already added via tabs")
+                    continue
+                
+                seen_components.add(component_id)
+                
+                # Get page information
+                page = None
+                page_id = None
+                for p in document.get_all_pages():
+                    if p.get_component(component_id):
+                        page = p
+                        page_id = p.page_id
+                        break
+                
+                page_name = page.name if page else (component.page_id if hasattr(component, 'page_id') else 'Unknown')
+                
+                # Get component label
+                label = component.properties.get('label', '')
+                
+                # Determine if component is driving the VNET
+                is_driving = self._is_component_driving_vnet(component, vnet)
+                
+                print(f"  Adding linked component: {component_id} on page {page_name}")
+                
+                components_info.append({
+                    'page_id': page_id or 'Unknown',
+                    'page_name': page_name,
+                    'component_id': component_id,
+                    'component_type': component.component_type,
+                    'label': label,
+                    'is_driving': is_driving
+                })
+        
+        print(f"\n{'='*80}")
+        print(f"=== RE-CHECKING ALL {len(components_info)} COMPONENTS FOR DRIVING STATUS ===")
+        print(f"{'='*80}")
+        # Re-check all components for driving status (in case we added better detection logic)
+        for i, comp_info in enumerate(components_info):
+            print(f"\n*** Re-checking component {i+1}/{len(components_info)}: {comp_info['component_id']} ({comp_info['component_type']}) ***")
+            component = document.get_component(comp_info['component_id'])
+            if component:
+                print(f"  Component found, actual type={component.component_type}")
+                if component.component_type == 'Diode':
+                    print(f"  *** THIS IS A DIODE - SHOULD USE SPECIAL LOGIC ***")
+                is_driving = self._is_component_driving_vnet(component, vnet)
+                if is_driving != comp_info['is_driving']:
+                    print(f"  *** UPDATED {comp_info['component_id']}: {comp_info['is_driving']} -> {is_driving} ***")
+                    comp_info['is_driving'] = is_driving
+                else:
+                    print(f"  No change: is_driving={is_driving}")
+            else:
+                print(f"  *** ERROR: Component NOT found in document! ***")
+        
+        print(f"=== Re-check complete, returning vnet_info ===")
+        return {
+            'vnet_id': vnet.vnet_id,
+            'state': state,
+            'components': components_info
+        }
+    
+    def _is_component_driving_vnet(self, component: Component, vnet: VNET) -> bool:
+        """
+        Determine if a component is driving the VNET (outputting HIGH).
+        
+        Args:
+            component: Component to check
+            vnet: VNET to check against
+            
+        Returns:
+            True if component is driving the VNET
+        """
+        from core.state import PinState
+        
+        print(f"    Checking if {component.component_id} ({component.component_type}) is driving...")
+        
+        # VCC always drives HIGH
+        if component.component_type == 'VCC':
+            print(f"      VCC component - always DRIVING!")
+            return True
+        
+        # For diodes, check if they're conducting by reading VNET states
+        if component.component_type == 'Diode' and self.simulation_engine:
+            pins_list = list(component.get_all_pins().values())
+            print(f"      Diode has {len(pins_list)} pins")
+            anode_high = False
+            cathode_in_our_vnet = False
+            
+            for i, pin in enumerate(pins_list):
+                print(f"        Pin {i} ({pin.pin_id}):")
+                
+                # Get VNET state for this pin
+                pin_vnet = None
+                pin_vnet_state = PinState.FLOAT
+                if pin.tabs:
+                    first_tab = next(iter(pin.tabs.values()))
+                    pin_vnet = self.simulation_engine.vnet_manager.get_vnet_for_tab(first_tab.tab_id)
+                    if pin_vnet:
+                        pin_vnet_state = pin_vnet.state
+                        print(f"          Pin VNET {pin_vnet.vnet_id}: state={pin_vnet_state}")
+                
+                # Check if this pin is in our target VNET
+                in_target_vnet = any(vnet.has_tab(tab.tab_id) for tab in pin.tabs.values())
+                
+                if in_target_vnet:
+                    print(f"          This is the CATHODE (in our target VNET)")
+                    cathode_in_our_vnet = True
+                else:
+                    print(f"          This is the ANODE (not in our target VNET)")
+                    if pin_vnet_state == PinState.HIGH:
+                        print(f"          Anode VNET is HIGH!")
+                        anode_high = True
+            
+            # Diode drives if anode is HIGH and cathode is in our VNET
+            if anode_high and cathode_in_our_vnet:
+                print(f"      *** DIODE IS DRIVING (anode HIGH -> cathode) ***")
+                return True
+            else:
+                print(f"      Diode not driving (anode_high={anode_high}, cathode_in_vnet={cathode_in_our_vnet})")
+        
+        # For Link components, check if they're on a HIGH VNET (they conduct through the link)
+        if component.component_type == 'Link' and self.simulation_engine:
+            print(f"      Link component - checking VNET state...")
+            for pin in component.get_all_pins().values():
+                if pin.tabs:
+                    first_tab = next(iter(pin.tabs.values()))
+                    pin_vnet = self.simulation_engine.vnet_manager.get_vnet_for_tab(first_tab.tab_id)
+                    if pin_vnet:
+                        print(f"        Link pin VNET {pin_vnet.vnet_id}: state={pin_vnet.state}")
+                        # Check if this link's VNET is HIGH and different from our target VNET
+                        if pin_vnet.state == PinState.HIGH and pin_vnet.vnet_id != vnet.vnet_id:
+                            print(f"        *** LINK IS DRIVING (from HIGH VNET {pin_vnet.vnet_id}) ***")
+                            return True
+        
+        # Check each pin of the component
+        for pin in component.get_all_pins().values():
+            print(f"      Pin {pin.pin_id}: state={pin.state}")
+            # Check if any tab of this pin is in the VNET
+            has_tab_in_vnet = False
+            for tab in pin.tabs.values():
+                if vnet.has_tab(tab.tab_id):
+                    has_tab_in_vnet = True
+                    print(f"        Tab {tab.tab_id} is in VNET")
+                    break
+            
+            if has_tab_in_vnet:
+                # This pin is connected to the VNET
+                # Check if the pin is outputting HIGH
+                if pin.state == PinState.HIGH:
+                    print(f"        Pin is HIGH - DRIVING!")
+                    return True
+                else:
+                    print(f"        Pin state is {pin.state} - not driving")
+                    
+                    # Special case: Check if this component type is an output type
+                    if component.component_type in ['Switch'] and self.simulation_engine:
+                        # For switches, check their internal state
+                        try:
+                            if hasattr(component, 'is_on') and component.is_on:
+                                print(f"        Component is ON - DRIVING!")
+                                return True
+                        except:
+                            pass
+        
+        print(f"    Component is NOT driving")
+        return False
+    
+    def _find_bridge_drivers(self, vnet: VNET, vnet_info: Dict, visited_vnets: set, depth: int = 0) -> None:
+        """
+        Recursively find components driving this VNET through bridges.
+        
+        Args:
+            vnet: VNET to check
+            vnet_info: VNET info dictionary to update
+            visited_vnets: Set of already-visited VNET IDs
+            depth: Recursion depth (for limiting search)
+        """
+        print(f"_find_bridge_drivers called: vnet_id={vnet.vnet_id}, depth={depth}")
+        if depth > 5 or vnet.vnet_id in visited_vnets:
+            print(f"  Skipping (depth={depth}, already_visited={vnet.vnet_id in visited_vnets})")
+            return
+        
+        visited_vnets.add(vnet.vnet_id)
+        indent = "  " * depth
+        
+        from core.state import PinState
+        
+        bridges = list(vnet.get_all_bridges())
+        print(f"  VNET has {len(bridges)} bridges: {bridges}")
+        
+        # Check all bridges connected to this VNET
+        for bridge_id in bridges:
+            print(f"{indent}Checking bridge: {bridge_id}")
+            if not hasattr(self.simulation_engine, 'bridge_manager'):
+                continue
+                
+            bridge = self.simulation_engine.bridge_manager.bridges.get(bridge_id)
+            if not bridge:
+                print(f"{indent}  Bridge not found in manager")
+                continue
+            
+            # Find the other VNET
+            other_vnet_id = bridge.vnet_id1 if bridge.vnet_id2 == vnet.vnet_id else bridge.vnet_id2
+            other_vnet = self.simulation_engine.vnet_manager.vnets.get(other_vnet_id)
+            
+            if not other_vnet:
+                print(f"{indent}  Other VNET not found: {other_vnet_id}")
+                continue
+            
+            print(f"{indent}  Other VNET {other_vnet_id}: state={other_vnet.state}")
+            
+            if other_vnet.state == PinState.HIGH:
+                print(f"{indent}  ** Other VNET is HIGH - checking its components **")
+                
+                # Check components in the other VNET
+                for tab_id in other_vnet.get_all_tabs():
+                    parts = tab_id.split('.')
+                    if len(parts) < 1:
+                        continue
+                    component_id = parts[0]
+                    
+                    tab = self.file_tabs.get_active_tab()
+                    if not tab or not tab.document:
+                        continue
+                    
+                    component = tab.document.get_component(component_id)
+                    if not component:
+                        continue
+                    
+                    # Check if this component is driving
+                    for pin in component.get_all_pins().values():
+                        for pin_tab in pin.tabs.values():
+                            if other_vnet.has_tab(pin_tab.tab_id) and pin.state == PinState.HIGH:
+                                print(f"{indent}    Found driver: {component_id} ({component.component_type}) via bridge!")
+                                # Add note to vnet_info
+                                if 'bridge_info' not in vnet_info:
+                                    vnet_info['bridge_info'] = []
+                                vnet_info['bridge_info'].append({
+                                    'component_id': component_id,
+                                    'component_type': component.component_type,
+                                    'via_vnet': other_vnet_id,
+                                    'via_bridge': bridge_id
+                                })
+                                return
+                
+                # Recursively check bridges on the other VNET
+                self._find_bridge_drivers(other_vnet, vnet_info, visited_vnets, depth + 1)
+    
     
     def _handle_component_placement(self, event) -> None:
         """

@@ -148,6 +148,9 @@ class Thumbwheel(Component):
         self._apply_outputs(vnet_manager)
 
     def sim_start(self, vnet_manager, bridge_manager):
+        # Reset value to 0 at simulation start
+        self._set_value(0)
+        
         # Ensure we have pins and drive initial value.
         if not self.pins or len(self.pins) != 4:
             self._create_hidden_output_pins()
