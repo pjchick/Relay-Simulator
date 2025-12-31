@@ -1066,7 +1066,12 @@ class PropertiesPanel:
             return
 
         comp_type = self.current_component.__class__.__name__
-        definitions = BASE_PROPERTY_SCHEMA + PROPERTY_SCHEMAS.get(comp_type, [])
+        
+        # Text components don't need label fields
+        if comp_type == 'Text':
+            definitions = PROPERTY_SCHEMAS.get(comp_type, [])
+        else:
+            definitions = BASE_PROPERTY_SCHEMA + PROPERTY_SCHEMAS.get(comp_type, [])
 
         self._active_definition_by_key = {
             d.get('key'): d for d in definitions if isinstance(d, dict) and d.get('key')
