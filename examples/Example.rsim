@@ -1,0 +1,6325 @@
+{
+  "version": "1.0.0",
+  "pages": [
+    {
+      "page_id": "df406880",
+      "name": "Indicators, Switches and Wires",
+      "canvas_x": 0.0,
+      "canvas_y": 6.0,
+      "canvas_zoom": 0.9320653479069907,
+      "components": [
+        {
+          "component_id": "cbb1196c",
+          "component_type": "Switch",
+          "position": {
+            "x": 140,
+            "y": 100
+          },
+          "pins": [
+            {
+              "pin_id": "cbb1196c.pin1",
+              "tabs": [
+                {
+                  "tab_id": "cbb1196c.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "cbb1196c.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "cbb1196c.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "cbb1196c.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SWITCH",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "d766a999",
+          "component_type": "Indicator",
+          "position": {
+            "x": 240,
+            "y": 100
+          },
+          "pins": [
+            {
+              "pin_id": "d766a999.pin1",
+              "tabs": [
+                {
+                  "tab_id": "d766a999.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "d766a999.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "d766a999.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "d766a999.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "bad36073",
+          "component_type": "Text",
+          "position": {
+            "x": 220,
+            "y": 60
+          },
+          "pins": [],
+          "properties": {
+            "text": "Toggle Switch",
+            "font_size": 12,
+            "color": "#FFFFFF",
+            "multiline": false,
+            "justify": "left",
+            "width": 200,
+            "height": 40,
+            "border": false
+          }
+        },
+        {
+          "component_id": "c45f07be",
+          "component_type": "Indicator",
+          "position": {
+            "x": 240.0,
+            "y": 260.0
+          },
+          "pins": [
+            {
+              "pin_id": "c45f07be.pin1",
+              "tabs": [
+                {
+                  "tab_id": "c45f07be.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "c45f07be.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "c45f07be.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "c45f07be.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED",
+            "label_position": "top",
+            "color": "green",
+            "on_color": [
+              0,
+              255,
+              0
+            ],
+            "off_color": [
+              0,
+              64,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "990eab7e",
+          "component_type": "Text",
+          "position": {
+            "x": 210.0,
+            "y": 180.0
+          },
+          "pins": [],
+          "properties": {
+            "text": "Push button Switch",
+            "font_size": 12,
+            "color": "#FFFFFF",
+            "multiline": false,
+            "justify": "left",
+            "width": 200,
+            "height": 40,
+            "border": false
+          }
+        },
+        {
+          "component_id": "a2ecbcdf",
+          "component_type": "Switch",
+          "position": {
+            "x": 140.0,
+            "y": 260.0
+          },
+          "pins": [
+            {
+              "pin_id": "a2ecbcdf.pin1",
+              "tabs": [
+                {
+                  "tab_id": "a2ecbcdf.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "a2ecbcdf.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "a2ecbcdf.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "a2ecbcdf.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "pushbutton",
+            "label": "SWITCH",
+            "label_position": "top",
+            "color": "green",
+            "on_color": [
+              0,
+              255,
+              0
+            ],
+            "dull_color": [
+              0,
+              128,
+              0
+            ],
+            "off_color": [
+              0,
+              64,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "93a845ce",
+          "component_type": "Indicator",
+          "position": {
+            "x": 140,
+            "y": 410
+          },
+          "pins": [
+            {
+              "pin_id": "93a845ce.pin1",
+              "tabs": [
+                {
+                  "tab_id": "93a845ce.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "93a845ce.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "93a845ce.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "93a845ce.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED 1",
+            "label_position": "top",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "808dfe31",
+          "component_type": "Indicator",
+          "position": {
+            "x": 140,
+            "y": 570
+          },
+          "pins": [
+            {
+              "pin_id": "808dfe31.pin1",
+              "tabs": [
+                {
+                  "tab_id": "808dfe31.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "808dfe31.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "808dfe31.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "808dfe31.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED 1",
+            "label_position": "bottom",
+            "color": "blue",
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              64
+            ]
+          }
+        },
+        {
+          "component_id": "b7e3cd02",
+          "component_type": "Switch",
+          "position": {
+            "x": 220,
+            "y": 480
+          },
+          "pins": [
+            {
+              "pin_id": "b7e3cd02.pin1",
+              "tabs": [
+                {
+                  "tab_id": "b7e3cd02.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "b7e3cd02.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "b7e3cd02.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "b7e3cd02.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SWITCH 1",
+            "label_position": "top",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "a2ce9585",
+          "component_type": "Indicator",
+          "position": {
+            "x": 370,
+            "y": 480
+          },
+          "pins": [
+            {
+              "pin_id": "a2ce9585.pin1",
+              "tabs": [
+                {
+                  "tab_id": "a2ce9585.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "a2ce9585.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "a2ce9585.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "a2ce9585.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED 3",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "245b9aaa",
+          "component_type": "Switch",
+          "position": {
+            "x": 370,
+            "y": 410
+          },
+          "pins": [
+            {
+              "pin_id": "245b9aaa.pin1",
+              "tabs": [
+                {
+                  "tab_id": "245b9aaa.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "245b9aaa.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "245b9aaa.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "245b9aaa.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SWITCH 2",
+            "label_position": "top",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "224f8d8a",
+          "component_type": "Indicator",
+          "position": {
+            "x": 300,
+            "y": 570
+          },
+          "pins": [
+            {
+              "pin_id": "224f8d8a.pin1",
+              "tabs": [
+                {
+                  "tab_id": "224f8d8a.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "224f8d8a.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "224f8d8a.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "224f8d8a.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED 4",
+            "label_position": "bottom",
+            "color": "blue",
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              64
+            ]
+          }
+        },
+        {
+          "component_id": "7f887259",
+          "component_type": "Indicator",
+          "position": {
+            "x": 460,
+            "y": 480
+          },
+          "pins": [
+            {
+              "pin_id": "7f887259.pin1",
+              "tabs": [
+                {
+                  "tab_id": "7f887259.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "7f887259.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "7f887259.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "7f887259.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED 5",
+            "label_position": "top",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "72da5567",
+          "component_type": "Text",
+          "position": {
+            "x": 220,
+            "y": 340
+          },
+          "pins": [],
+          "properties": {
+            "text": "Junctions waypoint and Multiple Component Connections",
+            "font_size": 12,
+            "color": "#FFFFFF",
+            "multiline": false,
+            "justify": "left",
+            "width": 200,
+            "height": 40,
+            "border": false
+          }
+        },
+        {
+          "component_id": "4465a52c",
+          "component_type": "Switch",
+          "position": {
+            "x": 150,
+            "y": 800
+          },
+          "pins": [
+            {
+              "pin_id": "4465a52c.pin1",
+              "tabs": [
+                {
+                  "tab_id": "4465a52c.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "4465a52c.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "4465a52c.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "4465a52c.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SWITCH",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "186f9a00",
+          "component_type": "Indicator",
+          "position": {
+            "x": 280,
+            "y": 760
+          },
+          "pins": [
+            {
+              "pin_id": "186f9a00.pin1",
+              "tabs": [
+                {
+                  "tab_id": "186f9a00.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "186f9a00.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "186f9a00.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "186f9a00.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED 1",
+            "label_position": "top",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "be7eb269",
+          "component_type": "Indicator",
+          "position": {
+            "x": 280,
+            "y": 840
+          },
+          "pins": [
+            {
+              "pin_id": "be7eb269.pin1",
+              "tabs": [
+                {
+                  "tab_id": "be7eb269.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "be7eb269.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "be7eb269.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "be7eb269.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED 2",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "bdcf7136",
+          "component_type": "Text",
+          "position": {
+            "x": 596.4011137985342,
+            "y": 110.50764757283687
+          },
+          "pins": [],
+          "properties": {
+            "text": "Components can be wired together. The green dots are the connection points. Some components such as Switches or Indicators have four pins. These are electrically all connected together. Switches are self powered and do not require VCC, similarly Indicators only require power and do not need a GND connection. ",
+            "font_size": 8,
+            "color": "#FFFFFF",
+            "multiline": true,
+            "justify": "left",
+            "width": 551,
+            "height": 60,
+            "border": false
+          }
+        },
+        {
+          "component_id": "1e084ba3",
+          "component_type": "Text",
+          "position": {
+            "x": 586.4011137985342,
+            "y": 260.50764757283685
+          },
+          "pins": [],
+          "properties": {
+            "text": "Components can be different colors. Components have labels that can be positioned Top, Bottom, Left or Right of the component, or omitted. ",
+            "font_size": 8,
+            "color": "#FFFFFF",
+            "multiline": true,
+            "justify": "left",
+            "width": 551,
+            "height": 60,
+            "border": false
+          }
+        },
+        {
+          "component_id": "fadbbbb6",
+          "component_type": "Text",
+          "position": {
+            "x": 810.4011137985342,
+            "y": 518.5076475728368
+          },
+          "pins": [],
+          "properties": {
+            "text": "Components can be wired together using Junctions, or by using one of the components tabs (id they have multiple tabs). \n\nWires and Components are snapped to 1/2 grid squares.\n\nIn this circuit all of these component are connected together. If you press a switch it lights up, but look at the other switch - it also lights up but is abit dimmer. The Dim switch signifies that it is being DRIVEN by somting else - and it not DRIVING itself.",
+            "font_size": 8,
+            "color": "#FFFFFF",
+            "multiline": true,
+            "justify": "left",
+            "width": 579,
+            "height": 156,
+            "border": false
+          }
+        },
+        {
+          "component_id": "80837b49",
+          "component_type": "Text",
+          "position": {
+            "x": 676.4011137985342,
+            "y": 800.5076475728368
+          },
+          "pins": [],
+          "properties": {
+            "text": "Multipile wires can also be connected to the same Pin.",
+            "font_size": 8,
+            "color": "#FFFFFF",
+            "multiline": true,
+            "justify": "left",
+            "width": 551,
+            "height": 60,
+            "border": false
+          }
+        },
+        {
+          "component_id": "432fecea",
+          "component_type": "Text",
+          "position": {
+            "x": 220.0,
+            "y": 690.0
+          },
+          "pins": [],
+          "properties": {
+            "text": "Multiple wires on the same pin.",
+            "font_size": 12,
+            "color": "#FFFFFF",
+            "multiline": false,
+            "justify": "left",
+            "width": 200,
+            "height": 40,
+            "border": false
+          }
+        }
+      ],
+      "wires": [
+        {
+          "wire_id": "0d5928bf",
+          "start_tab_id": "cbb1196c.pin1.tab3",
+          "end_tab_id": "d766a999.pin1.tab9"
+        },
+        {
+          "wire_id": "05542658",
+          "start_tab_id": "a2ecbcdf.pin1.tab3",
+          "end_tab_id": "c45f07be.pin1.tab9"
+        },
+        {
+          "wire_id": "26dc8e19",
+          "start_tab_id": "b7e3cd02.pin1.tab9",
+          "end_tab_id": "5a206d86"
+        },
+        {
+          "wire_id": "decc91b8",
+          "start_tab_id": "5a206d86",
+          "end_tab_id": "93a845ce.pin1.tab6"
+        },
+        {
+          "wire_id": "f95286aa",
+          "start_tab_id": "808dfe31.pin1.tab12",
+          "end_tab_id": "5a206d86"
+        },
+        {
+          "wire_id": "c61b9342",
+          "start_tab_id": "b7e3cd02.pin1.tab3",
+          "end_tab_id": "52223056"
+        },
+        {
+          "wire_id": "14aa14c6",
+          "start_tab_id": "245b9aaa.pin1.tab6",
+          "end_tab_id": "a2ce9585.pin1.tab12"
+        },
+        {
+          "wire_id": "f9f9b103",
+          "start_tab_id": "224f8d8a.pin1.tab12",
+          "end_tab_id": "52223056"
+        },
+        {
+          "wire_id": "ef6a8f9e",
+          "start_tab_id": "52223056",
+          "end_tab_id": "a2ce9585.pin1.tab9"
+        },
+        {
+          "wire_id": "be502ba7",
+          "start_tab_id": "b7e3cd02.pin1.tab6",
+          "end_tab_id": "7f887259.pin1.tab6",
+          "waypoints": [
+            {
+              "waypoint_id": "9a7dc1df",
+              "position": {
+                "x": 220,
+                "y": 640
+              }
+            },
+            {
+              "waypoint_id": "acda9261",
+              "position": {
+                "x": 460,
+                "y": 640
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "a81701a4",
+          "start_tab_id": "186f9a00.pin1.tab9",
+          "end_tab_id": "4465a52c.pin1.tab3"
+        },
+        {
+          "wire_id": "075f7b36",
+          "start_tab_id": "be7eb269.pin1.tab9",
+          "end_tab_id": "4465a52c.pin1.tab3"
+        }
+      ],
+      "junctions": [
+        {
+          "junction_id": "5a206d86",
+          "position": {
+            "x": 140,
+            "y": 480
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "52223056",
+          "position": {
+            "x": 300,
+            "y": 480
+          },
+          "child_wires": []
+        }
+      ]
+    },
+    {
+      "page_id": "23f39b77",
+      "name": "Clocks, Diodes and VCC",
+      "canvas_x": 3.0,
+      "canvas_y": 2.0,
+      "canvas_zoom": 0.9999999999999999,
+      "components": [
+        {
+          "component_id": "0f81ee3c",
+          "component_type": "VCC",
+          "position": {
+            "x": 100,
+            "y": 620
+          },
+          "pins": [
+            {
+              "pin_id": "0f81ee3c.pin1",
+              "tabs": [
+                {
+                  "tab_id": "0f81ee3c.pin1.tab1",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "pin_position": "bottom"
+          }
+        },
+        {
+          "component_id": "6d9e6117",
+          "component_type": "Indicator",
+          "position": {
+            "x": 200,
+            "y": 620
+          },
+          "pins": [
+            {
+              "pin_id": "6d9e6117.pin1",
+              "tabs": [
+                {
+                  "tab_id": "6d9e6117.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "6d9e6117.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "6d9e6117.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "6d9e6117.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "904154c1",
+          "component_type": "Clock",
+          "position": {
+            "x": 200,
+            "y": 210
+          },
+          "pins": [
+            {
+              "pin_id": "904154c1.pin1",
+              "tabs": [
+                {
+                  "tab_id": "904154c1.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "904154c1.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "904154c1.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "904154c1.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "CLK",
+            "label_position": "bottom",
+            "color": "red",
+            "frequency": "1Hz",
+            "enable_on_sim_start": false,
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "bfaa9132",
+          "component_type": "Indicator",
+          "position": {
+            "x": 200,
+            "y": 130
+          },
+          "pins": [
+            {
+              "pin_id": "bfaa9132.pin1",
+              "tabs": [
+                {
+                  "tab_id": "bfaa9132.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "bfaa9132.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "bfaa9132.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "bfaa9132.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED 1",
+            "label_position": "top",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "de145aa0",
+          "component_type": "Indicator",
+          "position": {
+            "x": 300,
+            "y": 210
+          },
+          "pins": [
+            {
+              "pin_id": "de145aa0.pin1",
+              "tabs": [
+                {
+                  "tab_id": "de145aa0.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "de145aa0.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "de145aa0.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "de145aa0.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED 2",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "0be21803",
+          "component_type": "Switch",
+          "position": {
+            "x": 100,
+            "y": 210
+          },
+          "pins": [
+            {
+              "pin_id": "0be21803.pin1",
+              "tabs": [
+                {
+                  "tab_id": "0be21803.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "0be21803.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "0be21803.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "0be21803.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SWITCH",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "90f49c75",
+          "component_type": "Text",
+          "position": {
+            "x": 180,
+            "y": 60
+          },
+          "pins": [],
+          "properties": {
+            "text": "Clocks",
+            "font_size": 12,
+            "color": "#FFFFFF",
+            "multiline": false,
+            "justify": "left",
+            "width": 200,
+            "height": 40,
+            "border": false
+          }
+        },
+        {
+          "component_id": "610c76c9",
+          "component_type": "Text",
+          "position": {
+            "x": 647.4011137985342,
+            "y": 196.50764757283685
+          },
+          "pins": [],
+          "properties": {
+            "text": "Clock Components produce a simple clock pulse which can then drive other components. Like Switches, clocks are self powered. Clocks can run from 4Hz down to once every 8 seconds.\n\nClocks can be started automatically when the SIM starts, of by clicking on it. Clicking again will Toggle the clock.\n\nNotice what happens if the Switch is ON and the clock is Running. The Switch is HIGH but the clock is going HIGH / LOW. So the swich is in effect overriding the clock signal.",
+            "font_size": 8,
+            "color": "#FFFFFF",
+            "multiline": true,
+            "justify": "left",
+            "width": 573,
+            "height": 152,
+            "border": false
+          }
+        },
+        {
+          "component_id": "277c2b59",
+          "component_type": "Diode",
+          "position": {
+            "x": 210,
+            "y": 400
+          },
+          "pins": [
+            {
+              "pin_id": "277c2b59.A",
+              "tabs": [
+                {
+                  "tab_id": "277c2b59.A.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "277c2b59.K",
+              "tabs": [
+                {
+                  "tab_id": "277c2b59.K.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "bottom"
+          }
+        },
+        {
+          "component_id": "8c140df1",
+          "component_type": "Text",
+          "position": {
+            "x": 180,
+            "y": 340
+          },
+          "pins": [],
+          "properties": {
+            "text": "Diodes",
+            "font_size": 12,
+            "color": "#FFFFFF",
+            "multiline": false,
+            "justify": "left",
+            "width": 200,
+            "height": 40,
+            "border": false
+          }
+        },
+        {
+          "component_id": "8f673cb6",
+          "component_type": "Switch",
+          "position": {
+            "x": 110,
+            "y": 400
+          },
+          "pins": [
+            {
+              "pin_id": "8f673cb6.pin1",
+              "tabs": [
+                {
+                  "tab_id": "8f673cb6.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "8f673cb6.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "8f673cb6.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "8f673cb6.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SWITCH 1",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "ec609cef",
+          "component_type": "Indicator",
+          "position": {
+            "x": 340,
+            "y": 400
+          },
+          "pins": [
+            {
+              "pin_id": "ec609cef.pin1",
+              "tabs": [
+                {
+                  "tab_id": "ec609cef.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "ec609cef.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "ec609cef.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "ec609cef.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED 1",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "3a0fcb2d",
+          "component_type": "Switch",
+          "position": {
+            "x": 280,
+            "y": 480
+          },
+          "pins": [
+            {
+              "pin_id": "3a0fcb2d.pin1",
+              "tabs": [
+                {
+                  "tab_id": "3a0fcb2d.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "3a0fcb2d.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "3a0fcb2d.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "3a0fcb2d.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SWITCH 2",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "696fc538",
+          "component_type": "Text",
+          "position": {
+            "x": 664.4011137985342,
+            "y": 409.50764757283685
+          },
+          "pins": [],
+          "properties": {
+            "text": "Diodes will block a signal in the same way as a normal Diode would.",
+            "font_size": 8,
+            "color": "#FFFFFF",
+            "multiline": true,
+            "justify": "left",
+            "width": 567,
+            "height": 58,
+            "border": false
+          }
+        },
+        {
+          "component_id": "a7ba2c2f",
+          "component_type": "Text",
+          "position": {
+            "x": 180.0,
+            "y": 570.0
+          },
+          "pins": [],
+          "properties": {
+            "text": "VCC",
+            "font_size": 12,
+            "color": "#FFFFFF",
+            "multiline": false,
+            "justify": "left",
+            "width": 200,
+            "height": 40,
+            "border": false
+          }
+        },
+        {
+          "component_id": "78026d0d",
+          "component_type": "Text",
+          "position": {
+            "x": 554.4011137985342,
+            "y": 619.5076475728368
+          },
+          "pins": [],
+          "properties": {
+            "text": "VCC will provide a constant HIGH source. This is used most often when you sant to connect a relay COM pin to power etc.",
+            "font_size": 8,
+            "color": "#FFFFFF",
+            "multiline": true,
+            "justify": "left",
+            "width": 567,
+            "height": 58,
+            "border": false
+          }
+        }
+      ],
+      "wires": [
+        {
+          "wire_id": "19a6c060",
+          "start_tab_id": "0f81ee3c.pin1.tab1",
+          "end_tab_id": "6d9e6117.pin1.tab9"
+        },
+        {
+          "wire_id": "a8324cfe",
+          "start_tab_id": "904154c1.pin1.tab3",
+          "end_tab_id": "de145aa0.pin1.tab9"
+        },
+        {
+          "wire_id": "393b228d",
+          "start_tab_id": "904154c1.pin1.tab12",
+          "end_tab_id": "bfaa9132.pin1.tab6"
+        },
+        {
+          "wire_id": "17adc49d",
+          "start_tab_id": "0be21803.pin1.tab3",
+          "end_tab_id": "904154c1.pin1.tab9"
+        },
+        {
+          "wire_id": "79f5958d",
+          "start_tab_id": "8f673cb6.pin1.tab3",
+          "end_tab_id": "277c2b59.A.tab0"
+        },
+        {
+          "wire_id": "65b9d454",
+          "start_tab_id": "277c2b59.K.tab0",
+          "end_tab_id": "bbdc0b14"
+        },
+        {
+          "wire_id": "4187208a",
+          "start_tab_id": "3a0fcb2d.pin1.tab12",
+          "end_tab_id": "bbdc0b14"
+        },
+        {
+          "wire_id": "95e41784",
+          "start_tab_id": "bbdc0b14",
+          "end_tab_id": "ec609cef.pin1.tab9"
+        }
+      ],
+      "junctions": [
+        {
+          "junction_id": "bbdc0b14",
+          "position": {
+            "x": 280,
+            "y": 400
+          },
+          "child_wires": []
+        }
+      ]
+    },
+    {
+      "page_id": "543305a2",
+      "name": "Relays",
+      "canvas_x": 44.0,
+      "canvas_y": 4.0,
+      "canvas_zoom": 0.9801000000000002,
+      "components": [
+        {
+          "component_id": "69f6645f",
+          "component_type": "DPDTRelay",
+          "position": {
+            "x": 310,
+            "y": 280
+          },
+          "pins": [
+            {
+              "pin_id": "69f6645f.COIL",
+              "tabs": [
+                {
+                  "tab_id": "69f6645f.COIL.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "69f6645f.COM1",
+              "tabs": [
+                {
+                  "tab_id": "69f6645f.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "69f6645f.COM2",
+              "tabs": [
+                {
+                  "tab_id": "69f6645f.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "69f6645f.NO1",
+              "tabs": [
+                {
+                  "tab_id": "69f6645f.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "69f6645f.NC1",
+              "tabs": [
+                {
+                  "tab_id": "69f6645f.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "69f6645f.NO2",
+              "tabs": [
+                {
+                  "tab_id": "69f6645f.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "69f6645f.NC2",
+              "tabs": [
+                {
+                  "tab_id": "69f6645f.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 80
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "7a934774",
+          "component_type": "Switch",
+          "position": {
+            "x": 180,
+            "y": 120
+          },
+          "pins": [
+            {
+              "pin_id": "7a934774.pin1",
+              "tabs": [
+                {
+                  "tab_id": "7a934774.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "7a934774.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "7a934774.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "7a934774.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SW",
+            "label_position": "top",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "328c053b",
+          "component_type": "VCC",
+          "position": {
+            "x": 420,
+            "y": 240
+          },
+          "pins": [
+            {
+              "pin_id": "328c053b.pin1",
+              "tabs": [
+                {
+                  "tab_id": "328c053b.pin1.tab1",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "pin_position": "bottom"
+          }
+        },
+        {
+          "component_id": "8bc0aed5",
+          "component_type": "Indicator",
+          "position": {
+            "x": 200,
+            "y": 260
+          },
+          "pins": [
+            {
+              "pin_id": "8bc0aed5.pin1",
+              "tabs": [
+                {
+                  "tab_id": "8bc0aed5.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "8bc0aed5.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "8bc0aed5.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "8bc0aed5.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED 1",
+            "label_position": "left",
+            "color": "orange",
+            "on_color": [
+              255,
+              165,
+              0
+            ],
+            "off_color": [
+              64,
+              42,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "48b5c446",
+          "component_type": "VCC",
+          "position": {
+            "x": 200,
+            "y": 340
+          },
+          "pins": [
+            {
+              "pin_id": "48b5c446.pin1",
+              "tabs": [
+                {
+                  "tab_id": "48b5c446.pin1.tab1",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "pin_position": "bottom"
+          }
+        },
+        {
+          "component_id": "7d5c080c",
+          "component_type": "Indicator",
+          "position": {
+            "x": 420,
+            "y": 320
+          },
+          "pins": [
+            {
+              "pin_id": "7d5c080c.pin1",
+              "tabs": [
+                {
+                  "tab_id": "7d5c080c.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "7d5c080c.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "7d5c080c.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "7d5c080c.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED 2",
+            "label_position": "right",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "161e7e94",
+          "component_type": "Indicator",
+          "position": {
+            "x": 420,
+            "y": 360
+          },
+          "pins": [
+            {
+              "pin_id": "161e7e94.pin1",
+              "tabs": [
+                {
+                  "tab_id": "161e7e94.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "161e7e94.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "161e7e94.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "161e7e94.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED 3",
+            "label_position": "right",
+            "color": "green",
+            "on_color": [
+              0,
+              255,
+              0
+            ],
+            "off_color": [
+              0,
+              64,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "8ba99a0b",
+          "component_type": "Text",
+          "position": {
+            "x": 807.4011137985342,
+            "y": 176.50764757283685
+          },
+          "pins": [],
+          "properties": {
+            "text": "The basic relay is a Dual pole Dual Throw DPDT relay. On this relay the coil GND is always connected - and is omitted.\n\nRelay contacts are completely bi-directional. In the example the top COM1 pin is being powered whenever the NO1 pin is switched. Whereas on the bottom contacts COM2 is powered by VCC and switched between LED 2 and LED 3. \n\nIn the simulator I have programmed a small delay from when the coil is energised or released until the contacts are actually changed. In the real world, relay contacts take a number of milliseconds to actuallly open or close.",
+            "font_size": 8,
+            "color": "#FFFFFF",
+            "multiline": true,
+            "justify": "left",
+            "width": 573,
+            "height": 152,
+            "border": false
+          }
+        },
+        {
+          "component_id": "13f512cd",
+          "component_type": "Text",
+          "position": {
+            "x": 250,
+            "y": 30
+          },
+          "pins": [],
+          "properties": {
+            "text": "Basic Relay",
+            "font_size": 12,
+            "color": "#FFFFFF",
+            "multiline": false,
+            "justify": "left",
+            "width": 200,
+            "height": 40,
+            "border": false
+          }
+        },
+        {
+          "component_id": "6cc01322",
+          "component_type": "DPDTRelay",
+          "position": {
+            "x": 310,
+            "y": 660
+          },
+          "pins": [
+            {
+              "pin_id": "6cc01322.COIL",
+              "tabs": [
+                {
+                  "tab_id": "6cc01322.COIL.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "6cc01322.COM1",
+              "tabs": [
+                {
+                  "tab_id": "6cc01322.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "6cc01322.COM2",
+              "tabs": [
+                {
+                  "tab_id": "6cc01322.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "6cc01322.NO1",
+              "tabs": [
+                {
+                  "tab_id": "6cc01322.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "6cc01322.NC1",
+              "tabs": [
+                {
+                  "tab_id": "6cc01322.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "6cc01322.NO2",
+              "tabs": [
+                {
+                  "tab_id": "6cc01322.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "6cc01322.NC2",
+              "tabs": [
+                {
+                  "tab_id": "6cc01322.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 80
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "e389ebe1",
+          "component_type": "Switch",
+          "position": {
+            "x": 160,
+            "y": 580
+          },
+          "pins": [
+            {
+              "pin_id": "e389ebe1.pin1",
+              "tabs": [
+                {
+                  "tab_id": "e389ebe1.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "e389ebe1.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "e389ebe1.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "e389ebe1.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SW",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "c23911c5",
+          "component_type": "VCC",
+          "position": {
+            "x": 240,
+            "y": 640
+          },
+          "pins": [
+            {
+              "pin_id": "c23911c5.pin1",
+              "tabs": [
+                {
+                  "tab_id": "c23911c5.pin1.tab1",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "pin_position": "bottom"
+          }
+        },
+        {
+          "component_id": "568173af",
+          "component_type": "VCC",
+          "position": {
+            "x": 240,
+            "y": 720
+          },
+          "pins": [
+            {
+              "pin_id": "568173af.pin1",
+              "tabs": [
+                {
+                  "tab_id": "568173af.pin1.tab1",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "pin_position": "bottom"
+          }
+        },
+        {
+          "component_id": "eb8cee34",
+          "component_type": "Indicator",
+          "position": {
+            "x": 380,
+            "y": 700
+          },
+          "pins": [
+            {
+              "pin_id": "eb8cee34.pin1",
+              "tabs": [
+                {
+                  "tab_id": "eb8cee34.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "eb8cee34.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "eb8cee34.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "eb8cee34.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED",
+            "label_position": "right",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "62500acc",
+          "component_type": "Text",
+          "position": {
+            "x": 240.0,
+            "y": 490.0
+          },
+          "pins": [],
+          "properties": {
+            "text": "Latching Relay",
+            "font_size": 12,
+            "color": "#FFFFFF",
+            "multiline": false,
+            "justify": "left",
+            "width": 200,
+            "height": 40,
+            "border": false
+          }
+        },
+        {
+          "component_id": "a25662b1",
+          "component_type": "Text",
+          "position": {
+            "x": 787.4011137985342,
+            "y": 596.5076475728368
+          },
+          "pins": [],
+          "properties": {
+            "text": "Here is an example of a common Latching Relay circuit. The small millisecond delay allows this latch to work correctly.\n\nStop and restart the SIM to reset the Latch.",
+            "font_size": 8,
+            "color": "#FFFFFF",
+            "multiline": true,
+            "justify": "left",
+            "width": 573,
+            "height": 152,
+            "border": false
+          }
+        }
+      ],
+      "wires": [
+        {
+          "wire_id": "df6a281c",
+          "start_tab_id": "328c053b.pin1.tab1",
+          "end_tab_id": "69f6645f.NO1.tab0"
+        },
+        {
+          "wire_id": "18dd587e",
+          "start_tab_id": "7a934774.pin1.tab6",
+          "end_tab_id": "69f6645f.COIL.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "5f71f854",
+              "position": {
+                "x": 180,
+                "y": 200
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "d5e4bd62",
+          "start_tab_id": "8bc0aed5.pin1.tab3",
+          "end_tab_id": "69f6645f.COM1.tab0"
+        },
+        {
+          "wire_id": "391b65a4",
+          "start_tab_id": "48b5c446.pin1.tab1",
+          "end_tab_id": "69f6645f.COM2.tab0"
+        },
+        {
+          "wire_id": "61a46835",
+          "start_tab_id": "161e7e94.pin1.tab9",
+          "end_tab_id": "69f6645f.NC2.tab0"
+        },
+        {
+          "wire_id": "59a9def1",
+          "start_tab_id": "7d5c080c.pin1.tab9",
+          "end_tab_id": "69f6645f.NO2.tab0"
+        },
+        {
+          "wire_id": "32aaddcf",
+          "start_tab_id": "e389ebe1.pin1.tab3",
+          "end_tab_id": "ec9f4c4a"
+        },
+        {
+          "wire_id": "ede470a6",
+          "start_tab_id": "c23911c5.pin1.tab1",
+          "end_tab_id": "6cc01322.COM1.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "13e6336d",
+              "position": {
+                "x": 270,
+                "y": 640
+              }
+            },
+            {
+              "waypoint_id": "2e0b6d16",
+              "position": {
+                "x": 270,
+                "y": 640
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "5707b81d",
+          "start_tab_id": "6cc01322.NO1.tab0",
+          "end_tab_id": "ec9f4c4a",
+          "waypoints": [
+            {
+              "waypoint_id": "01df1a27",
+              "position": {
+                "x": 380,
+                "y": 620
+              }
+            },
+            {
+              "waypoint_id": "4ae56223",
+              "position": {
+                "x": 380,
+                "y": 520
+              }
+            },
+            {
+              "waypoint_id": "2debf6b7",
+              "position": {
+                "x": 240,
+                "y": 520
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "dec86872",
+          "start_tab_id": "ec9f4c4a",
+          "end_tab_id": "6cc01322.COIL.tab0"
+        },
+        {
+          "wire_id": "72cba76f",
+          "start_tab_id": "568173af.pin1.tab1",
+          "end_tab_id": "6cc01322.COM2.tab0"
+        },
+        {
+          "wire_id": "a0b0a744",
+          "start_tab_id": "6cc01322.NO2.tab0",
+          "end_tab_id": "eb8cee34.pin1.tab9"
+        }
+      ],
+      "junctions": [
+        {
+          "junction_id": "ec9f4c4a",
+          "position": {
+            "x": 240,
+            "y": 580
+          },
+          "child_wires": []
+        }
+      ]
+    },
+    {
+      "page_id": "c299fe2a",
+      "name": "Links",
+      "canvas_x": 0.0,
+      "canvas_y": 1.0,
+      "canvas_zoom": 0.9999999999999998,
+      "components": [
+        {
+          "component_id": "07be556a",
+          "component_type": "Switch",
+          "position": {
+            "x": 140,
+            "y": 120
+          },
+          "pins": [
+            {
+              "pin_id": "07be556a.pin1",
+              "tabs": [
+                {
+                  "tab_id": "07be556a.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "07be556a.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "07be556a.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "07be556a.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SW",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "08806e81",
+          "component_type": "Link",
+          "position": {
+            "x": 250,
+            "y": 120
+          },
+          "pins": [
+            {
+              "pin_id": "08806e81.pin1",
+              "tabs": [
+                {
+                  "tab_id": "08806e81.pin1.tab1",
+                  "position": {
+                    "x": 10,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 180,
+          "link_name": "LINK 1",
+          "properties": {
+            "label": "LINK 1"
+          }
+        },
+        {
+          "component_id": "729ad204",
+          "component_type": "Link",
+          "position": {
+            "x": 370.0,
+            "y": 120.0
+          },
+          "pins": [
+            {
+              "pin_id": "729ad204.pin1",
+              "tabs": [
+                {
+                  "tab_id": "729ad204.pin1.tab1",
+                  "position": {
+                    "x": 10,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "link_name": "LINK 1",
+          "properties": {
+            "label": "LINK 1"
+          }
+        },
+        {
+          "component_id": "aefcb4b6",
+          "component_type": "Indicator",
+          "position": {
+            "x": 480,
+            "y": 120
+          },
+          "pins": [
+            {
+              "pin_id": "aefcb4b6.pin1",
+              "tabs": [
+                {
+                  "tab_id": "aefcb4b6.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "aefcb4b6.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "aefcb4b6.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "aefcb4b6.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "f393d39a",
+          "component_type": "Text",
+          "position": {
+            "x": 220,
+            "y": 70
+          },
+          "pins": [],
+          "properties": {
+            "text": "Link Components",
+            "font_size": 12,
+            "color": "#FFFFFF",
+            "multiline": false,
+            "justify": "left",
+            "width": 200,
+            "height": 40,
+            "border": false
+          }
+        },
+        {
+          "component_id": "d7cd0a3e",
+          "component_type": "Text",
+          "position": {
+            "x": 827.4011137985342,
+            "y": 116.50764757283685
+          },
+          "pins": [],
+          "properties": {
+            "text": "Links can be used to connect wires on the same or DIFFERENT pages together. This allows multi page designs to be created. THe link component has a property called 'Link Name'. Any links that has that name will be electrically connected - even across pages.",
+            "font_size": 8,
+            "color": "#FFFFFF",
+            "multiline": true,
+            "justify": "left",
+            "width": 573,
+            "height": 152,
+            "border": false
+          }
+        },
+        {
+          "component_id": "0ac9ba82",
+          "component_type": "Switch",
+          "position": {
+            "x": 140,
+            "y": 260
+          },
+          "pins": [
+            {
+              "pin_id": "0ac9ba82.pin1",
+              "tabs": [
+                {
+                  "tab_id": "0ac9ba82.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "0ac9ba82.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "0ac9ba82.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "0ac9ba82.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "link_name": "LINK 2",
+          "properties": {
+            "mode": "toggle",
+            "label": "SWITCH",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "ff44ea06",
+          "component_type": "Indicator",
+          "position": {
+            "x": 360,
+            "y": 260
+          },
+          "pins": [
+            {
+              "pin_id": "ff44ea06.pin1",
+              "tabs": [
+                {
+                  "tab_id": "ff44ea06.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "ff44ea06.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "ff44ea06.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "ff44ea06.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "link_name": "LINK 2",
+          "properties": {
+            "label": "LED",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "93e8f945",
+          "component_type": "Link",
+          "position": {
+            "x": 350,
+            "y": 360
+          },
+          "pins": [
+            {
+              "pin_id": "93e8f945.pin1",
+              "tabs": [
+                {
+                  "tab_id": "93e8f945.pin1.tab1",
+                  "position": {
+                    "x": 10,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "link_name": "LINK 2",
+          "properties": {
+            "label": "LINK 2"
+          }
+        },
+        {
+          "component_id": "c96c94be",
+          "component_type": "Indicator",
+          "position": {
+            "x": 460,
+            "y": 360
+          },
+          "pins": [
+            {
+              "pin_id": "c96c94be.pin1",
+              "tabs": [
+                {
+                  "tab_id": "c96c94be.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "c96c94be.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "c96c94be.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "c96c94be.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "ddd38f4c",
+          "component_type": "Text",
+          "position": {
+            "x": 827.4011137985342,
+            "y": 316.50764757283685
+          },
+          "pins": [],
+          "properties": {
+            "text": "Some components (Switches, Indicators and CLocks) have internal Links built into them. so do not require a separate link component. In this example you can see that the SWITCH has a 'Link Name' of 'Link 2'. The Indicator LED 1 shares the same 'Link name' so is electrically connected to the switch - even though there is no wire connecting them.\n\nA components built in Link can drive a regular link component too.",
+            "font_size": 8,
+            "color": "#FFFFFF",
+            "multiline": true,
+            "justify": "left",
+            "width": 573,
+            "height": 152,
+            "border": false
+          }
+        },
+        {
+          "component_id": "4e3c64f1",
+          "component_type": "Switch",
+          "position": {
+            "x": 200,
+            "y": 520
+          },
+          "pins": [
+            {
+              "pin_id": "4e3c64f1.pin1",
+              "tabs": [
+                {
+                  "tab_id": "4e3c64f1.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "4e3c64f1.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "4e3c64f1.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "4e3c64f1.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "link_name": "LINK 3",
+          "properties": {
+            "mode": "toggle",
+            "label": "SWITCH 1",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "38ef290e",
+          "component_type": "Indicator",
+          "position": {
+            "x": 380,
+            "y": 520
+          },
+          "pins": [
+            {
+              "pin_id": "38ef290e.pin1",
+              "tabs": [
+                {
+                  "tab_id": "38ef290e.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "38ef290e.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "38ef290e.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "38ef290e.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "link_name": "LINK 3",
+          "properties": {
+            "label": "LED 2",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "89070c4f",
+          "component_type": "Indicator",
+          "position": {
+            "x": 120,
+            "y": 520
+          },
+          "pins": [
+            {
+              "pin_id": "89070c4f.pin1",
+              "tabs": [
+                {
+                  "tab_id": "89070c4f.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "89070c4f.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "89070c4f.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "89070c4f.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "link_name": "LINK 3",
+          "properties": {
+            "label": "LED 1",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "919c0d9c",
+          "component_type": "Switch",
+          "position": {
+            "x": 480,
+            "y": 520
+          },
+          "pins": [
+            {
+              "pin_id": "919c0d9c.pin1",
+              "tabs": [
+                {
+                  "tab_id": "919c0d9c.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "919c0d9c.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "919c0d9c.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "919c0d9c.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "link_name": "LINK 3",
+          "properties": {
+            "mode": "toggle",
+            "label": "SWITCH 2",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "6f78fa32",
+          "component_type": "Text",
+          "position": {
+            "x": 837.4011137985342,
+            "y": 526.5076475728368
+          },
+          "pins": [],
+          "properties": {
+            "text": "Links are fully bidirectional. In this case SWITCH 1 and LED 2 have their 'Link Name' set.",
+            "font_size": 8,
+            "color": "#FFFFFF",
+            "multiline": true,
+            "justify": "left",
+            "width": 573,
+            "height": 152,
+            "border": false
+          }
+        }
+      ],
+      "wires": [
+        {
+          "wire_id": "e7978dde",
+          "start_tab_id": "07be556a.pin1.tab3",
+          "end_tab_id": "08806e81.pin1.tab1"
+        },
+        {
+          "wire_id": "feb20209",
+          "start_tab_id": "729ad204.pin1.tab1",
+          "end_tab_id": "aefcb4b6.pin1.tab9"
+        },
+        {
+          "wire_id": "7ad380fb",
+          "start_tab_id": "93e8f945.pin1.tab1",
+          "end_tab_id": "c96c94be.pin1.tab9"
+        },
+        {
+          "wire_id": "17f36e14",
+          "start_tab_id": "38ef290e.pin1.tab3",
+          "end_tab_id": "919c0d9c.pin1.tab9"
+        },
+        {
+          "wire_id": "10bb9d6a",
+          "start_tab_id": "4e3c64f1.pin1.tab9",
+          "end_tab_id": "89070c4f.pin1.tab3"
+        }
+      ]
+    },
+    {
+      "page_id": "0c619cd7",
+      "name": "Busses",
+      "canvas_x": 0.0,
+      "canvas_y": 1.0,
+      "canvas_zoom": 1.0,
+      "components": [
+        {
+          "component_id": "02feeb2d",
+          "component_type": "BUS",
+          "position": {
+            "x": 300,
+            "y": 180
+          },
+          "pins": [
+            {
+              "pin_id": "02feeb2d.pin0",
+              "tabs": [
+                {
+                  "tab_id": "02feeb2d.pin0.tab",
+                  "position": {
+                    "x": 0,
+                    "y": -210
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "02feeb2d.pin1",
+              "tabs": [
+                {
+                  "tab_id": "02feeb2d.pin1.tab",
+                  "position": {
+                    "x": 0,
+                    "y": -150
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "02feeb2d.pin2",
+              "tabs": [
+                {
+                  "tab_id": "02feeb2d.pin2.tab",
+                  "position": {
+                    "x": 0,
+                    "y": -90
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "02feeb2d.pin3",
+              "tabs": [
+                {
+                  "tab_id": "02feeb2d.pin3.tab",
+                  "position": {
+                    "x": 0,
+                    "y": -30
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "02feeb2d.pin4",
+              "tabs": [
+                {
+                  "tab_id": "02feeb2d.pin4.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 30
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "02feeb2d.pin5",
+              "tabs": [
+                {
+                  "tab_id": "02feeb2d.pin5.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 90
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "02feeb2d.pin6",
+              "tabs": [
+                {
+                  "tab_id": "02feeb2d.pin6.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 150
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "02feeb2d.pin7",
+              "tabs": [
+                {
+                  "tab_id": "02feeb2d.pin7.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 210
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 90,
+          "properties": {
+            "bus_name": "Bus",
+            "start_pin": 0,
+            "number_of_pins": 8,
+            "pin_spacing": 3
+          }
+        },
+        {
+          "component_id": "fe37f6ba",
+          "component_type": "Switch",
+          "position": {
+            "x": 90,
+            "y": 120
+          },
+          "pins": [
+            {
+              "pin_id": "fe37f6ba.pin1",
+              "tabs": [
+                {
+                  "tab_id": "fe37f6ba.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "fe37f6ba.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "fe37f6ba.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "fe37f6ba.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SW",
+            "label_position": "top",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "dc0f4890",
+          "component_type": "Switch",
+          "position": {
+            "x": 150,
+            "y": 120
+          },
+          "pins": [
+            {
+              "pin_id": "dc0f4890.pin1",
+              "tabs": [
+                {
+                  "tab_id": "dc0f4890.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "dc0f4890.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "dc0f4890.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "dc0f4890.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SW",
+            "label_position": "top",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "615dee07",
+          "component_type": "Switch",
+          "position": {
+            "x": 210.0,
+            "y": 120.0
+          },
+          "pins": [
+            {
+              "pin_id": "615dee07.pin1",
+              "tabs": [
+                {
+                  "tab_id": "615dee07.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "615dee07.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "615dee07.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "615dee07.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SW",
+            "label_position": "top",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "ebb841fd",
+          "component_type": "Switch",
+          "position": {
+            "x": 270.0,
+            "y": 120.0
+          },
+          "pins": [
+            {
+              "pin_id": "ebb841fd.pin1",
+              "tabs": [
+                {
+                  "tab_id": "ebb841fd.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "ebb841fd.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "ebb841fd.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "ebb841fd.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SW",
+            "label_position": "top",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "85049f69",
+          "component_type": "Switch",
+          "position": {
+            "x": 330.0,
+            "y": 120.0
+          },
+          "pins": [
+            {
+              "pin_id": "85049f69.pin1",
+              "tabs": [
+                {
+                  "tab_id": "85049f69.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "85049f69.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "85049f69.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "85049f69.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SW",
+            "label_position": "top",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "0afb7156",
+          "component_type": "Switch",
+          "position": {
+            "x": 390.0,
+            "y": 120.0
+          },
+          "pins": [
+            {
+              "pin_id": "0afb7156.pin1",
+              "tabs": [
+                {
+                  "tab_id": "0afb7156.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "0afb7156.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "0afb7156.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "0afb7156.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SW",
+            "label_position": "top",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "6a2e0ee4",
+          "component_type": "Switch",
+          "position": {
+            "x": 450.0,
+            "y": 120.0
+          },
+          "pins": [
+            {
+              "pin_id": "6a2e0ee4.pin1",
+              "tabs": [
+                {
+                  "tab_id": "6a2e0ee4.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "6a2e0ee4.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "6a2e0ee4.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "6a2e0ee4.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SW",
+            "label_position": "top",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "ff8ac0a2",
+          "component_type": "Switch",
+          "position": {
+            "x": 510.0,
+            "y": 120.0
+          },
+          "pins": [
+            {
+              "pin_id": "ff8ac0a2.pin1",
+              "tabs": [
+                {
+                  "tab_id": "ff8ac0a2.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "ff8ac0a2.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "ff8ac0a2.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "ff8ac0a2.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SW",
+            "label_position": "top",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "f9590a0e",
+          "component_type": "BUS",
+          "position": {
+            "x": 300.0,
+            "y": 240.0
+          },
+          "pins": [
+            {
+              "pin_id": "f9590a0e.pin0",
+              "tabs": [
+                {
+                  "tab_id": "f9590a0e.pin0.tab",
+                  "position": {
+                    "x": 0,
+                    "y": -210
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f9590a0e.pin1",
+              "tabs": [
+                {
+                  "tab_id": "f9590a0e.pin1.tab",
+                  "position": {
+                    "x": 0,
+                    "y": -150
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f9590a0e.pin2",
+              "tabs": [
+                {
+                  "tab_id": "f9590a0e.pin2.tab",
+                  "position": {
+                    "x": 0,
+                    "y": -90
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f9590a0e.pin3",
+              "tabs": [
+                {
+                  "tab_id": "f9590a0e.pin3.tab",
+                  "position": {
+                    "x": 0,
+                    "y": -30
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f9590a0e.pin4",
+              "tabs": [
+                {
+                  "tab_id": "f9590a0e.pin4.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 30
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f9590a0e.pin5",
+              "tabs": [
+                {
+                  "tab_id": "f9590a0e.pin5.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 90
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f9590a0e.pin6",
+              "tabs": [
+                {
+                  "tab_id": "f9590a0e.pin6.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 150
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f9590a0e.pin7",
+              "tabs": [
+                {
+                  "tab_id": "f9590a0e.pin7.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 210
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 90,
+          "properties": {
+            "bus_name": "Bus",
+            "start_pin": 0,
+            "number_of_pins": 8,
+            "pin_spacing": 3
+          }
+        },
+        {
+          "component_id": "241d6899",
+          "component_type": "Indicator",
+          "position": {
+            "x": 510,
+            "y": 300
+          },
+          "pins": [
+            {
+              "pin_id": "241d6899.pin1",
+              "tabs": [
+                {
+                  "tab_id": "241d6899.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "241d6899.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "241d6899.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "241d6899.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "a3cb049c",
+          "component_type": "Indicator",
+          "position": {
+            "x": 450,
+            "y": 300
+          },
+          "pins": [
+            {
+              "pin_id": "a3cb049c.pin1",
+              "tabs": [
+                {
+                  "tab_id": "a3cb049c.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "a3cb049c.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "a3cb049c.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "a3cb049c.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "360828f6",
+          "component_type": "Indicator",
+          "position": {
+            "x": 390,
+            "y": 300
+          },
+          "pins": [
+            {
+              "pin_id": "360828f6.pin1",
+              "tabs": [
+                {
+                  "tab_id": "360828f6.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "360828f6.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "360828f6.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "360828f6.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "aea0af38",
+          "component_type": "Indicator",
+          "position": {
+            "x": 330,
+            "y": 300
+          },
+          "pins": [
+            {
+              "pin_id": "aea0af38.pin1",
+              "tabs": [
+                {
+                  "tab_id": "aea0af38.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "aea0af38.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "aea0af38.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "aea0af38.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "11a23773",
+          "component_type": "Indicator",
+          "position": {
+            "x": 270,
+            "y": 300
+          },
+          "pins": [
+            {
+              "pin_id": "11a23773.pin1",
+              "tabs": [
+                {
+                  "tab_id": "11a23773.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "11a23773.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "11a23773.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "11a23773.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "a82fa66c",
+          "component_type": "Indicator",
+          "position": {
+            "x": 210,
+            "y": 300
+          },
+          "pins": [
+            {
+              "pin_id": "a82fa66c.pin1",
+              "tabs": [
+                {
+                  "tab_id": "a82fa66c.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "a82fa66c.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "a82fa66c.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "a82fa66c.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "d26d9fef",
+          "component_type": "Indicator",
+          "position": {
+            "x": 150,
+            "y": 300
+          },
+          "pins": [
+            {
+              "pin_id": "d26d9fef.pin1",
+              "tabs": [
+                {
+                  "tab_id": "d26d9fef.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "d26d9fef.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "d26d9fef.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "d26d9fef.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "c227cac7",
+          "component_type": "Indicator",
+          "position": {
+            "x": 90,
+            "y": 300
+          },
+          "pins": [
+            {
+              "pin_id": "c227cac7.pin1",
+              "tabs": [
+                {
+                  "tab_id": "c227cac7.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "c227cac7.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "c227cac7.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "c227cac7.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "2bbeb903",
+          "component_type": "Text",
+          "position": {
+            "x": 180,
+            "y": 30
+          },
+          "pins": [],
+          "properties": {
+            "text": "Basic BUS",
+            "font_size": 12,
+            "color": "#FFFFFF",
+            "multiline": false,
+            "justify": "left",
+            "width": 200,
+            "height": 40,
+            "border": false
+          }
+        },
+        {
+          "component_id": "47fe0989",
+          "component_type": "Text",
+          "position": {
+            "x": 890.5,
+            "y": 215.5
+          },
+          "pins": [],
+          "properties": {
+            "text": "A Bus is a special collection of Links that all share the same name - in this case 'BUS'.\n\nYou can specify how many pins the BUS has and the spacing in between pins.\n\nEach pin on the bus is then prefixed with a starting pin (0 in this case), so this Bus has pins BUS_0 to BUS 7.",
+            "font_size": 8,
+            "color": "#FFFFFF",
+            "multiline": true,
+            "justify": "left",
+            "width": 621,
+            "height": 151,
+            "border": false
+          }
+        },
+        {
+          "component_id": "e105a5ba",
+          "component_type": "BUS",
+          "position": {
+            "x": 180,
+            "y": 420
+          },
+          "pins": [
+            {
+              "pin_id": "e105a5ba.pin0",
+              "tabs": [
+                {
+                  "tab_id": "e105a5ba.pin0.tab",
+                  "position": {
+                    "x": 0,
+                    "y": -90
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "e105a5ba.pin1",
+              "tabs": [
+                {
+                  "tab_id": "e105a5ba.pin1.tab",
+                  "position": {
+                    "x": 0,
+                    "y": -30
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "e105a5ba.pin2",
+              "tabs": [
+                {
+                  "tab_id": "e105a5ba.pin2.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 30
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "e105a5ba.pin3",
+              "tabs": [
+                {
+                  "tab_id": "e105a5ba.pin3.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 90
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 90,
+          "properties": {
+            "bus_name": "Bus",
+            "start_pin": 4,
+            "number_of_pins": 4,
+            "pin_spacing": 3
+          }
+        },
+        {
+          "component_id": "f62d5e1f",
+          "component_type": "Indicator",
+          "position": {
+            "x": 90,
+            "y": 460
+          },
+          "pins": [
+            {
+              "pin_id": "f62d5e1f.pin1",
+              "tabs": [
+                {
+                  "tab_id": "f62d5e1f.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "f62d5e1f.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "f62d5e1f.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "f62d5e1f.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "34e0063f",
+          "component_type": "Indicator",
+          "position": {
+            "x": 150,
+            "y": 460
+          },
+          "pins": [
+            {
+              "pin_id": "34e0063f.pin1",
+              "tabs": [
+                {
+                  "tab_id": "34e0063f.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "34e0063f.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "34e0063f.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "34e0063f.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "2215cfb5",
+          "component_type": "Indicator",
+          "position": {
+            "x": 210,
+            "y": 460
+          },
+          "pins": [
+            {
+              "pin_id": "2215cfb5.pin1",
+              "tabs": [
+                {
+                  "tab_id": "2215cfb5.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "2215cfb5.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "2215cfb5.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "2215cfb5.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "12ff1085",
+          "component_type": "Indicator",
+          "position": {
+            "x": 270,
+            "y": 460
+          },
+          "pins": [
+            {
+              "pin_id": "12ff1085.pin1",
+              "tabs": [
+                {
+                  "tab_id": "12ff1085.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "12ff1085.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "12ff1085.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "12ff1085.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "42ac5da8",
+          "component_type": "Text",
+          "position": {
+            "x": 650.5,
+            "y": 455.5
+          },
+          "pins": [],
+          "properties": {
+            "text": "You can split a Bus and only present part of it. In this example I have created a bus component that is connected to the main 'BUS' component above but only presenting the top 4 pins Bus_4 to Bus_7",
+            "font_size": 8,
+            "color": "#FFFFFF",
+            "multiline": true,
+            "justify": "left",
+            "width": 621,
+            "height": 151,
+            "border": false
+          }
+        },
+        {
+          "component_id": "96edc158",
+          "component_type": "Text",
+          "position": {
+            "x": 170,
+            "y": 390
+          },
+          "pins": [],
+          "properties": {
+            "text": "Partial Bus",
+            "font_size": 12,
+            "color": "#FFFFFF",
+            "multiline": false,
+            "justify": "left",
+            "width": 200,
+            "height": 40,
+            "border": false
+          }
+        },
+        {
+          "component_id": "51f21e95",
+          "component_type": "BusDisplay",
+          "position": {
+            "x": 120,
+            "y": 580
+          },
+          "pins": [],
+          "rotation": 90,
+          "properties": {
+            "bus_name": "Bus",
+            "start_pin": 0,
+            "number_of_pins": 4,
+            "pin_spacing": 1
+          }
+        },
+        {
+          "component_id": "cddf79f2",
+          "component_type": "Text",
+          "position": {
+            "x": 527.5,
+            "y": 585.5
+          },
+          "pins": [],
+          "properties": {
+            "text": "A simpler way to display a BUS is by using the Bus Display component. Here I am showing the bottom 4 bits of the BUS.",
+            "font_size": 8,
+            "color": "#FFFFFF",
+            "multiline": true,
+            "justify": "left",
+            "width": 615,
+            "height": 71,
+            "border": false
+          }
+        },
+        {
+          "component_id": "9a28875e",
+          "component_type": "Text",
+          "position": {
+            "x": 170.0,
+            "y": 550.0
+          },
+          "pins": [],
+          "properties": {
+            "text": "Bus Display",
+            "font_size": 12,
+            "color": "#FFFFFF",
+            "multiline": false,
+            "justify": "left",
+            "width": 200,
+            "height": 40,
+            "border": false
+          }
+        }
+      ],
+      "wires": [
+        {
+          "wire_id": "431c7dc0",
+          "start_tab_id": "fe37f6ba.pin1.tab6",
+          "end_tab_id": "02feeb2d.pin7.tab",
+          "waypoints": [
+            {
+              "waypoint_id": "6169a95b",
+              "position": {
+                "x": 90,
+                "y": 180
+              }
+            },
+            {
+              "waypoint_id": "ff882f04",
+              "position": {
+                "x": 90,
+                "y": 180
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "657ec8fe",
+          "start_tab_id": "dc0f4890.pin1.tab6",
+          "end_tab_id": "02feeb2d.pin6.tab"
+        },
+        {
+          "wire_id": "ec2a50fd",
+          "start_tab_id": "615dee07.pin1.tab6",
+          "end_tab_id": "02feeb2d.pin5.tab"
+        },
+        {
+          "wire_id": "3a2770bd",
+          "start_tab_id": "ebb841fd.pin1.tab6",
+          "end_tab_id": "02feeb2d.pin4.tab"
+        },
+        {
+          "wire_id": "0b5e1832",
+          "start_tab_id": "85049f69.pin1.tab6",
+          "end_tab_id": "02feeb2d.pin3.tab"
+        },
+        {
+          "wire_id": "24d0b143",
+          "start_tab_id": "0afb7156.pin1.tab6",
+          "end_tab_id": "02feeb2d.pin2.tab"
+        },
+        {
+          "wire_id": "6a18f679",
+          "start_tab_id": "6a2e0ee4.pin1.tab6",
+          "end_tab_id": "02feeb2d.pin1.tab"
+        },
+        {
+          "wire_id": "69f35bbd",
+          "start_tab_id": "ff8ac0a2.pin1.tab6",
+          "end_tab_id": "02feeb2d.pin0.tab"
+        },
+        {
+          "wire_id": "b6199273",
+          "start_tab_id": "f9590a0e.pin7.tab",
+          "end_tab_id": "c227cac7.pin1.tab12"
+        },
+        {
+          "wire_id": "1e30ad2f",
+          "start_tab_id": "f9590a0e.pin6.tab",
+          "end_tab_id": "d26d9fef.pin1.tab12"
+        },
+        {
+          "wire_id": "3e742da0",
+          "start_tab_id": "f9590a0e.pin5.tab",
+          "end_tab_id": "a82fa66c.pin1.tab12"
+        },
+        {
+          "wire_id": "d7c6555a",
+          "start_tab_id": "f9590a0e.pin4.tab",
+          "end_tab_id": "11a23773.pin1.tab12"
+        },
+        {
+          "wire_id": "0d72fc68",
+          "start_tab_id": "f9590a0e.pin3.tab",
+          "end_tab_id": "aea0af38.pin1.tab12"
+        },
+        {
+          "wire_id": "39107943",
+          "start_tab_id": "f9590a0e.pin2.tab",
+          "end_tab_id": "360828f6.pin1.tab12"
+        },
+        {
+          "wire_id": "79765598",
+          "start_tab_id": "f9590a0e.pin1.tab",
+          "end_tab_id": "a3cb049c.pin1.tab12"
+        },
+        {
+          "wire_id": "d0e16814",
+          "start_tab_id": "f9590a0e.pin0.tab",
+          "end_tab_id": "241d6899.pin1.tab12"
+        },
+        {
+          "wire_id": "c0c832f6",
+          "start_tab_id": "e105a5ba.pin3.tab",
+          "end_tab_id": "f62d5e1f.pin1.tab12"
+        },
+        {
+          "wire_id": "b7cf7a74",
+          "start_tab_id": "e105a5ba.pin2.tab",
+          "end_tab_id": "34e0063f.pin1.tab12"
+        },
+        {
+          "wire_id": "c4e768d3",
+          "start_tab_id": "e105a5ba.pin1.tab",
+          "end_tab_id": "2215cfb5.pin1.tab12"
+        },
+        {
+          "wire_id": "7684e935",
+          "start_tab_id": "e105a5ba.pin0.tab",
+          "end_tab_id": "12ff1085.pin1.tab12"
+        }
+      ]
+    },
+    {
+      "page_id": "ab79f5c0",
+      "name": "Thumbwheels and 7 Segment Displays",
+      "canvas_x": 0.0,
+      "canvas_y": 11.999999999999998,
+      "canvas_zoom": 1.0,
+      "components": [
+        {
+          "component_id": "065dff0a",
+          "component_type": "BusDisplay",
+          "position": {
+            "x": 340,
+            "y": 180
+          },
+          "pins": [],
+          "rotation": 90,
+          "properties": {
+            "bus_name": "DATA_BUS",
+            "start_pin": 0,
+            "number_of_pins": 8,
+            "pin_spacing": 2,
+            "label": "DATA_BUS",
+            "label_position": "left"
+          }
+        },
+        {
+          "component_id": "be028c26",
+          "component_type": "Thumbwheel",
+          "position": {
+            "x": 640,
+            "y": 280
+          },
+          "pins": [
+            {
+              "pin_id": "be028c26.pin0",
+              "tabs": [
+                {
+                  "tab_id": "be028c26.pin0.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1000
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "be028c26.pin1",
+              "tabs": [
+                {
+                  "tab_id": "be028c26.pin1.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1020
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "be028c26.pin2",
+              "tabs": [
+                {
+                  "tab_id": "be028c26.pin2.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1040
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "be028c26.pin3",
+              "tabs": [
+                {
+                  "tab_id": "be028c26.pin3.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1060
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "bus_name": "DATA_BUS",
+            "start_pin": 0,
+            "value": 0
+          }
+        },
+        {
+          "component_id": "3b9e4a8c",
+          "component_type": "Thumbwheel",
+          "position": {
+            "x": 570,
+            "y": 280
+          },
+          "pins": [
+            {
+              "pin_id": "3b9e4a8c.pin0",
+              "tabs": [
+                {
+                  "tab_id": "3b9e4a8c.pin0.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1000
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "3b9e4a8c.pin1",
+              "tabs": [
+                {
+                  "tab_id": "3b9e4a8c.pin1.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1020
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "3b9e4a8c.pin2",
+              "tabs": [
+                {
+                  "tab_id": "3b9e4a8c.pin2.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1040
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "3b9e4a8c.pin3",
+              "tabs": [
+                {
+                  "tab_id": "3b9e4a8c.pin3.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1060
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "bus_name": "DATA_BUS",
+            "start_pin": 4,
+            "value": 0
+          }
+        },
+        {
+          "component_id": "77be9359",
+          "component_type": "SevenSegmentDisplay",
+          "position": {
+            "x": 640,
+            "y": 200
+          },
+          "pins": [],
+          "properties": {
+            "bus_name": "DATA_BUS",
+            "start_pin": 0,
+            "color": "green"
+          }
+        },
+        {
+          "component_id": "e30e7ab5",
+          "component_type": "SevenSegmentDisplay",
+          "position": {
+            "x": 570,
+            "y": 200
+          },
+          "pins": [],
+          "properties": {
+            "bus_name": "DATA_BUS",
+            "start_pin": 4,
+            "color": "green"
+          }
+        },
+        {
+          "component_id": "2fdfd7ac",
+          "component_type": "Text",
+          "position": {
+            "x": 180,
+            "y": 130
+          },
+          "pins": [],
+          "properties": {
+            "text": "Thumbwheel and 7 Segment Display",
+            "font_size": 12,
+            "color": "#FFFFFF",
+            "multiline": false,
+            "justify": "left",
+            "width": 200,
+            "height": 40,
+            "border": false
+          }
+        },
+        {
+          "component_id": "66770453",
+          "component_type": "Text",
+          "position": {
+            "x": 1003.0,
+            "y": 229.5
+          },
+          "pins": [],
+          "properties": {
+            "text": "To make likfe easier when interacting with a BUS we have the Thumbwheel and 7-Segment display components. Each Thumbwheel addresses 4 bits of a Bus, the same goes for the 7 segment Display.\n\nClicking the Plus and Minus buttons on the thumbwheel will change the value of those pins on the bus. Clicking C will clear the Thumbwheel back to Zero.",
+            "font_size": 8,
+            "color": "#FFFFFF",
+            "multiline": true,
+            "justify": "left",
+            "width": 566,
+            "height": 159,
+            "border": false
+          }
+        }
+      ]
+    },
+    {
+      "page_id": "f0b9e37d",
+      "name": "Memory",
+      "canvas_x": 0.0,
+      "canvas_y": 0.0,
+      "canvas_zoom": 1.0,
+      "components": [
+        {
+          "component_id": "b4ee72e4",
+          "component_type": "Memory",
+          "position": {
+            "x": 750,
+            "y": 530
+          },
+          "pins": [
+            {
+              "pin_id": "b4ee72e4.ADDR_0",
+              "tabs": [
+                {
+                  "tab_id": "b4ee72e4.ADDR_0.tab",
+                  "position": {
+                    "x": -440,
+                    "y": -63
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "b4ee72e4.ADDR_1",
+              "tabs": [
+                {
+                  "tab_id": "b4ee72e4.ADDR_1.tab",
+                  "position": {
+                    "x": -440,
+                    "y": -45
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "b4ee72e4.ADDR_2",
+              "tabs": [
+                {
+                  "tab_id": "b4ee72e4.ADDR_2.tab",
+                  "position": {
+                    "x": -440,
+                    "y": -27
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "b4ee72e4.ADDR_3",
+              "tabs": [
+                {
+                  "tab_id": "b4ee72e4.ADDR_3.tab",
+                  "position": {
+                    "x": -440,
+                    "y": -9
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "b4ee72e4.ADDR_4",
+              "tabs": [
+                {
+                  "tab_id": "b4ee72e4.ADDR_4.tab",
+                  "position": {
+                    "x": -440,
+                    "y": 9
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "b4ee72e4.ADDR_5",
+              "tabs": [
+                {
+                  "tab_id": "b4ee72e4.ADDR_5.tab",
+                  "position": {
+                    "x": -440,
+                    "y": 27
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "b4ee72e4.ADDR_6",
+              "tabs": [
+                {
+                  "tab_id": "b4ee72e4.ADDR_6.tab",
+                  "position": {
+                    "x": -440,
+                    "y": 45
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "b4ee72e4.ADDR_7",
+              "tabs": [
+                {
+                  "tab_id": "b4ee72e4.ADDR_7.tab",
+                  "position": {
+                    "x": -440,
+                    "y": 63
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "b4ee72e4.Enable",
+              "tabs": [
+                {
+                  "tab_id": "b4ee72e4.Enable.tab",
+                  "position": {
+                    "x": -440,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "b4ee72e4.Read",
+              "tabs": [
+                {
+                  "tab_id": "b4ee72e4.Read.tab",
+                  "position": {
+                    "x": -440,
+                    "y": 30
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "b4ee72e4.Write",
+              "tabs": [
+                {
+                  "tab_id": "b4ee72e4.Write.tab",
+                  "position": {
+                    "x": -440,
+                    "y": 100
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "b4ee72e4.DATA_0",
+              "tabs": [
+                {
+                  "tab_id": "b4ee72e4.DATA_0.tab",
+                  "position": {
+                    "x": 360,
+                    "y": -70
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "b4ee72e4.DATA_1",
+              "tabs": [
+                {
+                  "tab_id": "b4ee72e4.DATA_1.tab",
+                  "position": {
+                    "x": 360,
+                    "y": -50
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "b4ee72e4.DATA_2",
+              "tabs": [
+                {
+                  "tab_id": "b4ee72e4.DATA_2.tab",
+                  "position": {
+                    "x": 360,
+                    "y": -30
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "b4ee72e4.DATA_3",
+              "tabs": [
+                {
+                  "tab_id": "b4ee72e4.DATA_3.tab",
+                  "position": {
+                    "x": 360,
+                    "y": -10
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "b4ee72e4.DATA_4",
+              "tabs": [
+                {
+                  "tab_id": "b4ee72e4.DATA_4.tab",
+                  "position": {
+                    "x": 360,
+                    "y": 10
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "b4ee72e4.DATA_5",
+              "tabs": [
+                {
+                  "tab_id": "b4ee72e4.DATA_5.tab",
+                  "position": {
+                    "x": 360,
+                    "y": 30
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "b4ee72e4.DATA_6",
+              "tabs": [
+                {
+                  "tab_id": "b4ee72e4.DATA_6.tab",
+                  "position": {
+                    "x": 360,
+                    "y": 50
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "b4ee72e4.DATA_7",
+              "tabs": [
+                {
+                  "tab_id": "b4ee72e4.DATA_7.tab",
+                  "position": {
+                    "x": 360,
+                    "y": 70
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "address_bits": 8,
+            "data_bits": 8,
+            "address_bus_name": "Address",
+            "data_bus_name": "Data",
+            "default_memory_file": "",
+            "is_volatile": false,
+            "label": "RAM",
+            "label_position": "top",
+            "visible_rows": 16
+          },
+          "memory": {
+            "0": 85,
+            "1": 170,
+            "2": 204,
+            "3": 255
+          },
+          "scroll_offset": 0
+        },
+        {
+          "component_id": "6452133f",
+          "component_type": "Switch",
+          "position": {
+            "x": 230,
+            "y": 490
+          },
+          "pins": [
+            {
+              "pin_id": "6452133f.pin1",
+              "tabs": [
+                {
+                  "tab_id": "6452133f.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "6452133f.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "6452133f.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "6452133f.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "ENABLE",
+            "label_position": "left",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "b536a08c",
+          "component_type": "Switch",
+          "position": {
+            "x": 230,
+            "y": 560
+          },
+          "pins": [
+            {
+              "pin_id": "b536a08c.pin1",
+              "tabs": [
+                {
+                  "tab_id": "b536a08c.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "b536a08c.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "b536a08c.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "b536a08c.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "pushbutton",
+            "label": "READ",
+            "label_position": "left",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "307f3915",
+          "component_type": "Switch",
+          "position": {
+            "x": 230.0,
+            "y": 630.0
+          },
+          "pins": [
+            {
+              "pin_id": "307f3915.pin1",
+              "tabs": [
+                {
+                  "tab_id": "307f3915.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "307f3915.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "307f3915.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "307f3915.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "pushbutton",
+            "label": "WRITE",
+            "label_position": "left",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "9ccb6214",
+          "component_type": "Thumbwheel",
+          "position": {
+            "x": 130.0,
+            "y": 240.0
+          },
+          "pins": [
+            {
+              "pin_id": "9ccb6214.pin0",
+              "tabs": [
+                {
+                  "tab_id": "9ccb6214.pin0.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1000
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "9ccb6214.pin1",
+              "tabs": [
+                {
+                  "tab_id": "9ccb6214.pin1.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1020
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "9ccb6214.pin2",
+              "tabs": [
+                {
+                  "tab_id": "9ccb6214.pin2.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1040
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "9ccb6214.pin3",
+              "tabs": [
+                {
+                  "tab_id": "9ccb6214.pin3.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1060
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "bus_name": "Address",
+            "start_pin": 4,
+            "value": 0
+          }
+        },
+        {
+          "component_id": "b1841bb1",
+          "component_type": "Thumbwheel",
+          "position": {
+            "x": 200.0,
+            "y": 240.0
+          },
+          "pins": [
+            {
+              "pin_id": "b1841bb1.pin0",
+              "tabs": [
+                {
+                  "tab_id": "b1841bb1.pin0.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1000
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "b1841bb1.pin1",
+              "tabs": [
+                {
+                  "tab_id": "b1841bb1.pin1.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1020
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "b1841bb1.pin2",
+              "tabs": [
+                {
+                  "tab_id": "b1841bb1.pin2.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1040
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "b1841bb1.pin3",
+              "tabs": [
+                {
+                  "tab_id": "b1841bb1.pin3.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1060
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "bus_name": "Address",
+            "start_pin": 0,
+            "value": 4
+          }
+        },
+        {
+          "component_id": "ec654a5e",
+          "component_type": "SevenSegmentDisplay",
+          "position": {
+            "x": 200.0,
+            "y": 160.0
+          },
+          "pins": [],
+          "properties": {
+            "bus_name": "Address",
+            "start_pin": 0,
+            "color": "green"
+          }
+        },
+        {
+          "component_id": "ad06db6e",
+          "component_type": "SevenSegmentDisplay",
+          "position": {
+            "x": 130.0,
+            "y": 160.0
+          },
+          "pins": [],
+          "properties": {
+            "bus_name": "Address",
+            "start_pin": 4,
+            "color": "green"
+          }
+        },
+        {
+          "component_id": "7fed677b",
+          "component_type": "Thumbwheel",
+          "position": {
+            "x": 330.0,
+            "y": 240.0
+          },
+          "pins": [
+            {
+              "pin_id": "7fed677b.pin0",
+              "tabs": [
+                {
+                  "tab_id": "7fed677b.pin0.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1000
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "7fed677b.pin1",
+              "tabs": [
+                {
+                  "tab_id": "7fed677b.pin1.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1020
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "7fed677b.pin2",
+              "tabs": [
+                {
+                  "tab_id": "7fed677b.pin2.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1040
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "7fed677b.pin3",
+              "tabs": [
+                {
+                  "tab_id": "7fed677b.pin3.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1060
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "bus_name": "Data",
+            "start_pin": 4,
+            "value": 0
+          }
+        },
+        {
+          "component_id": "18594bdb",
+          "component_type": "SevenSegmentDisplay",
+          "position": {
+            "x": 400.0,
+            "y": 160.0
+          },
+          "pins": [],
+          "properties": {
+            "bus_name": "Data",
+            "start_pin": 0,
+            "color": "red"
+          }
+        },
+        {
+          "component_id": "f19bce6d",
+          "component_type": "SevenSegmentDisplay",
+          "position": {
+            "x": 330.0,
+            "y": 160.0
+          },
+          "pins": [],
+          "properties": {
+            "bus_name": "Data",
+            "start_pin": 4,
+            "color": "red"
+          }
+        },
+        {
+          "component_id": "60fc0d9f",
+          "component_type": "Thumbwheel",
+          "position": {
+            "x": 400.0,
+            "y": 240.0
+          },
+          "pins": [
+            {
+              "pin_id": "60fc0d9f.pin0",
+              "tabs": [
+                {
+                  "tab_id": "60fc0d9f.pin0.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1000
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "60fc0d9f.pin1",
+              "tabs": [
+                {
+                  "tab_id": "60fc0d9f.pin1.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1020
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "60fc0d9f.pin2",
+              "tabs": [
+                {
+                  "tab_id": "60fc0d9f.pin2.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1040
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "60fc0d9f.pin3",
+              "tabs": [
+                {
+                  "tab_id": "60fc0d9f.pin3.tab",
+                  "position": {
+                    "x": 0,
+                    "y": 1060
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "bus_name": "Data",
+            "start_pin": 0,
+            "value": 0
+          }
+        },
+        {
+          "component_id": "d5285e8b",
+          "component_type": "Text",
+          "position": {
+            "x": 163.0,
+            "y": 101.0
+          },
+          "pins": [],
+          "properties": {
+            "text": "Address",
+            "font_size": 12,
+            "color": "#FFFFFF",
+            "multiline": false,
+            "justify": "left",
+            "width": 126,
+            "height": 42,
+            "border": false
+          }
+        },
+        {
+          "component_id": "13fc9add",
+          "component_type": "Text",
+          "position": {
+            "x": 363.0,
+            "y": 101.0
+          },
+          "pins": [],
+          "properties": {
+            "text": "Data",
+            "font_size": 12,
+            "color": "#FFFFFF",
+            "multiline": false,
+            "justify": "left",
+            "width": 126,
+            "height": 42,
+            "border": false
+          }
+        },
+        {
+          "component_id": "624a5130",
+          "component_type": "Text",
+          "position": {
+            "x": 857.0,
+            "y": 199.0
+          },
+          "pins": [],
+          "properties": {
+            "text": "This is VERY simple memory.\n\nThe memory can be configured to be as wide (4,8,16 bits) and as many addresses as you require.\n\nThe memory is configured by setting an 'Address Bus' and 'Data Bus' names.\n\nThe memory can be set as volitile which will wipe it every time the SIM starts, or persistant so it saves the data stored in it in between SIM starts.\n\nThis data is also saved to the main .rsim file.\n\na memory file can be loaded or saved for future use, and if required a default file can be loaded every time the SIM starts. I am planning on writing a compiler for my relay computer, if I always save output of the compiler to the same name and location, every time the SIM starts I will reload the new program.",
+            "font_size": 8,
+            "color": "#FFFFFF",
+            "multiline": true,
+            "justify": "left",
+            "width": 694,
+            "height": 198,
+            "border": false
+          }
+        },
+        {
+          "component_id": "67a0abfc",
+          "component_type": "Text",
+          "position": {
+            "x": 200,
+            "y": 60
+          },
+          "pins": [],
+          "properties": {
+            "text": "Memory",
+            "font_size": 12,
+            "color": "#FFFFFF",
+            "multiline": false,
+            "justify": "left",
+            "width": 200,
+            "height": 40,
+            "border": false
+          }
+        },
+        {
+          "component_id": "a96be931",
+          "component_type": "Text",
+          "position": {
+            "x": 1230,
+            "y": 380
+          },
+          "pins": [],
+          "properties": {
+            "text": "Memory can be edited by clicking on a cell and changing the value in HEX.",
+            "font_size": 8,
+            "color": "#FFFFFF",
+            "multiline": true,
+            "justify": "left",
+            "width": 200,
+            "height": 40,
+            "border": false
+          }
+        }
+      ],
+      "wires": [
+        {
+          "wire_id": "a3699bc1",
+          "start_tab_id": "6452133f.pin1.tab3",
+          "end_tab_id": "b4ee72e4.Enable.tab"
+        },
+        {
+          "wire_id": "c2a981ff",
+          "start_tab_id": "307f3915.pin1.tab3",
+          "end_tab_id": "b4ee72e4.Write.tab"
+        },
+        {
+          "wire_id": "ccdbbff4",
+          "start_tab_id": "b536a08c.pin1.tab3",
+          "end_tab_id": "b4ee72e4.Read.tab"
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "author": "",
+    "created": "",
+    "modified": "",
+    "description": ""
+  }
+}
