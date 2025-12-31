@@ -2518,7 +2518,6 @@ class MainWindow:
         
         # In simulation mode, only allow switch toggling
         if self.simulation_mode:
-            print(f"Canvas click in simulation mode at ({canvas_x}, {canvas_y})")
             # Mouse-down: handle Thumbwheel buttons or Switch press/toggle.
             if self._handle_thumbwheel_interaction(canvas_x, canvas_y):
                 return
@@ -2531,9 +2530,7 @@ class MainWindow:
             
             # Check if clicked on a wire
             wire_clicked = self._find_wire_at_position(canvas_x, canvas_y)
-            print(f"Wire at position: {wire_clicked}")
             if wire_clicked:
-                print(f"Calling _handle_wire_selection for wire: {wire_clicked}")
                 self._handle_wire_selection(event, wire_clicked)
                 return
             
@@ -6404,6 +6401,7 @@ class MainWindow:
                 _collapse_degree_two_junction(junction_id)
         
         # Delete components
+        delete_components_count = len(self.selected_components)
         for component_id in list(self.selected_components):
             page.remove_component(component_id)
         
