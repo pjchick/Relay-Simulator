@@ -18,6 +18,7 @@ from gui.renderers.memory_renderer import MemoryRenderer
 from gui.renderers.diode_renderer import DiodeRenderer
 from gui.renderers.clock_renderer import ClockRenderer
 from gui.renderers.link_renderer import LinkRenderer
+from gui.renderers.text_renderer import TextRenderer
 
 
 class RendererFactory:
@@ -41,6 +42,7 @@ class RendererFactory:
         'Diode': DiodeRenderer,
         'Clock': ClockRenderer,
         'Link': LinkRenderer,
+        'Text': TextRenderer,
     }
     
     @classmethod

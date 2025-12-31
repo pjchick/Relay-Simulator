@@ -2149,11 +2149,26 @@ class MainWindow:
         # (Backward compatible with older list-only clipboard.)
         self.clipboard = None
         
+        # Inline text editor state
+        self._inline_text_editor = None
+        self._inline_text_editor_frame = None
+        self._inline_text_component = None
+        self._pending_text_click = None  # (component, canvas_x, canvas_y) for click vs drag detection
+        
+        # Text component resize state
+        self._resizing_text_component = None
+        self._resize_corner = None
+        self._resize_start_pos = None
+        self._resize_original_size = None
+        self._resize_border = None  # Canvas rectangle ID for alignment border
+        self._drag_border = None  # Canvas rectangle ID for alignment border during drag
+        
         # Create context menu
         self._create_context_menu()
         
         # Bind canvas click for component placement and wire drawing
         self.design_canvas.canvas.bind('<Button-1>', self._on_canvas_click)
+        self.design_canvas.canvas.bind('<Double-Button-1>', self._on_canvas_double_click)
         self.design_canvas.canvas.bind('<Motion>', self._on_canvas_motion)
         self.design_canvas.canvas.bind('<ButtonRelease-1>', self._on_canvas_release)
         self.design_canvas.canvas.bind('<Button-3>', self._on_right_click)  # Right-click
@@ -2529,6 +2544,10 @@ class MainWindow:
         if self.placement_component:
             self._handle_component_placement(event)
             return
+        
+        # Check if clicked on a Text component resize handle
+        if self._check_text_resize_handle_click(event):
+            return
 
         # Design mode: allow editing Memory cells by clicking in the grid.
         # Do this before selection/wiring hit-testing so the cell click isn't stolen.
@@ -2593,6 +2612,548 @@ class MainWindow:
         
         # Handle component selection and dragging
         self._handle_component_selection(event)
+    
+    def _on_canvas_double_click(self, event) -> None:
+        """
+        Handle canvas double-click for editing Text components.
+        
+        Args:
+            event: Double-click event
+        """
+        # Don't handle in simulation mode
+        if self.simulation_mode:
+            return
+        
+        # Get canvas coordinates for hit-testing
+        hit_canvas_x = self.design_canvas.canvas.canvasx(event.x)
+        hit_canvas_y = self.design_canvas.canvas.canvasy(event.y)
+        
+        # Get active page
+        tab = self.file_tabs.get_active_tab()
+        if not tab or not tab.document:
+            return
+        
+        active_page_id = self.page_tabs.get_active_page_id()
+        if not active_page_id:
+            return
+        
+        page = tab.document.get_page(active_page_id)
+        if not page:
+            return
+        
+        # Find component at click position using canvas items
+        clicked_component = None
+        try:
+            items = self.design_canvas.canvas.find_overlapping(
+                hit_canvas_x, hit_canvas_y, hit_canvas_x, hit_canvas_y
+            )
+        except Exception:
+            items = ()
+
+        if items:
+            # Prefer the top-most rendered item
+            for item_id in reversed(items):
+                try:
+                    tags = set(self.design_canvas.canvas.gettags(item_id))
+                except Exception:
+                    continue
+
+                # Only treat clicks on actual component body graphics
+                if 'component' not in tags:
+                    continue
+
+                comp_tag = next((t for t in tags if isinstance(t, str) and t.startswith('component_')), None)
+                if not comp_tag:
+                    continue
+
+                comp_id = comp_tag[len('component_'):]
+                candidate = page.components.get(comp_id)
+                if candidate:
+                    clicked_component = candidate
+                    break
+        
+        # Check if it's a Text component
+        if clicked_component and clicked_component.component_type == 'Text':
+            # Close any existing inline editor
+            self._close_inline_text_editor()
+            
+            # Open inline editor for this Text component
+            self._open_inline_text_editor(clicked_component, event.x, event.y)
+    
+    def _check_text_component_click(self, event) -> bool:
+        """
+        Check if a Text component was clicked and set up pending click state.
+        This allows distinguishing between click (edit) and drag (move).
+        
+        Args:
+            event: Click event
+        
+        Returns:
+            True if a Text component was clicked
+        """
+        # Get canvas coordinates for hit-testing
+        hit_canvas_x = self.design_canvas.canvas.canvasx(event.x)
+        hit_canvas_y = self.design_canvas.canvas.canvasy(event.y)
+        
+        # Get world coordinates
+        canvas_x, canvas_y = self.design_canvas.screen_to_world(event.x, event.y)
+        
+        # Get active page
+        tab = self.file_tabs.get_active_tab()
+        if not tab or not tab.document:
+            return False
+        
+        active_page_id = self.page_tabs.get_active_page_id()
+        if not active_page_id:
+            return False
+        
+        page = tab.document.get_page(active_page_id)
+        if not page:
+            return False
+        
+        # Find component at click position using canvas items
+        clicked_component = None
+        try:
+            items = self.design_canvas.canvas.find_overlapping(
+                hit_canvas_x, hit_canvas_y, hit_canvas_x, hit_canvas_y
+            )
+        except Exception:
+            items = ()
+
+        if items:
+            # Prefer the top-most rendered item
+            for item_id in reversed(items):
+                try:
+                    tags = set(self.design_canvas.canvas.gettags(item_id))
+                except Exception:
+                    continue
+
+                # Only treat clicks on actual component body graphics
+                if 'component' not in tags:
+                    continue
+
+                comp_tag = next((t for t in tags if isinstance(t, str) and t.startswith('component_')), None)
+                if not comp_tag:
+                    continue
+
+                comp_id = comp_tag[len('component_'):]
+                candidate = page.components.get(comp_id)
+                if candidate:
+                    clicked_component = candidate
+                    break
+        
+        # Check if it's a Text component
+        if clicked_component and clicked_component.component_type == 'Text':
+            # Store pending click - will open editor on release if not dragged
+            self._pending_text_click = (clicked_component, canvas_x, canvas_y)
+            return True
+        
+        return False
+    
+    def _open_inline_text_editor(self, component, screen_x: int, screen_y: int) -> None:
+        """
+        Open an inline text editor on the canvas for editing Text component.
+        The editor is styled to match the component exactly.
+        
+        Args:
+            component: Text component to edit
+            screen_x: Screen X coordinate for editor position
+            screen_y: Screen Y coordinate for editor position
+        """
+        from components.text import Text
+        
+        if not isinstance(component, Text):
+            return
+        
+        # Store reference to component being edited
+        self._inline_text_component = component
+        
+        # Get current text and properties
+        current_text = component.properties.get('text', '')
+        multiline = component.properties.get('multiline', False)
+        font_size = component.properties.get('font_size', 12)
+        width = component.properties.get('width', 200)
+        height = component.properties.get('height', 40)
+        color = component.properties.get('color', 'white')
+        justify = component.properties.get('justify', 'left')
+        has_border = component.properties.get('border', False)
+        
+        # Color mapping
+        color_map = {
+            'white': '#FFFFFF', 'gray': '#AAAAAA', 'red': '#FF6B6B',
+            'green': '#4ECB71', 'blue': '#64B5F6', 'yellow': '#FFD93D',
+            'orange': '#FF9F43', 'purple': '#A569BD', 'cyan': '#48C9B0',
+            'pink': '#FD79A8'
+        }
+        fg_color = color_map.get(color, '#FFFFFF')
+        
+        # Calculate zoom for sizing
+        zoom = self.design_canvas.zoom_level
+        
+        # Convert world coordinates to canvas coordinates
+        comp_x, comp_y = component.position
+        canvas_comp_x, canvas_comp_y = self.design_canvas.world_to_canvas(comp_x, comp_y)
+        
+        # Calculate scaled width and height
+        scaled_width = width * zoom
+        scaled_height = height * zoom
+        
+        # Calculate text position to match renderer positioning
+        # The renderer centers the box at (comp_x, comp_y), then positions text with padding
+        padding = 5 * zoom
+        
+        # Calculate the exact box boundaries
+        box_x1 = canvas_comp_x - (scaled_width / 2)
+        box_y1 = canvas_comp_y - (scaled_height / 2)
+        box_x2 = canvas_comp_x + (scaled_width / 2)
+        box_y2 = canvas_comp_y + (scaled_height / 2)
+        
+        if justify == 'left':
+            # Text aligns to left edge of box with padding
+            text_x = box_x1 + padding
+            text_y = box_y1
+            justify_anchor = tk.NW
+        elif justify == 'right':
+            # Text aligns to right edge of box with padding
+            text_x = box_x2 - padding
+            text_y = box_y1
+            justify_anchor = tk.NE
+        else:
+            # Center alignment
+            text_x = canvas_comp_x
+            text_y = canvas_comp_y
+            justify_anchor = tk.CENTER
+        
+        # Create a frame to hold the editor with exact pixel dimensions
+        editor_frame = tk.Frame(
+            self.design_canvas.canvas,
+            bg=VSCodeTheme.BG_PRIMARY,
+            width=int(scaled_width - 2 * padding),
+            height=int(scaled_height),
+            highlightthickness=0,
+            borderwidth=0
+        )
+        editor_frame.pack_propagate(False)  # Prevent frame from shrinking
+        
+        # Create text widget inside the frame
+        if multiline:
+            self._inline_text_editor = tk.Text(
+                editor_frame,
+                font=('Consolas', int(font_size * zoom)),
+                bg=VSCodeTheme.BG_PRIMARY,
+                fg=fg_color,
+                insertbackground=fg_color,
+                relief=tk.FLAT,
+                borderwidth=0,
+                highlightthickness=0,
+                wrap=tk.WORD
+            )
+            self._inline_text_editor.pack(fill=tk.BOTH, expand=True)
+            self._inline_text_editor.insert('1.0', current_text)
+            self._inline_text_editor.focus_set()
+            
+            # Bind events
+            self._inline_text_editor.bind('<Escape>', lambda e: self._close_inline_text_editor(save=False))
+            self._inline_text_editor.bind('<FocusOut>', lambda e: self._close_inline_text_editor(save=True))
+            # Return to save and close (Ctrl+Return for new lines in multiline mode)
+            self._inline_text_editor.bind('<Return>', lambda e: self._close_inline_text_editor(save=True))
+            # Ctrl+Return inserts a newline
+            def insert_newline(e):
+                self._inline_text_editor.insert(tk.INSERT, '\n')
+                return 'break'
+            self._inline_text_editor.bind('<Control-Return>', insert_newline)
+        else:
+            self._inline_text_editor = tk.Entry(
+                editor_frame,
+                font=('Consolas', int(font_size * zoom)),
+                bg=VSCodeTheme.BG_PRIMARY,
+                fg=fg_color,
+                insertbackground=fg_color,
+                relief=tk.FLAT,
+                borderwidth=0,
+                highlightthickness=0,
+                justify=justify
+            )
+            self._inline_text_editor.pack(fill=tk.BOTH, expand=True, pady=int(scaled_height / 2 - font_size * zoom / 2))
+            self._inline_text_editor.insert(0, current_text)
+            self._inline_text_editor.select_range(0, tk.END)
+            self._inline_text_editor.focus_set()
+            
+            # Bind events
+            self._inline_text_editor.bind('<Return>', lambda e: self._close_inline_text_editor(save=True))
+            self._inline_text_editor.bind('<Escape>', lambda e: self._close_inline_text_editor(save=False))
+            self._inline_text_editor.bind('<FocusOut>', lambda e: self._close_inline_text_editor(save=True))
+        
+        # Store frame reference for cleanup
+        self._inline_text_editor_frame = editor_frame
+        
+        # Position the frame to match the text rendering position exactly
+        self.design_canvas.canvas.create_window(
+            text_x, text_y,
+            window=editor_frame,
+            anchor=justify_anchor,
+            tags=('inline_editor',)
+        )
+    
+    def _close_inline_text_editor(self, save: bool = True) -> None:
+        """
+        Close the inline text editor and optionally save changes.
+        
+        Args:
+            save: Whether to save the changes to the component
+        """
+        # Prevent double-close
+        if not self._inline_text_editor or not self._inline_text_component:
+            return
+        
+        # Store references before clearing
+        editor = self._inline_text_editor
+        component = self._inline_text_component
+        frame = self._inline_text_editor_frame
+        
+        # Clear references immediately to prevent re-entry
+        self._inline_text_editor = None
+        self._inline_text_editor_frame = None
+        self._inline_text_component = None
+        
+        # Get the edited text if saving
+        if save:
+            try:
+                if isinstance(editor, tk.Text):
+                    new_text = editor.get('1.0', 'end-1c')
+                else:
+                    new_text = editor.get()
+                
+                # Update component property
+                old_text = component.properties.get('text', '')
+                if new_text != old_text:
+                    # Capture undo checkpoint before changing
+                    self._capture_undo_checkpoint()
+                    
+                    component.properties['text'] = new_text
+                    
+                    # Mark document as modified
+                    tab = self.file_tabs.get_active_tab()
+                    if tab:
+                        self.file_tabs.set_tab_modified(tab.tab_id, True)
+                    
+                    # Refresh the canvas to show updated text
+                    if self.design_canvas.current_page:
+                        self.design_canvas.set_page(self.design_canvas.current_page)
+                    
+                    self.set_status(f"Updated text: {new_text[:30]}...")
+            except tk.TclError:
+                # Widget already destroyed
+                pass
+        
+        # Destroy the editor widget and frame
+        try:
+            if editor:
+                editor.destroy()
+        except tk.TclError:
+            pass
+        
+        try:
+            if frame:
+                frame.destroy()
+        except tk.TclError:
+            pass
+        
+        # Remove the canvas window
+        try:
+            self.design_canvas.canvas.delete('inline_editor')
+        except tk.TclError:
+            pass
+    
+    def _check_text_resize_handle_click(self, event) -> bool:
+        """
+        Check if click is on a Text component resize handle and start resize if so.
+        
+        Args:
+            event: Click event
+            
+        Returns:
+            True if resize started, False otherwise
+        """
+        # Get canvas coordinates
+        hit_canvas_x = self.design_canvas.canvas.canvasx(event.x)
+        hit_canvas_y = self.design_canvas.canvas.canvasy(event.y)
+        
+        # Find items at click position
+        try:
+            items = self.design_canvas.canvas.find_overlapping(
+                hit_canvas_x, hit_canvas_y, hit_canvas_x, hit_canvas_y
+            )
+        except Exception:
+            return False
+        
+        # Check if any item is a resize handle
+        for item_id in reversed(items):
+            try:
+                tags = set(self.design_canvas.canvas.gettags(item_id))
+            except Exception:
+                continue
+            
+            if 'resize_handle' not in tags:
+                continue
+            
+            # Found a resize handle - extract component ID and corner
+            comp_tag = next((t for t in tags if t.startswith('resize_handle_')), None)
+            corner_tag = next((t for t in tags if t.startswith('corner_')), None)
+            
+            if not comp_tag or not corner_tag:
+                continue
+            
+            comp_id = comp_tag[len('resize_handle_'):]
+            corner = corner_tag[len('corner_'):]
+            
+            # Get the component
+            tab = self.file_tabs.get_active_tab()
+            if not tab or not tab.document:
+                return False
+            
+            active_page_id = self.page_tabs.get_active_page_id()
+            if not active_page_id:
+                return False
+            
+            page = tab.document.get_page(active_page_id)
+            if not page:
+                return False
+            
+            component = page.components.get(comp_id)
+            if not component or component.component_type != 'Text':
+                return False
+            
+            # Start resizing
+            canvas_x, canvas_y = self.design_canvas.screen_to_world(event.x, event.y)
+            self._resizing_text_component = component
+            self._resize_corner = corner
+            self._resize_start_pos = (canvas_x, canvas_y)
+            self._resize_original_size = (
+                component.properties.get('width', 200),
+                component.properties.get('height', 40)
+            )
+            
+            # Set appropriate cursor
+            cursor_map = {
+                'nw': 'top_left_corner',
+                'ne': 'top_right_corner',
+                'sw': 'bottom_left_corner',
+                'se': 'bottom_right_corner'
+            }
+            self.design_canvas.canvas.config(cursor=cursor_map.get(corner, 'cross'))
+            
+            return True
+        
+        return False
+    
+    def _update_text_component_resize(self, event) -> None:
+        """
+        Update Text component size during resize drag.
+        
+        Args:
+            event: Motion event
+        """
+        if not self._resizing_text_component:
+            return
+        
+        # Get current mouse position
+        canvas_x, canvas_y = self.design_canvas.screen_to_world(event.x, event.y)
+        
+        # Calculate delta from start
+        dx = canvas_x - self._resize_start_pos[0]
+        dy = canvas_y - self._resize_start_pos[1]
+        
+        # Get original size
+        orig_width, orig_height = self._resize_original_size
+        
+        # Calculate new size based on corner being dragged
+        new_width = orig_width
+        new_height = orig_height
+        
+        if self._resize_corner in ('ne', 'se'):
+            new_width = orig_width + dx
+        elif self._resize_corner in ('nw', 'sw'):
+            new_width = orig_width - dx
+        
+        if self._resize_corner in ('sw', 'se'):
+            new_height = orig_height + dy
+        elif self._resize_corner in ('nw', 'ne'):
+            new_height = orig_height - dy
+        
+        # Enforce minimum size
+        new_width = max(50, new_width)
+        new_height = max(20, new_height)
+        
+        # Update component properties
+        self._resizing_text_component.properties['width'] = int(new_width)
+        self._resizing_text_component.properties['height'] = int(new_height)
+        
+        # Draw alignment border
+        zoom = self.design_canvas.zoom_level
+        comp_x, comp_y = self._resizing_text_component.position
+        canvas_comp_x, canvas_comp_y = self.design_canvas.world_to_canvas(comp_x, comp_y)
+        
+        half_w = (new_width * zoom) / 2
+        half_h = (new_height * zoom) / 2
+        
+        x1 = canvas_comp_x - half_w
+        y1 = canvas_comp_y - half_h
+        x2 = canvas_comp_x + half_w
+        y2 = canvas_comp_y + half_h
+        
+        # Remove old border if exists
+        if self._resize_border:
+            self.design_canvas.canvas.delete(self._resize_border)
+        
+        # Draw new border
+        self._resize_border = self.design_canvas.canvas.create_rectangle(
+            x1, y1, x2, y2,
+            outline=VSCodeTheme.ACCENT_BLUE,
+            width=2,
+            dash=(5, 5),
+            tags='resize_border'
+        )
+        
+        # Refresh canvas to show new size
+        if self.design_canvas.current_page:
+            self.design_canvas.set_page(self.design_canvas.current_page)
+    
+    def _finish_text_component_resize(self) -> None:
+        """Finish resizing Text component."""
+        if not self._resizing_text_component:
+            return
+        
+        # Store component reference before clearing state
+        component = self._resizing_text_component
+        
+        # Remove alignment border
+        if self._resize_border:
+            self.design_canvas.canvas.delete(self._resize_border)
+            self._resize_border = None
+        
+        # Capture undo checkpoint
+        self._capture_undo_checkpoint()
+        
+        # Mark document as modified
+        tab = self.file_tabs.get_active_tab()
+        if tab:
+            self.file_tabs.set_tab_modified(tab.tab_id, True)
+        
+        # Reset cursor
+        self.design_canvas.canvas.config(cursor="")
+        
+        # Clear resize state
+        self._resizing_text_component = None
+        self._resize_corner = None
+        self._resize_start_pos = None
+        self._resize_original_size = None
+        
+        # Keep component selected
+        if component:
+            self.selected_components.add(component.component_id)
+            self.design_canvas.set_component_selected(component.component_id, True)
+            self.properties_panel.set_component(component)
 
     def _convert_waypoint_to_junction_and_complete_wire(self, waypoint_info: Tuple[str, str]) -> None:
         """Convert a clicked waypoint to a junction and complete current wire to it."""
@@ -3273,7 +3834,12 @@ class MainWindow:
         Args:
             event: Motion event
         """
-        # Get world coordinates
+        # Handle Text component resizing
+        if self._resizing_text_component:
+            self._update_text_component_resize(event)
+            return
+        
+        # Get world coordinates first (needed for drag detection)
         canvas_x, canvas_y = self.design_canvas.screen_to_world(event.x, event.y)
         zoom = getattr(self.design_canvas, 'zoom_level', 1.0) or 1.0
         drag_threshold = 3.0 / zoom  # ~3 screen pixels
@@ -4494,6 +5060,11 @@ class MainWindow:
         Args:
             event: Mouse release event
         """
+        # Handle Text component resize completion
+        if self._resizing_text_component:
+            self._finish_text_component_resize()
+            return
+        
         # In simulation mode, mouse-up releases pushbutton switches
         if self.simulation_mode:
             if self._memory_scrollbar_renderer:
@@ -4823,6 +5394,44 @@ class MainWindow:
                 # Update component position (no snapping)
                 component.position = (new_x, new_y)
         
+        # Draw alignment border for Text components being dragged
+        if len(self.drag_components) == 1:
+            component_id = next(iter(self.drag_components))
+            component = page.components.get(component_id)
+            if component and component.component_type == 'Text':
+                zoom = self.design_canvas.zoom_level
+                comp_x, comp_y = component.position
+                canvas_comp_x, canvas_comp_y = self.design_canvas.world_to_canvas(comp_x, comp_y)
+                
+                width = component.properties.get('width', 200)
+                height = component.properties.get('height', 40)
+                
+                half_w = (width * zoom) / 2
+                half_h = (height * zoom) / 2
+                
+                x1 = canvas_comp_x - half_w
+                y1 = canvas_comp_y - half_h
+                x2 = canvas_comp_x + half_w
+                y2 = canvas_comp_y + half_h
+                
+                # Remove old border if exists
+                if self._drag_border:
+                    self.design_canvas.canvas.delete(self._drag_border)
+                
+                # Draw new border
+                self._drag_border = self.design_canvas.canvas.create_rectangle(
+                    x1, y1, x2, y2,
+                    outline=VSCodeTheme.ACCENT_BLUE,
+                    width=2,
+                    dash=(5, 5),
+                    tags='drag_border'
+                )
+        else:
+            # Clear drag border if dragging multiple items
+            if self._drag_border:
+                self.design_canvas.canvas.delete(self._drag_border)
+                self._drag_border = None
+        
         # Update all dragged junctions
         if hasattr(self, 'drag_junctions'):
             for junction_id, original_pos in self.drag_junctions.items():
@@ -4854,6 +5463,11 @@ class MainWindow:
     
     def _end_drag(self) -> None:
         """End dragging operation."""
+        # Remove drag alignment border
+        if self._drag_border:
+            self.design_canvas.canvas.delete(self._drag_border)
+            self._drag_border = None
+        
         if self.is_dragging:
             # Mark document as modified
             tab = self.file_tabs.get_active_tab()
@@ -4871,6 +5485,10 @@ class MainWindow:
                         if component:
                             self.properties_panel.set_component(component)
             
+            # Re-apply selection highlight after drag
+            for component_id in self.selected_components:
+                self.design_canvas.set_component_selected(component_id, True)
+            
             total_moved = len(self.selected_components) + len(self.selected_junctions) + len(self.selected_waypoints)
             self.set_status(f"Moved {total_moved} item(s)")
         
@@ -4885,6 +5503,11 @@ class MainWindow:
     
     def _cancel_drag(self) -> None:
         """Cancel drag operation and restore original positions."""
+        # Remove drag alignment border
+        if self._drag_border:
+            self.design_canvas.canvas.delete(self._drag_border)
+            self._drag_border = None
+        
         if not self.is_dragging:
             return
         

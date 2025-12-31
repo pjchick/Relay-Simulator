@@ -19,6 +19,7 @@ from components.memory import Memory
 from components.diode import Diode
 from components.clock import Clock
 from components.link import Link
+from components.text import Text
 
 
 class ComponentFactory:
@@ -50,6 +51,7 @@ class ComponentFactory:
         self.register_component("Diode", Diode)
         self.register_component("Clock", Clock)
         self.register_component("Link", Link)
+        self.register_component("Text", Text)
     
     def register_component(self, type_name: str, component_class: Type[Component]):
         """
