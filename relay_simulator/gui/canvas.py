@@ -533,9 +533,37 @@ class DesignCanvas:
         
         if not self.current_page:
             return
-            
-        # Create renderers for all components
+        
+        # Separate Box components from other components
+        # Boxes should be rendered first (bottom layer)
+        box_components = []
+        other_components = []
+        
         for component in self.current_page.components.values():
+            if component.component_type == 'Box':
+                box_components.append(component)
+            else:
+                other_components.append(component)
+        
+        # Render Box components first (bottom layer)
+        for component in box_components:
+            try:
+                renderer = RendererFactory.create_renderer(self.canvas, component)
+                
+                # Set powered state if simulation is running
+                if self.simulation_engine:
+                    renderer.set_simulation_engine(self.simulation_engine)
+                    is_powered = self._is_component_powered(component, self.simulation_engine)
+                    renderer.set_powered(is_powered)
+                
+                self.renderers[component.component_id] = renderer
+                setattr(renderer, 'zoom', self.zoom_level)
+                renderer.render(self.zoom_level)
+            except Exception as e:
+                print(f"Error rendering component {component.component_id}: {e}")
+        
+        # Then render other components (top layer)
+        for component in other_components:
             try:
                 renderer = RendererFactory.create_renderer(self.canvas, component)
                 

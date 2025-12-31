@@ -2155,8 +2155,8 @@ class MainWindow:
         self._inline_text_component = None
         self._pending_text_click = None  # (component, canvas_x, canvas_y) for click vs drag detection
         
-        # Text component resize state
-        self._resizing_text_component = None
+        # Text and Box component resize state
+        self._resizing_component = None  # Can be Text or Box
         self._resize_corner = None
         self._resize_start_pos = None
         self._resize_original_size = None
@@ -3021,18 +3021,35 @@ class MainWindow:
                 return False
             
             component = page.components.get(comp_id)
-            if not component or component.component_type != 'Text':
+            if not component or component.component_type not in ('Text', 'Box'):
                 return False
             
             # Start resizing
             canvas_x, canvas_y = self.design_canvas.screen_to_world(event.x, event.y)
-            self._resizing_text_component = component
+            self._resizing_component = component
             self._resize_corner = corner
             self._resize_start_pos = (canvas_x, canvas_y)
             self._resize_original_size = (
                 component.properties.get('width', 200),
                 component.properties.get('height', 40)
             )
+            self._resize_original_position = component.position
+            
+            # Calculate opposite corner position (world coordinates) - this stays fixed
+            comp_x, comp_y = component.position
+            width = component.properties.get('width', 200)
+            height = component.properties.get('height', 40)
+            half_w = width / 2
+            half_h = height / 2
+            
+            # Get opposite corner coordinates
+            opposite_corners = {
+                'nw': (comp_x + half_w, comp_y + half_h),  # opposite is SE
+                'ne': (comp_x - half_w, comp_y + half_h),  # opposite is SW
+                'sw': (comp_x + half_w, comp_y - half_h),  # opposite is NE
+                'se': (comp_x - half_w, comp_y - half_h),  # opposite is NW
+            }
+            self._resize_opposite_corner = opposite_corners.get(corner, component.position)
             
             # Set appropriate cursor
             cursor_map = {
@@ -3054,7 +3071,7 @@ class MainWindow:
         Args:
             event: Motion event
         """
-        if not self._resizing_text_component:
+        if not self._resizing_component:
             return
         
         # Get current mouse position
@@ -3081,17 +3098,45 @@ class MainWindow:
         elif self._resize_corner in ('nw', 'ne'):
             new_height = orig_height - dy
         
-        # Enforce minimum size
-        new_width = max(50, new_width)
-        new_height = max(20, new_height)
+        # Enforce minimum size based on component type
+        if self._resizing_component.component_type == 'Text':
+            new_width = max(50, new_width)
+            new_height = max(20, new_height)
+        else:  # Box
+            new_width = max(50, new_width)
+            new_height = max(50, new_height)
+        
+        # Calculate new center position to keep opposite corner fixed
+        opp_x, opp_y = self._resize_opposite_corner
+        half_w = new_width / 2
+        half_h = new_height / 2
+        
+        # New center is offset from opposite corner by half the new size
+        if self._resize_corner == 'nw':  # dragging NW, SE is fixed
+            new_center_x = opp_x - half_w
+            new_center_y = opp_y - half_h
+        elif self._resize_corner == 'ne':  # dragging NE, SW is fixed
+            new_center_x = opp_x + half_w
+            new_center_y = opp_y - half_h
+        elif self._resize_corner == 'sw':  # dragging SW, NE is fixed
+            new_center_x = opp_x - half_w
+            new_center_y = opp_y + half_h
+        else:  # 'se' - dragging SE, NW is fixed
+            new_center_x = opp_x + half_w
+            new_center_y = opp_y + half_h
         
         # Update component properties
-        self._resizing_text_component.properties['width'] = int(new_width)
-        self._resizing_text_component.properties['height'] = int(new_height)
+        self._resizing_component.properties['width'] = int(new_width)
+        self._resizing_component.properties['height'] = int(new_height)
+        self._resizing_component.position = (new_center_x, new_center_y)
         
-        # Draw alignment border
+        # Refresh canvas to show new size
+        if self.design_canvas.current_page:
+            self.design_canvas.set_page(self.design_canvas.current_page)
+        
+        # Draw alignment border AFTER re-render to ensure it appears on top
         zoom = self.design_canvas.zoom_level
-        comp_x, comp_y = self._resizing_text_component.position
+        comp_x, comp_y = self._resizing_component.position
         canvas_comp_x, canvas_comp_y = self.design_canvas.world_to_canvas(comp_x, comp_y)
         
         half_w = (new_width * zoom) / 2
@@ -3114,18 +3159,14 @@ class MainWindow:
             dash=(5, 5),
             tags='resize_border'
         )
-        
-        # Refresh canvas to show new size
-        if self.design_canvas.current_page:
-            self.design_canvas.set_page(self.design_canvas.current_page)
     
     def _finish_text_component_resize(self) -> None:
-        """Finish resizing Text component."""
-        if not self._resizing_text_component:
+        """Finish resizing Text or Box component."""
+        if not self._resizing_component:
             return
         
         # Store component reference before clearing state
-        component = self._resizing_text_component
+        component = self._resizing_component
         
         # Remove alignment border
         if self._resize_border:
@@ -3144,10 +3185,12 @@ class MainWindow:
         self.design_canvas.canvas.config(cursor="")
         
         # Clear resize state
-        self._resizing_text_component = None
+        self._resizing_component = None
         self._resize_corner = None
         self._resize_start_pos = None
         self._resize_original_size = None
+        self._resize_original_position = None
+        self._resize_opposite_corner = None
         
         # Keep component selected
         if component:
@@ -3834,8 +3877,8 @@ class MainWindow:
         Args:
             event: Motion event
         """
-        # Handle Text component resizing
-        if self._resizing_text_component:
+        # Handle Text/Box component resizing
+        if self._resizing_component:
             self._update_text_component_resize(event)
             return
         
@@ -5060,8 +5103,8 @@ class MainWindow:
         Args:
             event: Mouse release event
         """
-        # Handle Text component resize completion
-        if self._resizing_text_component:
+        # Handle Text/Box component resize completion
+        if self._resizing_component:
             self._finish_text_component_resize()
             return
         
@@ -5394,44 +5437,6 @@ class MainWindow:
                 # Update component position (no snapping)
                 component.position = (new_x, new_y)
         
-        # Draw alignment border for Text components being dragged
-        if len(self.drag_components) == 1:
-            component_id = next(iter(self.drag_components))
-            component = page.components.get(component_id)
-            if component and component.component_type == 'Text':
-                zoom = self.design_canvas.zoom_level
-                comp_x, comp_y = component.position
-                canvas_comp_x, canvas_comp_y = self.design_canvas.world_to_canvas(comp_x, comp_y)
-                
-                width = component.properties.get('width', 200)
-                height = component.properties.get('height', 40)
-                
-                half_w = (width * zoom) / 2
-                half_h = (height * zoom) / 2
-                
-                x1 = canvas_comp_x - half_w
-                y1 = canvas_comp_y - half_h
-                x2 = canvas_comp_x + half_w
-                y2 = canvas_comp_y + half_h
-                
-                # Remove old border if exists
-                if self._drag_border:
-                    self.design_canvas.canvas.delete(self._drag_border)
-                
-                # Draw new border
-                self._drag_border = self.design_canvas.canvas.create_rectangle(
-                    x1, y1, x2, y2,
-                    outline=VSCodeTheme.ACCENT_BLUE,
-                    width=2,
-                    dash=(5, 5),
-                    tags='drag_border'
-                )
-        else:
-            # Clear drag border if dragging multiple items
-            if self._drag_border:
-                self.design_canvas.canvas.delete(self._drag_border)
-                self._drag_border = None
-        
         # Update all dragged junctions
         if hasattr(self, 'drag_junctions'):
             for junction_id, original_pos in self.drag_junctions.items():
@@ -5460,6 +5465,50 @@ class MainWindow:
         
         # Re-render page to show updated positions
         self.design_canvas.set_page(page)
+        
+        # Draw alignment border for Text and Box components being dragged
+        # (drawn AFTER re-render to ensure it appears on top)
+        if len(self.drag_components) == 1:
+            component_id = next(iter(self.drag_components))
+            component = page.components.get(component_id)
+            if component and component.component_type in ('Text', 'Box'):
+                zoom = self.design_canvas.zoom_level
+                comp_x, comp_y = component.position
+                canvas_comp_x, canvas_comp_y = self.design_canvas.world_to_canvas(comp_x, comp_y)
+                
+                # Get dimensions based on component type
+                if component.component_type == 'Text':
+                    width = component.properties.get('width', 200)
+                    height = component.properties.get('height', 40)
+                else:  # Box
+                    width = component.properties.get('width', 200)
+                    height = component.properties.get('height', 150)
+                
+                half_w = (width * zoom) / 2
+                half_h = (height * zoom) / 2
+                
+                x1 = canvas_comp_x - half_w
+                y1 = canvas_comp_y - half_h
+                x2 = canvas_comp_x + half_w
+                y2 = canvas_comp_y + half_h
+                
+                # Remove old border if exists
+                if self._drag_border:
+                    self.design_canvas.canvas.delete(self._drag_border)
+                
+                # Draw new border
+                self._drag_border = self.design_canvas.canvas.create_rectangle(
+                    x1, y1, x2, y2,
+                    outline=VSCodeTheme.ACCENT_BLUE,
+                    width=2,
+                    dash=(5, 5),
+                    tags='drag_border'
+                )
+        else:
+            # Clear drag border if dragging multiple items
+            if self._drag_border:
+                self.design_canvas.canvas.delete(self._drag_border)
+                self._drag_border = None
     
     def _end_drag(self) -> None:
         """End dragging operation."""

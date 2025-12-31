@@ -574,6 +574,58 @@ PROPERTY_SCHEMAS: Dict[str, List[Dict[str, Any]]] = {
             'coerce': int,
         },
     ],
+    'Box': [
+        {
+            'section': 'Format',
+            'key': 'color',
+            'label': 'Border Color',
+            'type': 'dropdown',
+            'options': [
+                {'label': 'White', 'value': '#FFFFFF'},
+                {'label': 'Light Gray', 'value': '#CCCCCC'},
+                {'label': 'Gray', 'value': '#888888'},
+                {'label': 'Red', 'value': '#FF0000'},
+                {'label': 'Green', 'value': '#00FF00'},
+                {'label': 'Blue', 'value': '#0000FF'},
+                {'label': 'Yellow', 'value': '#FFFF00'},
+                {'label': 'Orange', 'value': '#FFA500'},
+                {'label': 'Cyan', 'value': '#00FFFF'},
+                {'label': 'Magenta', 'value': '#FF00FF'},
+            ],
+            'default': '#FFFFFF',
+            'target': 'prop',
+        },
+        {
+            'section': 'Format',
+            'key': 'filled',
+            'label': 'Fill Box',
+            'type': 'boolean',
+            'default': False,
+            'target': 'prop',
+        },
+        {
+            'section': 'Advanced',
+            'key': 'width',
+            'label': 'Width (px)',
+            'type': 'number',
+            'default': 200,
+            'min': 50,
+            'max': 2000,
+            'target': 'prop',
+            'coerce': int,
+        },
+        {
+            'section': 'Advanced',
+            'key': 'height',
+            'label': 'Height (px)',
+            'type': 'number',
+            'default': 150,
+            'min': 50,
+            'max': 2000,
+            'target': 'prop',
+            'coerce': int,
+        },
+    ],
 }
 
 
@@ -882,9 +934,30 @@ class DropdownPropertyEditor(PropertyEditor):
         # Prefer mapping stored value -> display label
         if value in self._value_to_label:
             self.var.set(self._value_to_label[value])
+        elif str(value) in self._value_to_label:
+            # Try string version of value
+            self.var.set(self._value_to_label[str(value)])
         else:
-            # Fall back: if caller passes a display label
-            self.var.set(str(value))
+            # Try case-insensitive lookup for hex colors (e.g., #FFFFFF vs #ffffff)
+            str_value = str(value)
+            if str_value.startswith('#'):
+                # Try uppercase version
+                upper_value = str_value.upper()
+                if upper_value in self._value_to_label:
+                    self.var.set(self._value_to_label[upper_value])
+                    return
+                # Try lowercase version
+                lower_value = str_value.lower()
+                if lower_value in self._value_to_label:
+                    self.var.set(self._value_to_label[lower_value])
+                    return
+            
+            # Check if value might already be a display label
+            if value in self._label_to_value.values():
+                self.var.set(str_value)
+            else:
+                # Last resort: display the value as-is
+                self.var.set(str_value)
     
     def get_value(self) -> str:
         """Get dropdown value."""
@@ -1067,8 +1140,8 @@ class PropertiesPanel:
 
         comp_type = self.current_component.__class__.__name__
         
-        # Text components don't need label fields
-        if comp_type == 'Text':
+        # Text and Box components don't need label fields
+        if comp_type in ('Text', 'Box'):
             definitions = PROPERTY_SCHEMAS.get(comp_type, [])
         else:
             definitions = BASE_PROPERTY_SCHEMA + PROPERTY_SCHEMAS.get(comp_type, [])
