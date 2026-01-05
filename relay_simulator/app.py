@@ -1,7 +1,7 @@
 """
-Relay Simulator III - Application Entry Point
+Relay Simulator - Application Entry Point
 
-This is the main entry point for the Relay Simulator III GUI application.
+This is the main entry point for the Relay Simulator GUI application.
 Run this file to start the application.
 """
 

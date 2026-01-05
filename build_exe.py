@@ -1,5 +1,5 @@
 """
-Build script to create Windows executable for Relay Simulator III.
+Build script to create Windows executable for Relay Simulator.
 
 Usage:
     python build_exe.py
@@ -17,7 +17,7 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 # Build arguments for PyInstaller
 args = [
     os.path.join(script_dir, 'relay_simulator', 'app.py'),  # Entry point
-    '--name=RelaySimulatorIII',  # Executable name
+    '--name=RelaySimulator',  # Executable name
     '--onefile',  # Create a single executable file
     '--windowed',  # No console window (GUI app)
     '--clean',  # Clean PyInstaller cache
@@ -61,7 +61,7 @@ args = [
     '--specpath=' + os.path.join(script_dir, 'build'),
 ]
 
-print("Building Relay Simulator III executable...")
+print("Building Relay Simulator executable...")
 print("This may take a few minutes...")
 print()
 
@@ -69,4 +69,4 @@ PyInstaller.__main__.run(args)
 
 print()
 print("Build complete!")
-print(f"Executable location: {os.path.join(script_dir, 'dist', 'RelaySimulatorIII.exe')}")
+print(f"Executable location: {os.path.join(script_dir, 'dist', 'RelaySimulator.exe')}")

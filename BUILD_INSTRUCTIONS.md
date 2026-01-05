@@ -1,6 +1,6 @@
-# Building Relay Simulator III as Windows Executable
+# Building Relay Simulator as Windows Executable
 
-This guide explains how to create a standalone Windows executable (.exe) for Relay Simulator III.
+This guide explains how to create a standalone Windows executable (.exe) for Relay Simulator.
 
 ## Prerequisites
 

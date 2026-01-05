@@ -1,5 +1,5 @@
 """
-Main Window for Relay Simulator III
+Main Window for Relay Simulator
 
 Provides the MainWindow class which manages the primary application window,
 including initialization, lifecycle, and basic window operations.
@@ -40,7 +40,7 @@ from diagnostics import UiWatchdog, get_logger
 
 class MainWindow:
     """
-    Main application window for Relay Simulator III.
+    Main application window for Relay Simulator.
     
     This class manages the primary application window, including:
     - Window initialization and configuration
@@ -57,7 +57,7 @@ class MainWindow:
         """Initialize the main window."""
         # Create root window
         self.root = tk.Tk()
-        self.root.title("Relay Simulator III")
+        self.root.title("Relay Simulator")
         
         # Set window size and position
         self.default_width = 1280
@@ -2475,7 +2475,7 @@ class MainWindow:
         active_tab = self.file_tabs.get_active_tab()
         
         if active_tab:
-            base_title = f"{active_tab.filename} - Relay Simulator III"
+            base_title = f"{active_tab.filename} - Relay Simulator"
             if active_tab.is_modified:
                 self.root.title(f"*{base_title}")
             else:
@@ -2484,7 +2484,7 @@ class MainWindow:
             # Update global unsaved changes flag
             self.has_unsaved_changes = self.file_tabs.has_unsaved_changes()
         else:
-            self.root.title("Relay Simulator III")
+            self.root.title("Relay Simulator")
             self.has_unsaved_changes = False
     
     # === Component Placement ===

@@ -1,5 +1,5 @@
 """
-About Dialog for Relay Simulator III
+About Dialog for Relay Simulator
 
 Displays application version and build information.
 """
@@ -23,7 +23,7 @@ class AboutDialog:
             parent: Parent window
         """
         self.dialog = tk.Toplevel(parent)
-        self.dialog.title("About Relay Simulator III")
+        self.dialog.title("About Relay Simulator")
         self.dialog.resizable(False, False)
         
         # Make dialog modal
@@ -48,7 +48,7 @@ class AboutDialog:
         # Application name
         app_name = tk.Label(
             main_frame,
-            text="Relay Simulator III",
+            text="Relay Simulator",
             font=("Segoe UI", 18, "bold"),
             bg=VSCodeTheme.BG_PRIMARY,
             fg=VSCodeTheme.FG_PRIMARY
@@ -160,10 +160,17 @@ class AboutDialog:
             button_frame,
             text="Close",
             command=self.dialog.destroy,
+<<<<<<< HEAD
             bg=VSCodeTheme.ACCENT_BLUE,
             fg=VSCodeTheme.FG_BRIGHT,
             activebackground=VSCodeTheme.BG_ACTIVE,
             activeforeground=VSCodeTheme.FG_BRIGHT,
+=======
+            bg=VSCodeTheme.BUTTON_BG,
+            fg=VSCodeTheme.BUTTON_FG,
+            activebackground=VSCodeTheme.BUTTON_ACTIVE_BG,
+            activeforeground=VSCodeTheme.BUTTON_ACTIVE_FG,
+>>>>>>> bfc6a9e (Added Help and about)
             relief=tk.FLAT,
             padx=20,
             pady=5,

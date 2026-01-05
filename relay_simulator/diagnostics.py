@@ -1,4 +1,4 @@
-"""Diagnostics helpers for Relay Simulator III.
+"""Diagnostics helpers for Relay Simulator.
 
 This module provides optional logging + a GUI watchdog that can dump stack
 traces when the Tkinter event loop becomes unresponsive.
@@ -9,7 +9,7 @@ Enablement:
   - RSIM_WATCHDOG=0  (disable)
   - RSIM_WATCHDOG_TIMEOUT=8.0  (seconds)
 
-Logs (Windows): %LOCALAPPDATA%\\RelaySimulatorIII\\logs
+Logs (Windows): %LOCALAPPDATA%\\RelaySimulator\\logs
 """
 
 from __future__ import annotations
@@ -48,7 +48,7 @@ def _env_float(name: str, default: float) -> float:
 def get_log_dir() -> Path:
     local_app_data = os.getenv("LOCALAPPDATA") or os.getenv("APPDATA")
     base = Path(local_app_data) if local_app_data else Path.cwd()
-    return base / "RelaySimulatorIII" / "logs"
+    return base / "RelaySimulator" / "logs"
 
 
 def setup_diagnostics() -> Path:

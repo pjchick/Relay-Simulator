@@ -1,4 +1,4 @@
-# Relay Simulator III - AI Coding Agent Instructions
+# Relay Simulator - AI Coding Agent Instructions
 
 ## Project Overview
 
@@ -8,6 +8,12 @@ A Python-based relay logic simulator with tkinter GUI designer and multi-threade
 
 ### Separation of Concerns
 
+<<<<<<< HEAD
+
+=======
+
+> > > > > > > bfc6a9e (Added Help and about)
+
 - **Engine has ZERO GUI dependencies** - core simulation runs independently
 - **Direct Python API** for GUI (no serialization overhead)
 - **Socket API** (`networking/`) for remote control/testing (JSON over TCP)
@@ -15,7 +21,14 @@ A Python-based relay logic simulator with tkinter GUI designer and multi-threade
 
 ### ID System - 8-Character UUIDs
 
+<<<<<<< HEAD
+
 All IDs are **first 8 characters of UUID**, used hierarchically:
+
+=======
+All IDs are **first 8 characters of UUID**, used hierarchically:
+
+> > > > > > > bfc6a9e (Added Help and about)
 
 - `pageId.componentId.pinId.tabId`
 - `pageId.wireId.waypointId`
@@ -23,6 +36,12 @@ All IDs are **first 8 characters of UUID**, used hierarchically:
 - **NO DUPLICATE IDs across entire document**
 
 ### Pin/Tab/VNET Model (Read This Carefully!)
+
+<<<<<<< HEAD
+
+=======
+
+> > > > > > > bfc6a9e (Added Help and about)
 
 - **Tab**: Physical connection point on component (has position)
 - **Pin**: Logical collection of tabs (e.g., Indicator has 1 pin, 4 tabs at 3/6/9/12 o'clock)
@@ -33,7 +52,14 @@ All IDs are **first 8 characters of UUID**, used hierarchically:
 
 ### Component Lifecycle
 
+<<<<<<< HEAD
+
 Every component implements 4 key methods (see [`components/base.py`](../relay_simulator/components/base.py)):
+
+=======
+Every component implements 4 key methods (see [`components/base.py`](../relay_simulator/components/base.py)):
+
+> > > > > > > bfc6a9e (Added Help and about)
 
 1. `simulate_logic(vnet_manager, bridge_manager)` - Calculate new state, mark VNETs dirty
 2. `sim_start(vnet_manager, bridge_manager)` - Initialize on simulation start, create bridges
@@ -41,6 +67,12 @@ Every component implements 4 key methods (see [`components/base.py`](../relay_si
 4. `render(canvas_adapter)` - Draw component on canvas
 
 ### Simulation Engine - Performance Critical
+
+<<<<<<< HEAD
+
+=======
+
+> > > > > > > bfc6a9e (Added Help and about)
 
 - **Single-threaded is 2x faster** for circuits <2000 components (default)
 - **Multi-threaded** only beneficial for large circuits (≥2000 components)
@@ -50,6 +82,12 @@ Every component implements 4 key methods (see [`components/base.py`](../relay_si
 
 ### File Format
 
+<<<<<<< HEAD
+
+=======
+
+> > > > > > > bfc6a9e (Added Help and about)
+
 - `.rsim` files are JSON with hierarchical structure (see [`fileio/rsim_schema.py`](../relay_simulator/fileio/rsim_schema.py))
 - Schema version 1.0.0 - check compatibility with `SchemaVersion.is_compatible()`
 - Structure: `Document → Pages → Components/Wires → Pins/Tabs`
@@ -57,6 +95,12 @@ Every component implements 4 key methods (see [`components/base.py`](../relay_si
 ## Developer Workflows
 
 ### Running the Application
+
+<<<<<<< HEAD
+
+=======
+
+> > > > > > > bfc6a9e (Added Help and about)
 
 ```powershell
 # Activate virtual environment first
@@ -74,12 +118,24 @@ python tools\terminal_server_demo.py
 
 ### Building Executable
 
+<<<<<<< HEAD
+
+=======
+
+> > > > > > > bfc6a9e (Added Help and about)
+
 ```powershell
 python build_exe.py
 # Output: dist\RelaySimulatorIII.exe
 ```
 
 ### Testing
+
+<<<<<<< HEAD
+
+=======
+
+> > > > > > > bfc6a9e (Added Help and about)
 
 - Test scripts in `relay_simulator/testing/`
 - Example circuits in `examples/*.rsim`
@@ -89,14 +145,29 @@ python build_exe.py
 
 ### File Size Limit
 
+<<<<<<< HEAD
+
 **Keep all .py files under 300 lines** - split large files into focused modules
 
 ### Thread Safety
+
+=======
+**Keep all .py files under 300 lines** - split large files into focused modules
+
+### Thread Safety
+
+> > > > > > > bfc6a9e (Added Help and about)
 
 - All VNET/component state access uses `threading.RLock()` (reentrant locks)
 - See [`core/vnet.py`](../relay_simulator/core/vnet.py) for pattern example
 
 ### Component Registration
+
+<<<<<<< HEAD
+
+=======
+
+> > > > > > > bfc6a9e (Added Help and about)
 
 - Components auto-discovered from `components/` directory
 - Set `component_type` class attribute for factory registration
@@ -104,11 +175,23 @@ python build_exe.py
 
 ### Logging & Diagnostics
 
+<<<<<<< HEAD
+
+=======
+
+> > > > > > > bfc6a9e (Added Help and about)
+
 - Use `diagnostics.get_logger()` for logging (configured in [`diagnostics.py`](../relay_simulator/diagnostics.py))
 - Logs: `%LOCALAPPDATA%\RelaySimulatorIII\logs` (Windows)
 - GUI watchdog monitors Tkinter responsiveness (env: `RSIM_WATCHDOG=0` to disable)
 
 ### State Management
+
+<<<<<<< HEAD
+
+=======
+
+> > > > > > > bfc6a9e (Added Help and about)
 
 ```python
 from core.state import PinState, combine_states
@@ -123,6 +206,12 @@ with vnet._lock:
 
 ### Bridge System
 
+<<<<<<< HEAD
+
+=======
+
+> > > > > > > bfc6a9e (Added Help and about)
+
 - Bridges are **dynamic connections** created at runtime (e.g., relay contacts)
 - Created in `sim_start()`, removed automatically in `sim_stop()`
 - Bridge format: `(source_tab_id, target_tab_id, bridge_id)`
@@ -131,17 +220,35 @@ with vnet._lock:
 
 ### GUI ↔ Engine
 
+<<<<<<< HEAD
+
+=======
+
+> > > > > > > bfc6a9e (Added Help and about)
+
 - GUI imports engine directly: `from engine.api import SimulationEngine`
 - Callbacks: `engine.register_stable_callback(gui.on_stable)`
 - See [`gui/main_window.py`](../relay_simulator/gui/main_window.py) lines 40-80
 
 ### Networking/Terminal Interface
 
+<<<<<<< HEAD
+
+=======
+
+> > > > > > > bfc6a9e (Added Help and about)
+
 - Commands defined in [`networking/simulator_commands.py`](../relay_simulator/networking/simulator_commands.py)
 - Command parser in [`networking/command_parser.py`](../relay_simulator/networking/command_parser.py)
 - Interactive features: `networking/interactive_features.py`
 
 ### VNET Builder
+
+<<<<<<< HEAD
+
+=======
+
+> > > > > > > bfc6a9e (Added Help and about)
 
 - Algorithm in [`core/vnet_builder.py`](../relay_simulator/core/vnet_builder.py)
 - Traverses wire connections to create VNETs

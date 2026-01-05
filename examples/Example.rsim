@@ -2724,7 +2724,7 @@
       "name": "Links",
       "canvas_x": 0.0,
       "canvas_y": 1.0,
-      "canvas_zoom": 0.9999999999999998,
+      "canvas_zoom": 0.9999999999999997,
       "components": [
         {
           "component_id": "07be556a",
@@ -5693,10 +5693,11 @@
             "visible_rows": 16
           },
           "memory": {
-            "0": 85,
-            "1": 170,
-            "2": 204,
-            "3": 255
+            "0": 34,
+            "1": 85,
+            "2": 170,
+            "3": 18,
+            "4": 86
           },
           "scroll_offset": 0
         },
