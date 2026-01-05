@@ -1,9 +1,0 @@
-# Memory contents
-# Address bits: 12
-# Data bits: 12
-#
-000:555
-001:AAA
-002:CCC
-003:222
-004:FFF
