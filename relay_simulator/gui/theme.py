@@ -88,6 +88,12 @@ class VSCodeTheme:
     TOOLBOX_WIDTH = 200             # Toolbox panel width
     PROPERTIES_WIDTH = 250          # Properties panel width
     
+    # Button Colors
+    BUTTON_BG = BG_TERTIARY         # Button background
+    BUTTON_FG = FG_PRIMARY          # Button foreground (text)
+    BUTTON_ACTIVE_BG = ACCENT_BLUE  # Button active background
+    BUTTON_ACTIVE_FG = FG_BRIGHT    # Button active foreground
+    
     # Component Rendering
     COMPONENT_OUTLINE = '#505050'   # Component outline color
     COMPONENT_FILL = '#2d2d2d'      # Component fill color
