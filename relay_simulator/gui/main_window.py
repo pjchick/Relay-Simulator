@@ -171,7 +171,9 @@ class MainWindow:
         self.menu_bar.set_callback('zoom_out', self._menu_zoom_out)
         self.menu_bar.set_callback('reset_zoom', self._menu_reset_zoom)
         self.menu_bar.set_callback('toggle_properties', self._menu_toggle_properties)
-        self.menu_bar.set_callback('toggle_properties', self._menu_toggle_properties)
+        
+        # Help menu
+        self.menu_bar.set_callback('about', self._menu_about)
         
         # Initialize menu states
         self.menu_bar.enable_edit_menu(has_selection=False)
@@ -1827,6 +1829,11 @@ class MainWindow:
             self.properties_panel.frame.pack(side=tk.RIGHT, fill=tk.Y, padx=(1, 0))
         else:
             self.properties_panel.frame.pack_forget()
+    
+    def _menu_about(self) -> None:
+        """Handle Help > About."""
+        from gui.about_dialog import show_about_dialog
+        show_about_dialog(self.root)
     
     # === Context Menu ===
     

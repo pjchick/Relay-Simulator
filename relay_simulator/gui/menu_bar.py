@@ -67,6 +67,7 @@ class MenuBar:
             'zoom_out': None,
             'reset_zoom': None,
             'toggle_properties': None,
+            'about': None,
         }
         
         # Create all menus
@@ -74,6 +75,7 @@ class MenuBar:
         self._create_edit_menu()
         self._create_simulation_menu()
         self._create_view_menu()
+        self._create_help_menu()
         
     def _create_file_menu(self) -> None:
         """Create the File menu."""
@@ -277,6 +279,19 @@ class MenuBar:
         self.parent.bind('<Control-equal>', lambda e: self._on_zoom_in())
         self.parent.bind('<Control-minus>', lambda e: self._on_zoom_out())
         self.parent.bind('<Control-Key-0>', lambda e: self._on_reset_zoom())
+    
+    def _create_help_menu(self) -> None:
+        """Create the Help menu."""
+        self.help_menu = tk.Menu(self.menubar, tearoff=0)
+        self.menubar.add_cascade(label="Help", menu=self.help_menu)
+        
+        self.help_menu.add_command(
+            label="About Relay Simulator III...",
+            command=self._on_about
+        )
+        
+        # Bind F1 key to About
+        self.parent.bind('<F1>', lambda e: self._on_about())
         
     # Callback wrappers
     def _on_new(self) -> None:
@@ -383,6 +398,11 @@ class MenuBar:
         """Handle Toggle Properties Panel command."""
         if self.callbacks['toggle_properties']:
             self.callbacks['toggle_properties'](self.properties_visible.get())
+    
+    def _on_about(self) -> None:
+        """Handle About command."""
+        if self.callbacks.get('about'):
+            self.callbacks['about']()
             
     def _on_recent_document(self, filepath: str) -> None:
         """
