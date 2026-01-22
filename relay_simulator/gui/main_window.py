@@ -576,40 +576,31 @@ class MainWindow:
         return image
 
     def _menu_export_canvas_png(self) -> None:
-        """Handle File > Export Canvas as PNG..."""
-        active_tab = self.file_tabs.get_active_tab()
+        """Handle File > Export Visible Canvas as PNG... (with preview)."""
+        from gui.export_image_dialog import ExportImageDialog
 
-        suggested = "canvas"
+        active_tab = self.file_tabs.get_active_tab()
+        suggested = "canvas.png"
         if active_tab and getattr(active_tab, 'filename', None):
             try:
-                suggested = Path(active_tab.filename).stem
+                suggested = f"{Path(active_tab.filename).stem}.png"
             except Exception:
-                suggested = "canvas"
+                suggested = "canvas.png"
 
-        filepath = filedialog.asksaveasfilename(
-            parent=self.root,
-            title="Export Canvas as PNG",
-            filetypes=[("PNG Image", "*.png"), ("All Files", "*.*")],
-            defaultextension=".png",
-            initialfile=f"{suggested}.png",
+        dialog = ExportImageDialog(
+            self.root,
+            canvas=self.design_canvas.canvas,
+            default_mode="visible",
+            suggested_filename=suggested,
         )
-        if not filepath:
-            return
-
-        try:
-            image = self._capture_visible_canvas_image()
-            image.save(filepath, format="PNG")
-            self.set_status(f"Exported PNG: {Path(filepath).name}")
-        except Exception as e:
-            messagebox.showerror(
-                "Export Failed",
-                str(e),
-                parent=self.root,
-            )
-            self.set_status("Export failed")
+        result = dialog.show()
+        if result.saved_path:
+            self.set_status(f"Exported PNG: {Path(result.saved_path).name}")
 
     def _menu_export_full_canvas_png(self) -> None:
-        """Handle File > Export Full Canvas as PNG (1:1)..."""
+        """Handle File > Export Full Canvas as PNG (1:1)... (with preview)."""
+        from gui.export_image_dialog import ExportImageDialog
+
         active_tab = self.file_tabs.get_active_tab()
         if not active_tab or not hasattr(active_tab, 'document'):
             messagebox.showinfo(
@@ -628,34 +619,22 @@ class MainWindow:
             )
             return
 
-        suggested = "canvas"
+        suggested = "canvas_full.png"
         if active_tab and getattr(active_tab, 'filename', None):
             try:
-                suggested = Path(active_tab.filename).stem
+                suggested = f"{Path(active_tab.filename).stem}_full.png"
             except Exception:
-                suggested = "canvas"
+                suggested = "canvas_full.png"
 
-        filepath = filedialog.asksaveasfilename(
-            parent=self.root,
-            title="Export Full Canvas as PNG (1:1 Scale)",
-            filetypes=[("PNG Image", "*.png"), ("All Files", "*.*")],
-            defaultextension=".png",
-            initialfile=f"{suggested}_full.png",
+        dialog = ExportImageDialog(
+            self.root,
+            canvas=self.design_canvas.canvas,
+            default_mode="full",
+            suggested_filename=suggested,
         )
-        if not filepath:
-            return
-
-        try:
-            image = self._render_full_canvas_image()
-            image.save(filepath, format="PNG")
-            self.set_status(f"Exported full canvas PNG: {Path(filepath).name}")
-        except Exception as e:
-            messagebox.showerror(
-                "Export Failed",
-                str(e),
-                parent=self.root,
-            )
-            self.set_status("Export failed")
+        result = dialog.show()
+        if result.saved_path:
+            self.set_status(f"Exported PNG: {Path(result.saved_path).name}")
 
     def _get_canvas_bounds(self, padding=40):
         """Calculate the bounding box of all canvas items.
