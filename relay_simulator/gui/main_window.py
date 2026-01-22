@@ -150,7 +150,6 @@ class MainWindow:
         self.menu_bar.set_callback('save_as', self._menu_save_as)
         self.menu_bar.set_callback('export_png', self._menu_export_canvas_png)
         self.menu_bar.set_callback('export_full_png', self._menu_export_full_canvas_png)
-        self.menu_bar.set_callback('print_canvas', self._menu_print_canvas)
         self.menu_bar.set_callback('settings', self._menu_settings)
         self.menu_bar.set_callback('exit', self._on_closing)
         
@@ -1071,38 +1070,6 @@ class MainWindow:
 
         return min_x, min_y, max_x, max_y
 
-    def _menu_print_canvas(self) -> None:
-        """Handle File > Print Canvas..."""
-        if os.name != 'nt':
-            messagebox.showinfo(
-                "Print Not Supported",
-                "Printing is currently implemented for Windows only.\n\n"
-                "You can still use File > Export Canvas as PNG... and print the image file.",
-                parent=self.root,
-            )
-            return
-
-        try:
-            # Use the same rendering approach as full canvas export
-            # This ensures white background, hidden grid, and black labels
-            image = self._render_full_canvas_image()
-            tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
-            tmp_path = tmp.name
-            tmp.close()
-
-            image.save(tmp_path, format="PNG")
-
-            # Ask the default associated app to print the image.
-            os.startfile(tmp_path, "print")
-            self.set_status("Sent canvas to printer")
-        except Exception as e:
-            messagebox.showerror(
-                "Print Failed",
-                str(e),
-                parent=self.root,
-            )
-            self.set_status("Print failed")
-        
     def _menu_settings(self) -> None:
         """Handle File > Settings."""
         # Show settings dialog
