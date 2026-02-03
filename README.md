@@ -113,7 +113,7 @@ To create a standalone Windows executable:
 python build_exe.py
 ```
 
-The executable will be created in `dist/RelaySimulatorIII.exe`
+The executable will be created in `dist/RelaySimulator.exe`
 
 See `BUILD_INSTRUCTIONS.md` for more details.
 
