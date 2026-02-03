@@ -2,10 +2,10 @@
 
 
 a = Analysis(
-    ['D:\\repos\\Relay Simulator III\\relay_simulator\\app.py'],
-    pathex=['D:\\repos\\Relay Simulator III\\relay_simulator'],
+    ['D:\\repos\\Relay-Simulator\\relay_simulator\\app.py'],
+    pathex=['D:\\repos\\Relay-Simulator\\relay_simulator'],
     binaries=[],
-    datas=[('D:\\repos\\Relay Simulator III\\relay_simulator\\gui', 'gui'), ('D:\\repos\\Relay Simulator III\\relay_simulator\\components', 'components'), ('D:\\repos\\Relay Simulator III\\relay_simulator\\core', 'core'), ('D:\\repos\\Relay Simulator III\\relay_simulator\\engine', 'engine'), ('D:\\repos\\Relay Simulator III\\relay_simulator\\fileio', 'fileio'), ('D:\\repos\\Relay Simulator III\\relay_simulator\\simulation', 'simulation'), ('D:\\repos\\Relay Simulator III\\relay_simulator\\rendering', 'rendering')],
+    datas=[('D:\\repos\\Relay-Simulator\\relay_simulator\\gui', 'gui'), ('D:\\repos\\Relay-Simulator\\relay_simulator\\components', 'components'), ('D:\\repos\\Relay-Simulator\\relay_simulator\\core', 'core'), ('D:\\repos\\Relay-Simulator\\relay_simulator\\engine', 'engine'), ('D:\\repos\\Relay-Simulator\\relay_simulator\\fileio', 'fileio'), ('D:\\repos\\Relay-Simulator\\relay_simulator\\simulation', 'simulation'), ('D:\\repos\\Relay-Simulator\\relay_simulator\\rendering', 'rendering')],
     hiddenimports=['tkinter', 'tkinter.ttk', 'tkinter.font', 'tkinter.messagebox', 'tkinter.filedialog', 'tkinter.simpledialog', 'tkinter.colorchooser', 'PIL', 'PIL.ImageGrab', 'uuid', 'json', 'copy', 'typing', 'collections', 'diagnostics'],
     hookspath=[],
     hooksconfig={},
