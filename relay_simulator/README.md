@@ -8,7 +8,6 @@ A multi-threaded relay logic simulator with tkinter designer interface.
 - Dirty-flag optimization for efficient circuit simulation
 - Dynamic component loading architecture
 - tkinter-based schematic designer
-- Socket API for remote control and testing
 - Support for 100+ components per circuit
 
 ## Components
@@ -33,43 +32,31 @@ pip install -r requirements.txt
 
 ### Designer Mode (GUI)
 ```bash
-python main.py
-```
-
-### Standalone Engine (Socket Server)
-```bash
-python engine_server.py
-```
-
-### Test Scripts
-```bash
-python testing/test_socket_client.py
+python app.py
 ```
 
 ## Project Structure
 
 ```
 relay_simulator/
-├── main.py                  # Designer entry point
-├── engine_server.py         # Standalone engine entry point
+├── app.py                   # Designer entry point
 ├── engine/                  # Engine API
 ├── core/                    # Core simulation classes
 ├── components/              # Component implementations
 ├── rendering/               # Canvas adapter
-├── networking/              # Socket server
-├── designer/                # tkinter GUI
+├── gui/                     # tkinter GUI
 ├── testing/                 # Test scripts
 └── examples/                # Example circuits
 ```
 
 ## Architecture
 
-See `Architecture.md` for detailed architecture documentation.
+See `docs/Architecture.md` for detailed architecture documentation.
 
 ## Development
 
-See `ProjectPlan.md` for development roadmap and todo lists.
+See project documentation for development information.
 
 ## License
 
-TBD
+MIT License

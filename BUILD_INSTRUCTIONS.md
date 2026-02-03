@@ -33,7 +33,7 @@ This will:
 ## Step 3: Find Your Executable
 
 After the build completes, you'll find:
-- **Executable**: `dist\RelaySimulatorIII.exe`
+- **Executable**: `dist\RelaySimulator.exe`
 
 You can copy this .exe file anywhere and run it without Python installed.
 
@@ -61,7 +61,7 @@ This creates a folder with the .exe and supporting files.
 - Try running from command line to see error messages:
   ```powershell
   cd dist
-  .\RelaySimulatorIII.exe
+  .\RelaySimulator.exe
   ```
 - Check Windows Defender or antivirus - they sometimes flag PyInstaller executables
 

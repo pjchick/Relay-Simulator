@@ -1,4 +1,4 @@
-# Relay Simulator III
+# Relay Simulator
 
 A Python-based relay logic circuit simulator with a modern tkinter GUI designer and multi-threaded simulation engine. Design complex relay logic circuits, simulate their behavior in real-time, and interact with components through an intuitive visual interface.
 
@@ -42,11 +42,6 @@ A Python-based relay logic circuit simulator with a modern tkinter GUI designer 
 - JSON-based command protocol
 - Interactive command system with help
 
-## Screenshots
-
-*(Add screenshots of your application here)*
-
-## Quick Start
 
 ### Prerequisites
 
@@ -93,16 +88,6 @@ A Python-based relay logic circuit simulator with a modern tkinter GUI designer 
 **GUI Designer Mode:**
 ```bash
 python relay_simulator/app.py
-```
-
-**Standalone Engine Server (Terminal Interface):**
-```bash
-python relay_simulator/engine_server.py
-```
-
-**Terminal Demo (Interactive):**
-```bash
-python tools/terminal_server_demo.py
 ```
 
 ## Usage
