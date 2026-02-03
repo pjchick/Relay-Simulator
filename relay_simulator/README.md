@@ -22,7 +22,7 @@ Initial component set:
 
 ```bash
 # Clone repository
-git clone <repository-url>
+git clone https://github.com/pjchick/Relay-Simulator.git
 
 # Install dependencies (minimal)
 pip install -r requirements.txt
@@ -59,4 +59,5 @@ See project documentation for development information.
 
 ## License
 
-MIT License
+GPLv3 License
+
