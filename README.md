@@ -2,9 +2,9 @@
 
 A Python-based relay logic circuit simulator with a modern tkinter GUI designer and multi-threaded simulation engine. Design complex relay logic circuits, simulate their behavior in real-time, and interact with components through an intuitive visual interface.
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![License](https://img.shields.io/badge/license-GNUv3-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)
-![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)
+![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)
 
 ## Features
 
@@ -23,7 +23,7 @@ A Python-based relay logic circuit simulator with a modern tkinter GUI designer 
 - Automatic mode selection based on circuit complexity
 - Dirty-flag optimization for efficient simulation
 - VNET-based electrical network resolution
-- Support for 100+ components per circuit
+- Support for 100's components per circuit
 - Relay timing simulation with realistic delays
 
 ### 🔌 Component Library
@@ -35,12 +35,6 @@ A Python-based relay logic circuit simulator with a modern tkinter GUI designer 
 - **Memory**: RAM/ROM components with scrollable viewing
 - **Utilities**: Text labels, Box containers, Clock generators
 - **Cross-Page Links**: Connect circuits across multiple pages
-
-### 🌐 Network Interface
-- Socket API for remote control and automation
-- Terminal/Telnet interface for debugging
-- JSON-based command protocol
-- Interactive command system with help
 
 
 ### Prerequisites
@@ -102,29 +96,11 @@ python relay_simulator/app.py
 6. Click on the switch to toggle it and see the indicator light up!
 7. Press **Shift+F5** to stop the simulation
 
-### Keyboard Shortcuts
-
-- **F5**: Start simulation
-- **Shift+F5**: Stop simulation
-- **Ctrl+N**: New document
-- **Ctrl+O**: Open document
-- **Ctrl+S**: Save document
-- **Ctrl+Z**: Undo
-- **Ctrl+Y**: Redo
-- **Ctrl+C**: Copy selection
-- **Ctrl+V**: Paste
-- **Ctrl+X**: Cut selection
-- **Delete**: Delete selection
-- **Arrow Keys**: Move selected components
-- **R**: Rotate component during placement
-- **Escape**: Cancel operation
 
 ### File Format
 
 Circuits are saved in `.rsim` format (JSON-based):
-- Human-readable and version-controlled
 - Supports multi-page documents
-- Hierarchical component structure
 - Cross-page linking capabilities
 
 Example files can be found in the `examples/` directory.
@@ -195,21 +171,6 @@ Based on comprehensive profiling:
 
 The engine automatically selects the optimal mode based on circuit size (AUTO mode).
 
-## Terminal Interface
-
-Connect via telnet for interactive control:
-
-```bash
-telnet localhost 5000
-```
-
-Example commands:
-- `load circuit.rsim` - Load a circuit file
-- `start` - Start simulation
-- `list` - List all components
-- `toggle <component_id>` - Toggle a switch
-- `stats` - Show simulation statistics
-- `help` - Show available commands
 
 ## Contributing
 
@@ -225,20 +186,15 @@ Contributions are welcome! Please feel free to submit pull requests or open issu
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- Inspired by classic relay logic systems and digital circuit simulators
-- Built with Python and tkinter for cross-platform compatibility
-- Uses multi-threaded architecture for high-performance simulation
+This project is licensed under the GNUv3 License- see the LICENSE file for details.
 
 ## Contact
 
-- **Repository**: [https://github.com/pjchick/Relay-Simulator-III](https://github.com/pjchick/Relay-Simulator-III)
-- **Issues**: [https://github.com/pjchick/Relay-Simulator-III/issues](https://github.com/pjchick/Relay-Simulator-III/issues)
+- **Repository**: [https://github.com/pjchick/Relay-Simulator](https://github.com/pjchick/Relay-Simulator)
+- **Issues**: [https://github.com/pjchick/Relay-Simulator/issues](https://github.com/pjchick/Relay-Simulator/issues)
 
+**website**: https://chickfamily.net
 ---
 
-**Version**: 1.0.0  
+**Version**: 0.1.0  
 **Last Updated**: January 2026
