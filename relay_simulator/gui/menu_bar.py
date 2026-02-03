@@ -277,7 +277,7 @@ class MenuBar:
         self.menubar.add_cascade(label="Help", menu=self.help_menu)
         
         self.help_menu.add_command(
-            label="About Relay Simulator III...",
+            label="About Relay Simulator...",
             command=self._on_about
         )
         

@@ -160,17 +160,10 @@ class AboutDialog:
             button_frame,
             text="Close",
             command=self.dialog.destroy,
-<<<<<<< HEAD
             bg=VSCodeTheme.ACCENT_BLUE,
             fg=VSCodeTheme.FG_BRIGHT,
             activebackground=VSCodeTheme.BG_ACTIVE,
             activeforeground=VSCodeTheme.FG_BRIGHT,
-=======
-            bg=VSCodeTheme.BUTTON_BG,
-            fg=VSCodeTheme.BUTTON_FG,
-            activebackground=VSCodeTheme.BUTTON_ACTIVE_BG,
-            activeforeground=VSCodeTheme.BUTTON_ACTIVE_FG,
->>>>>>> bfc6a9e (Added Help and about)
             relief=tk.FLAT,
             padx=20,
             pady=5,
