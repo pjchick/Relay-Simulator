@@ -51,6 +51,9 @@ class Link(Component):
 
     def simulate_logic(self, vnet_manager, bridge_manager=None):
         """Passive: does not drive the network."""
+        # Debug: Log when Link receives HIGH signal
+        if self._pin and self._pin.state == PinState.HIGH:
+            print(f"Link {self.component_id} ({self.link_name}) is HIGH")
         return
 
     def sim_start(self, vnet_manager, bridge_manager=None):

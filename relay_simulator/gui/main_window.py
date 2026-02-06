@@ -348,7 +348,12 @@ class MainWindow:
             filepath = filedialog.askopenfilename(
                 parent=self.root,
                 title="Open Relay Simulator File",
-                filetypes=[("Relay Simulator Files", "*.rsim"), ("All Files", "*.*")],
+                filetypes=[
+                    ("Relay Simulator Files", "*.rsim *.rsub"),
+                    ("Circuit Files", "*.rsim"),
+                    ("Sub-Circuit Templates", "*.rsub"),
+                    ("All Files", "*.*")
+                ],
                 defaultextension=".rsim"
             )
             
@@ -363,8 +368,15 @@ class MainWindow:
             return
         
         try:
-            # Load document
-            document = self.document_loader.load_from_file(filepath)
+            # Determine file type
+            file_ext = Path(filepath).suffix.lower()
+            
+            if file_ext == '.rsub':
+                # Load .rsub as a Document (for editing template pages)
+                document = self._load_rsub_as_document(filepath)
+            else:
+                # Load .rsim normally
+                document = self.document_loader.load_from_file(filepath)
             
             # Create new tab
             filename = Path(filepath).name
@@ -402,6 +414,42 @@ class MainWindow:
                 parent=self.root
             )
             self.set_status("Failed to open file")
+    
+    def _load_rsub_as_document(self, filepath: str) -> Document:
+        """
+        Load a .rsub file as a Document for editing.
+        
+        Treats the .rsub template pages as regular document pages,
+        allowing the user to edit the sub-circuit template.
+        
+        Args:
+            filepath: Path to .rsub file
+            
+        Returns:
+            Document: Document containing template pages as regular pages
+        """
+        from fileio.sub_circuit_loader import SubCircuitLoader
+        from components.factory import get_factory
+        
+        factory = get_factory()
+        
+        # Load as template first (validates FOOTPRINT page exists)
+        loader = SubCircuitLoader(factory)
+        template = loader.load_from_file(filepath)
+        
+        # Create a new document
+        document = Document()
+        
+        # Convert template pages to document pages
+        from core.page import Page
+        for page_data in template.pages:
+            page = Page.from_dict(page_data, factory)
+            document.add_page(page)
+        
+        # Note: We don't embed this as a sub-circuit definition, we just
+        # load the pages for editing. When saved, it will be saved as-is.
+        
+        return document
         
     def _menu_save(self) -> None:
         """Handle File > Save."""
@@ -457,7 +505,12 @@ class MainWindow:
         filepath = filedialog.asksaveasfilename(
             parent=self.root,
             title="Save Relay Simulator File As",
-            filetypes=[("Relay Simulator Files", "*.rsim"), ("All Files", "*.*")],
+            filetypes=[
+                ("Relay Simulator Files", "*.rsim *.rsub"),
+                ("Circuit Files", "*.rsim"),
+                ("Sub-Circuit Templates", "*.rsub"),
+                ("All Files", "*.*")
+            ],
             defaultextension=".rsim",
             initialfile=active_tab.filename if not active_tab.filepath else Path(active_tab.filepath).name
         )
@@ -2054,6 +2107,7 @@ class MainWindow:
         # Track component placement mode
         self.placement_component = None  # Component type being placed
         self.placement_rotation = 0  # Rotation for placement (0, 90, 180, 270)
+        self.placement_sub_circuit_path = None  # Path to .rsub file for sub-circuit placement
         
         # Track wire drawing state
         self.wire_start_tab = None  # Tab ID where wire starts
@@ -2445,13 +2499,37 @@ class MainWindow:
         # Reset placement mode
         self.placement_component = None
         self.placement_rotation = 0
+        self.placement_sub_circuit_path = None
         self._clear_wire_preview()
         self.wire_temp_waypoints = []
         
         if component_type:
+            # Special handling for SubCircuit - need to select .rsub file
+            if component_type == 'SubCircuit':
+                # Show file dialog to select .rsub file
+                rsub_path = filedialog.askopenfilename(
+                    parent=self.root,
+                    title="Select Sub-Circuit Template",
+                    filetypes=[("Sub-Circuit Files", "*.rsub"), ("All Files", "*.*")],
+                    defaultextension=".rsub",
+                    initialdir=str(Path.home() / "Documents")
+                )
+                
+                if not rsub_path:
+                    # User cancelled - deselect component in toolbox
+                    self.toolbox.deselect_all()
+                    self.set_status("Sub-circuit placement cancelled")
+                    return
+                
+                # Store .rsub path for placement
+                self.placement_sub_circuit_path = rsub_path
+                rsub_name = Path(rsub_path).stem
+                self.set_status(f"Click on canvas to place {rsub_name}. Press R to rotate.")
+            else:
+                self.set_status(f"Click on canvas to place {component_type}. Press R to rotate.")
+            
             # Component placement mode
             self.placement_component = component_type
-            self.set_status(f"Click on canvas to place {component_type}. Press R to rotate.")
             self.design_canvas.canvas.config(cursor="crosshair")
         else:
             # Normal interaction mode
@@ -3776,11 +3854,49 @@ class MainWindow:
         component = None
         
         try:
-            component = factory.create_component(
-                self.placement_component,
-                component_id,
-                page.page_id
-            )
+            # Special handling for SubCircuit components
+            if self.placement_component == 'SubCircuit' and self.placement_sub_circuit_path:
+                # Use SubCircuitInstantiator to create instance from .rsub file
+                from core.sub_circuit_instantiator import SubCircuitInstantiator
+                
+                instantiator = SubCircuitInstantiator(tab.document, factory)
+                
+                # Load and embed template (if not already embedded)
+                try:
+                    # Check if this .rsub is already embedded
+                    source_file = str(Path(self.placement_sub_circuit_path).absolute())
+                    sc_def = None
+                    for sub_circuit_id, definition in tab.document.sub_circuits.items():
+                        if definition.source_file == source_file:
+                            sc_def = definition
+                            break
+                    
+                    # If not embedded, load it now
+                    if not sc_def:
+                        sc_def = instantiator.load_and_embed_template(self.placement_sub_circuit_path)
+                    
+                    # Create instance at snapped position
+                    component = instantiator.create_instance(
+                        sc_def.sub_circuit_id,
+                        page.page_id,
+                        (snapped_x, snapped_y)
+                    )
+                    
+                except FileNotFoundError:
+                    self.set_status(f"Sub-circuit file not found: {self.placement_sub_circuit_path}")
+                    return
+                except Exception as e:
+                    self.set_status(f"Error loading sub-circuit: {e}")
+                    import traceback
+                    traceback.print_exc()
+                    return
+            else:
+                # Normal component creation
+                component = factory.create_component(
+                    self.placement_component,
+                    component_id,
+                    page.page_id
+                )
         except ValueError as e:
             self.set_status(f"Error creating component: {e}")
             return
@@ -3814,6 +3930,7 @@ class MainWindow:
             # Return to normal mode
             self.toolbox.deselect_all()
             self.placement_component = None
+            self.placement_sub_circuit_path = None
             self.design_canvas.canvas.config(cursor="")
             
             self.set_status(f"Component placed at ({int(snapped_x)}, {int(snapped_y)})")

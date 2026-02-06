@@ -61,15 +61,18 @@ class Box(Component):
         pass
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any], page_id: str):
+    def from_dict(cls, data: Dict[str, Any]):
         """Create Box from dictionary data."""
-        component_id = data.get('id', '')
+        component_id = data.get('component_id') or data.get('id', '')
+        page_id = data.get('page_id', 'page001')  # Default page if not specified
         box = cls(component_id, page_id)
         
         # Set position
         position = data.get('position', (0, 0))
         if isinstance(position, (list, tuple)) and len(position) == 2:
             box.position = tuple(position)
+        elif isinstance(position, dict):
+            box.position = (position.get('x', 0), position.get('y', 0))
         
         # Set properties
         properties = data.get('properties', {})
@@ -81,8 +84,9 @@ class Box(Component):
     def to_dict(self) -> Dict[str, Any]:
         """Convert Box to dictionary for serialization."""
         return {
-            'type': self.component_type,
-            'id': self.component_id,
-            'position': list(self.position),
+            'component_type': self.component_type,
+            'component_id': self.component_id,
+            'position': {'x': self.position[0], 'y': self.position[1]},
+            'pins': [],  # Box has no pins
             'properties': self.properties.copy()
         }

@@ -1,0 +1,936 @@
+{
+  "version": "1.0.0",
+  "pages": [
+    {
+      "page_id": "1722341b",
+      "name": "Page 1",
+      "canvas_x": 0.0,
+      "canvas_y": 0.0,
+      "canvas_zoom": 1.0,
+      "components": [
+        {
+          "component_id": "727ab2ad",
+          "component_type": "SubCircuit",
+          "position": {
+            "x": 330,
+            "y": 300
+          },
+          "pins": [
+            {
+              "pin_id": "727ab2ad.SUB_IN",
+              "tabs": [
+                {
+                  "tab_id": "727ab2ad.SUB_IN.tab1",
+                  "position": {
+                    "x": -90.0,
+                    "y": -40.0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "727ab2ad.SUB_OUT",
+              "tabs": [
+                {
+                  "tab_id": "727ab2ad.SUB_OUT.tab1",
+                  "position": {
+                    "x": 90.0,
+                    "y": 40.0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "sub_circuit_id": "c4633087",
+            "instance_id": "945aba7e",
+            "sub_circuit_name": "Latch",
+            "width": 210.0,
+            "height": 150.0
+          }
+        },
+        {
+          "component_id": "03c39973",
+          "component_type": "Switch",
+          "position": {
+            "x": 120,
+            "y": 260
+          },
+          "pins": [
+            {
+              "pin_id": "03c39973.pin1",
+              "tabs": [
+                {
+                  "tab_id": "03c39973.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "03c39973.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "03c39973.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "03c39973.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SW",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "e6aece26",
+          "component_type": "Indicator",
+          "position": {
+            "x": 530,
+            "y": 340
+          },
+          "pins": [
+            {
+              "pin_id": "e6aece26.pin1",
+              "tabs": [
+                {
+                  "tab_id": "e6aece26.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "e6aece26.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "e6aece26.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "e6aece26.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        }
+      ],
+      "wires": [
+        {
+          "wire_id": "5856fa82",
+          "start_tab_id": "03c39973.pin1.tab3",
+          "end_tab_id": "727ab2ad.SUB_IN.tab1"
+        },
+        {
+          "wire_id": "554b48b9",
+          "start_tab_id": "727ab2ad.SUB_OUT.tab1",
+          "end_tab_id": "e6aece26.pin1.tab9"
+        }
+      ]
+    },
+    {
+      "page_id": "fd868a88",
+      "name": "FOOTPRINT",
+      "canvas_x": 0.0,
+      "canvas_y": 0.0,
+      "canvas_zoom": 1.0,
+      "components": [
+        {
+          "component_type": "Box",
+          "component_id": "fca40ef2",
+          "position": {
+            "x": 240,
+            "y": 160
+          },
+          "pins": [],
+          "properties": {
+            "color": "#FFFFFF",
+            "width": 200,
+            "height": 150,
+            "filled": false
+          }
+        },
+        {
+          "component_id": "fc0145a6",
+          "component_type": "Link",
+          "position": {
+            "x": 150,
+            "y": 120
+          },
+          "pins": [
+            {
+              "pin_id": "fc0145a6.pin1",
+              "tabs": [
+                {
+                  "tab_id": "fc0145a6.pin1.tab1",
+                  "position": {
+                    "x": 10,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 180,
+          "link_name": "SUB_IN",
+          "properties": {
+            "label": "IN",
+            "label_position": "right"
+          }
+        },
+        {
+          "component_id": "b9c01fe2",
+          "component_type": "Link",
+          "position": {
+            "x": 330,
+            "y": 200
+          },
+          "pins": [
+            {
+              "pin_id": "b9c01fe2.pin1",
+              "tabs": [
+                {
+                  "tab_id": "b9c01fe2.pin1.tab1",
+                  "position": {
+                    "x": 10,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "link_name": "SUB_OUT",
+          "properties": {
+            "label": "OUT",
+            "label_position": "left"
+          }
+        },
+        {
+          "component_id": "8ad097b5",
+          "component_type": "Text",
+          "position": {
+            "x": 246.0,
+            "y": 161.0
+          },
+          "pins": [],
+          "properties": {
+            "text": "LATCH",
+            "font_size": 12,
+            "color": "#FFFFFF",
+            "multiline": false,
+            "justify": "left",
+            "width": 72,
+            "height": 42,
+            "border": false
+          }
+        }
+      ],
+      "is_sub_circuit_page": true,
+      "parent_instance_id": "945aba7e",
+      "parent_sub_circuit_id": "c4633087"
+    },
+    {
+      "page_id": "882cdebc",
+      "name": "Latching Relay",
+      "canvas_x": 0.0,
+      "canvas_y": 0.0,
+      "canvas_zoom": 1.0,
+      "components": [
+        {
+          "component_id": "78f462e5",
+          "component_type": "DPDTRelay",
+          "position": {
+            "x": 290,
+            "y": 220
+          },
+          "pins": [
+            {
+              "pin_id": "78f462e5.COIL",
+              "tabs": [
+                {
+                  "tab_id": "78f462e5.COIL.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "78f462e5.COM1",
+              "tabs": [
+                {
+                  "tab_id": "78f462e5.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "78f462e5.COM2",
+              "tabs": [
+                {
+                  "tab_id": "78f462e5.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "78f462e5.NO1",
+              "tabs": [
+                {
+                  "tab_id": "78f462e5.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "78f462e5.NC1",
+              "tabs": [
+                {
+                  "tab_id": "78f462e5.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "78f462e5.NO2",
+              "tabs": [
+                {
+                  "tab_id": "78f462e5.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "78f462e5.NC2",
+              "tabs": [
+                {
+                  "tab_id": "78f462e5.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 80
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "e83b0191",
+          "component_type": "VCC",
+          "position": {
+            "x": 220,
+            "y": 280
+          },
+          "pins": [
+            {
+              "pin_id": "e83b0191.pin1",
+              "tabs": [
+                {
+                  "tab_id": "e83b0191.pin1.tab1",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "pin_position": "bottom"
+          }
+        },
+        {
+          "component_id": "dce8c356",
+          "component_type": "Link",
+          "position": {
+            "x": 170,
+            "y": 140
+          },
+          "pins": [
+            {
+              "pin_id": "dce8c356.pin1",
+              "tabs": [
+                {
+                  "tab_id": "dce8c356.pin1.tab1",
+                  "position": {
+                    "x": 10,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "link_name": "SUB_IN",
+          "properties": {
+            "label": "SUB_IN",
+            "label_position": "left"
+          }
+        },
+        {
+          "component_id": "5901e702",
+          "component_type": "VCC",
+          "position": {
+            "x": 220,
+            "y": 200
+          },
+          "pins": [
+            {
+              "pin_id": "5901e702.pin1",
+              "tabs": [
+                {
+                  "tab_id": "5901e702.pin1.tab1",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "pin_position": "bottom"
+          }
+        },
+        {
+          "component_id": "6db9a800",
+          "component_type": "Link",
+          "position": {
+            "x": 410,
+            "y": 260
+          },
+          "pins": [
+            {
+              "pin_id": "6db9a800.pin1",
+              "tabs": [
+                {
+                  "tab_id": "6db9a800.pin1.tab1",
+                  "position": {
+                    "x": 10,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 180,
+          "link_name": " SUB_OUT",
+          "properties": {
+            "label": "SUB_OUT",
+            "label_position": "right"
+          }
+        }
+      ],
+      "wires": [
+        {
+          "wire_id": "dd8654a8",
+          "start_tab_id": "e83b0191.pin1.tab1",
+          "end_tab_id": "78f462e5.COM2.tab0"
+        },
+        {
+          "wire_id": "cac75296",
+          "start_tab_id": "5901e702.pin1.tab1",
+          "end_tab_id": "78f462e5.COM1.tab0"
+        },
+        {
+          "wire_id": "b1934bc1",
+          "start_tab_id": "6db9a800.pin1.tab1",
+          "end_tab_id": "78f462e5.NO2.tab0"
+        },
+        {
+          "wire_id": "e09b0800",
+          "start_tab_id": "dce8c356.pin1.tab1",
+          "end_tab_id": "78f462e5.COIL.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "3994a819",
+              "position": {
+                "x": 220,
+                "y": 140
+              }
+            }
+          ]
+        }
+      ],
+      "is_sub_circuit_page": true,
+      "parent_instance_id": "945aba7e",
+      "parent_sub_circuit_id": "c4633087"
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "author": "",
+    "created": "",
+    "modified": "",
+    "description": ""
+  },
+  "sub_circuits": {
+    "c4633087": {
+      "sub_circuit_id": "c4633087",
+      "name": "Latch",
+      "source_file": "Latch.rsub",
+      "pages": [
+        {
+          "page_id": "8fb912e8",
+          "name": "FOOTPRINT",
+          "canvas_x": 0.0,
+          "canvas_y": 0.0,
+          "canvas_zoom": 1.0,
+          "components": [
+            {
+              "component_type": "Box",
+              "component_id": "39e0c200",
+              "position": {
+                "x": 240,
+                "y": 160
+              },
+              "pins": [],
+              "properties": {
+                "color": "#FFFFFF",
+                "width": 200,
+                "height": 150,
+                "filled": false
+              }
+            },
+            {
+              "component_id": "f4756b4b",
+              "component_type": "Link",
+              "position": {
+                "x": 150,
+                "y": 120
+              },
+              "pins": [
+                {
+                  "pin_id": "f4756b4b.pin1",
+                  "tabs": [
+                    {
+                      "tab_id": "f4756b4b.pin1.tab1",
+                      "position": {
+                        "x": 10,
+                        "y": 0
+                      }
+                    }
+                  ]
+                }
+              ],
+              "rotation": 180,
+              "link_name": "SUB_IN",
+              "properties": {
+                "label": "IN",
+                "label_position": "right"
+              }
+            },
+            {
+              "component_id": "6640a22e",
+              "component_type": "Link",
+              "position": {
+                "x": 330,
+                "y": 200
+              },
+              "pins": [
+                {
+                  "pin_id": "6640a22e.pin1",
+                  "tabs": [
+                    {
+                      "tab_id": "6640a22e.pin1.tab1",
+                      "position": {
+                        "x": 10,
+                        "y": 0
+                      }
+                    }
+                  ]
+                }
+              ],
+              "link_name": "SUB_OUT",
+              "properties": {
+                "label": "OUT",
+                "label_position": "left"
+              }
+            },
+            {
+              "component_id": "cff306ca",
+              "component_type": "Text",
+              "position": {
+                "x": 246.0,
+                "y": 161.0
+              },
+              "pins": [],
+              "properties": {
+                "text": "LATCH",
+                "font_size": 12,
+                "color": "#FFFFFF",
+                "multiline": false,
+                "justify": "left",
+                "width": 72,
+                "height": 42,
+                "border": false
+              }
+            }
+          ]
+        },
+        {
+          "page_id": "4b5ed154",
+          "name": "Latching Relay",
+          "canvas_x": 0.0,
+          "canvas_y": 0.0,
+          "canvas_zoom": 1.0,
+          "components": [
+            {
+              "component_id": "e2830e6e",
+              "component_type": "DPDTRelay",
+              "position": {
+                "x": 290,
+                "y": 220
+              },
+              "pins": [
+                {
+                  "pin_id": "e2830e6e.COIL",
+                  "tabs": [
+                    {
+                      "tab_id": "e2830e6e.COIL.tab0",
+                      "position": {
+                        "x": -30,
+                        "y": -80
+                      }
+                    }
+                  ]
+                },
+                {
+                  "pin_id": "e2830e6e.COM1",
+                  "tabs": [
+                    {
+                      "tab_id": "e2830e6e.COM1.tab0",
+                      "position": {
+                        "x": -30,
+                        "y": -20
+                      }
+                    }
+                  ]
+                },
+                {
+                  "pin_id": "e2830e6e.COM2",
+                  "tabs": [
+                    {
+                      "tab_id": "e2830e6e.COM2.tab0",
+                      "position": {
+                        "x": -30,
+                        "y": 60
+                      }
+                    }
+                  ]
+                },
+                {
+                  "pin_id": "e2830e6e.NO1",
+                  "tabs": [
+                    {
+                      "tab_id": "e2830e6e.NO1.tab0",
+                      "position": {
+                        "x": 30,
+                        "y": -40
+                      }
+                    }
+                  ]
+                },
+                {
+                  "pin_id": "e2830e6e.NC1",
+                  "tabs": [
+                    {
+                      "tab_id": "e2830e6e.NC1.tab0",
+                      "position": {
+                        "x": 30,
+                        "y": 0
+                      }
+                    }
+                  ]
+                },
+                {
+                  "pin_id": "e2830e6e.NO2",
+                  "tabs": [
+                    {
+                      "tab_id": "e2830e6e.NO2.tab0",
+                      "position": {
+                        "x": 30,
+                        "y": 40
+                      }
+                    }
+                  ]
+                },
+                {
+                  "pin_id": "e2830e6e.NC2",
+                  "tabs": [
+                    {
+                      "tab_id": "e2830e6e.NC2.tab0",
+                      "position": {
+                        "x": 30,
+                        "y": 80
+                      }
+                    }
+                  ]
+                }
+              ],
+              "properties": {
+                "label": "",
+                "label_position": "top",
+                "color": "blue",
+                "body_color": "#CCCCCC",
+                "flip_horizontal": false,
+                "flip_vertical": false,
+                "on_color": [
+                  0,
+                  0,
+                  255
+                ],
+                "off_color": [
+                  0,
+                  0,
+                  128
+                ]
+              }
+            },
+            {
+              "component_id": "afccd56d",
+              "component_type": "VCC",
+              "position": {
+                "x": 220,
+                "y": 280
+              },
+              "pins": [
+                {
+                  "pin_id": "afccd56d.pin1",
+                  "tabs": [
+                    {
+                      "tab_id": "afccd56d.pin1.tab1",
+                      "position": {
+                        "x": 0,
+                        "y": 0
+                      }
+                    }
+                  ]
+                }
+              ],
+              "properties": {
+                "label": "",
+                "pin_position": "bottom"
+              }
+            },
+            {
+              "component_id": "7385f1fb",
+              "component_type": "Link",
+              "position": {
+                "x": 170,
+                "y": 140
+              },
+              "pins": [
+                {
+                  "pin_id": "7385f1fb.pin1",
+                  "tabs": [
+                    {
+                      "tab_id": "7385f1fb.pin1.tab1",
+                      "position": {
+                        "x": 10,
+                        "y": 0
+                      }
+                    }
+                  ]
+                }
+              ],
+              "link_name": "SUB_IN",
+              "properties": {
+                "label": "SUB_IN",
+                "label_position": "left"
+              }
+            },
+            {
+              "component_id": "bbd8806d",
+              "component_type": "VCC",
+              "position": {
+                "x": 220,
+                "y": 200
+              },
+              "pins": [
+                {
+                  "pin_id": "bbd8806d.pin1",
+                  "tabs": [
+                    {
+                      "tab_id": "bbd8806d.pin1.tab1",
+                      "position": {
+                        "x": 0,
+                        "y": 0
+                      }
+                    }
+                  ]
+                }
+              ],
+              "properties": {
+                "label": "",
+                "pin_position": "bottom"
+              }
+            },
+            {
+              "component_id": "44f03870",
+              "component_type": "Link",
+              "position": {
+                "x": 410,
+                "y": 260
+              },
+              "pins": [
+                {
+                  "pin_id": "44f03870.pin1",
+                  "tabs": [
+                    {
+                      "tab_id": "44f03870.pin1.tab1",
+                      "position": {
+                        "x": 10,
+                        "y": 0
+                      }
+                    }
+                  ]
+                }
+              ],
+              "rotation": 180,
+              "link_name": " SUB_OUT",
+              "properties": {
+                "label": "SUB_OUT",
+                "label_position": "right"
+              }
+            }
+          ],
+          "wires": [
+            {
+              "wire_id": "77dbeeaa",
+              "start_tab_id": "afccd56d.pin1.tab1",
+              "end_tab_id": "e2830e6e.COM2.tab0"
+            },
+            {
+              "wire_id": "6152653f",
+              "start_tab_id": "bbd8806d.pin1.tab1",
+              "end_tab_id": "e2830e6e.COM1.tab0"
+            },
+            {
+              "wire_id": "6cda716d",
+              "start_tab_id": "44f03870.pin1.tab1",
+              "end_tab_id": "e2830e6e.NO2.tab0"
+            },
+            {
+              "wire_id": "36ec72ee",
+              "start_tab_id": "7385f1fb.pin1.tab1",
+              "end_tab_id": "e2830e6e.COIL.tab0",
+              "waypoints": [
+                {
+                  "waypoint_id": "a2b7ccc8",
+                  "position": {
+                    "x": 220,
+                    "y": 140
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "instances": {
+        "945aba7e": {
+          "instance_id": "945aba7e",
+          "parent_page_id": "1722341b",
+          "component_id": "727ab2ad",
+          "page_id_map": {
+            "8fb912e8": "fd868a88",
+            "4b5ed154": "882cdebc"
+          }
+        }
+      }
+    }
+  }
+}

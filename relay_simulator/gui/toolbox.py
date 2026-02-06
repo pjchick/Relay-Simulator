@@ -107,6 +107,7 @@ class ToolboxPanel(tk.Frame):
         ('Diode', 'Diode'),
         ('Text', 'Text'),
         ('Box', 'Box'),
+        ('SubCircuit', 'Sub-Circuit'),
     ]
     
     def __init__(self, parent, on_component_select: Optional[Callable[[Optional[str]], None]] = None):

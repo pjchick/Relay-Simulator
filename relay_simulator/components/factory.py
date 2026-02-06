@@ -21,6 +21,7 @@ from components.clock import Clock
 from components.link import Link
 from components.text import Text
 from components.box import Box
+from components.sub_circuit import SubCircuit
 
 
 class ComponentFactory:
@@ -54,6 +55,7 @@ class ComponentFactory:
         self.register_component("Link", Link)
         self.register_component("Text", Text)
         self.register_component("Box", Box)
+        self.register_component("SubCircuit", SubCircuit)
     
     def register_component(self, type_name: str, component_class: Type[Component]):
         """
@@ -108,18 +110,27 @@ class ComponentFactory:
             ValueError: If 'component_type' field missing or type not registered
         """
         # Schema uses 'component_type' field (not 'type')
-        if 'component_type' not in data:
-            raise ValueError("Component data missing 'component_type' field")
+        # Handle backward compatibility: check 'type' if 'component_type' missing
+        type_name = data.get('component_type') or data.get('type')
         
-        type_name = data['component_type']
+        if not type_name:
+            raise ValueError("Component data missing 'component_type' field")
         
         if type_name not in self._registry:
             raise ValueError(f"Unknown component type: '{type_name}'")
         
+        # Normalize data: ensure component_type is set
+        data_normalized = data.copy()
+        data_normalized['component_type'] = type_name
+        
+        # Handle backward compatibility: 'id' -> 'component_id'
+        if 'component_id' not in data_normalized and 'id' in data_normalized:
+            data_normalized['component_id'] = data_normalized['id']
+        
         component_class = self._registry[type_name]
         
         # Use the component's from_dict class method
-        return component_class.from_dict(data)
+        return component_class.from_dict(data_normalized)
     
     def list_component_types(self) -> List[str]:
         """

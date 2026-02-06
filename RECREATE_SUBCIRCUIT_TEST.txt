@@ -1,0 +1,53 @@
+"""
+Instructions to Recreate SubTest1 Circuit
+==========================================
+
+Your SubTest1.rsim file has corrupted wire tab IDs from the ID regeneration bug.
+Now that the bug is fixed, create a fresh test circuit:
+
+STEPS:
+------
+1. Launch the application:
+   > python relay_simulator\app.py
+
+2. Create a new circuit (File > New or Ctrl+N)
+
+3. Place components on the page:
+   - SubCircuit (from toolbox) - place at center
+   - Switch (left side)
+   - Indicator (right side)
+
+4. Connect them:
+   - Wire from Switch → SubCircuit SUB_IN pin
+   - Wire from SubCircuit SUB_OUT pin → Indicator
+
+5. Save the file as SubTest1_fixed.rsim
+
+6. Test the simulation:
+   - Click the simulation play button
+   - Click the switch - the indicator should light up
+   - Click the switch again - the indicator should stay lit (latching behavior)
+
+EXPECTED BEHAVIOR:
+------------------
+- Switch ON → SubCircuit receives signal on SUB_IN
+- SubCircuit internal relay energizes and latches
+- SUB_OUT goes HIGH, lighting the indicator
+- Switch OFF → Indicator stays lit (latch holds)
+
+TROUBLESHOOTING:
+----------------
+If it still doesn't work, check:
+- Are wires properly connected (green dots at connection points)?
+- Is simulation running (play button pressed)?
+- Check the internal pages of the SubCircuit to verify components are there
+
+FILE VALIDATION:
+----------------
+After saving, you can verify the file has correct tab IDs by searching for any of these patterns:
+- Tab IDs should look like: "component_id.pin_name.tab_name"
+- CORRECT: "e83b0191.pin1.tab1"
+- WRONG: "e83b0191.ea5cfb12.3b9845c7"
+
+If you see the wrong pattern, the bug may not be fully fixed.
+"""

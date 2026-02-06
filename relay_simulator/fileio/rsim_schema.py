@@ -285,6 +285,64 @@ PAGE_SCHEMA = {
     }
 }
 
+# Sub-Circuit Schema Definitions
+
+SUB_CIRCUIT_INSTANCE_SCHEMA = {
+    "instance_id": {
+        "type": FieldType.UUID,
+        "required": True,
+        "description": "Unique identifier for this sub-circuit instance"
+    },
+    "parent_page_id": {
+        "type": FieldType.UUID,
+        "required": True,
+        "description": "Page ID where the SubCircuit component is placed"
+    },
+    "component_id": {
+        "type": FieldType.UUID,
+        "required": True,
+        "description": "Component ID of the SubCircuit component"
+    },
+    "page_id_map": {
+        "type": FieldType.OBJECT,
+        "required": True,
+        "description": "Maps template page IDs to instance page IDs",
+        "default": {}
+    }
+}
+
+SUB_CIRCUIT_DEFINITION_SCHEMA = {
+    "sub_circuit_id": {
+        "type": FieldType.UUID,
+        "required": True,
+        "description": "Unique identifier for this sub-circuit definition"
+    },
+    "name": {
+        "type": FieldType.STRING,
+        "required": True,
+        "description": "Name of the sub-circuit (from template file)"
+    },
+    "source_file": {
+        "type": FieldType.STRING,
+        "required": False,
+        "description": "Original .rsub template filename",
+        "default": ""
+    },
+    "pages": {
+        "type": FieldType.ARRAY,
+        "required": True,
+        "description": "Template pages from .rsub file (includes FOOTPRINT)",
+        "item_schema": PAGE_SCHEMA,
+        "min_items": 1
+    },
+    "instances": {
+        "type": FieldType.OBJECT,
+        "required": False,
+        "description": "Map of instance_id to instance data",
+        "default": {}
+    }
+}
+
 DOCUMENT_SCHEMA = {
     "version": {
         "type": FieldType.STRING,
@@ -311,6 +369,12 @@ DOCUMENT_SCHEMA = {
         "description": "Collection of pages in document",
         "item_schema": PAGE_SCHEMA,
         "min_items": 1
+    },
+    "sub_circuits": {
+        "type": FieldType.OBJECT,
+        "required": False,
+        "description": "Embedded sub-circuit definitions (sub_circuit_id -> definition)",
+        "default": {}
     }
 }
 
@@ -325,7 +389,9 @@ def get_schema_for_type(type_name: str) -> Optional[Dict[str, Any]]:
         "junction": JUNCTION_SCHEMA,
         "waypoint": WAYPOINT_SCHEMA,
         "pin": PIN_SCHEMA,
-        "tab": TAB_SCHEMA
+        "tab": TAB_SCHEMA,
+        "sub_circuit_definition": SUB_CIRCUIT_DEFINITION_SCHEMA,
+        "sub_circuit_instance": SUB_CIRCUIT_INSTANCE_SCHEMA
     }
     return schemas.get(type_name.lower())
 

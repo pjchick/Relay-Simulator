@@ -1,10 +1,95 @@
 """
 Document class - Represents a complete .rsim file with multiple pages.
+Supports embedded sub-circuits from .rsub templates.
 """
 
 from typing import Dict, List, Optional
 from core.page import Page
 from core.id_manager import IDManager
+
+
+class SubCircuitInstance:
+    """
+    Represents a single instance of a sub-circuit.
+    
+    Maps template pages to instance-specific page IDs.
+    """
+    
+    def __init__(self, instance_id: str, parent_page_id: str, component_id: str):
+        self.instance_id = instance_id
+        self.parent_page_id = parent_page_id  # Page where SubCircuit component is placed
+        self.component_id = component_id  # SubCircuit component ID
+        self.page_id_map: Dict[str, str] = {}  # template_page_id -> instance_page_id
+    
+    def to_dict(self) -> dict:
+        """Serialize to dict."""
+        return {
+            'instance_id': self.instance_id,
+            'parent_page_id': self.parent_page_id,
+            'component_id': self.component_id,
+            'page_id_map': self.page_id_map
+        }
+    
+    @staticmethod
+    def from_dict(data: dict) -> 'SubCircuitInstance':
+        """Deserialize from dict."""
+        instance = SubCircuitInstance(
+            data['instance_id'],
+            data['parent_page_id'],
+            data['component_id']
+        )
+        instance.page_id_map = data.get('page_id_map', {})
+        return instance
+
+
+class SubCircuitDefinition:
+    """
+    Represents a sub-circuit definition (template) embedded in a document.
+    
+    Contains:
+    - Template pages from .rsub file
+    - All instances of this sub-circuit
+    """
+    
+    def __init__(self, sub_circuit_id: str, name: str):
+        self.sub_circuit_id = sub_circuit_id
+        self.name = name
+        self.source_file: str = ""  # Original .rsub filename
+        self.template_pages: List[Page] = []  # Template pages (including FOOTPRINT)
+        self.instances: Dict[str, SubCircuitInstance] = {}  # instance_id -> instance
+    
+    def to_dict(self) -> dict:
+        """Serialize to dict."""
+        return {
+            'sub_circuit_id': self.sub_circuit_id,
+            'name': self.name,
+            'source_file': self.source_file,
+            'pages': [page.to_dict() for page in self.template_pages],
+            'instances': {
+                inst_id: inst.to_dict()
+                for inst_id, inst in self.instances.items()
+            }
+        }
+    
+    @staticmethod
+    def from_dict(data: dict, component_factory=None) -> 'SubCircuitDefinition':
+        """Deserialize from dict."""
+        sc_def = SubCircuitDefinition(
+            data['sub_circuit_id'],
+            data['name']
+        )
+        sc_def.source_file = data.get('source_file', '')
+        
+        # Load template pages
+        for page_data in data.get('pages', []):
+            page = Page.from_dict(page_data, component_factory)
+            sc_def.template_pages.append(page)
+        
+        # Load instances
+        for inst_id, inst_data in data.get('instances', {}).items():
+            sc_def.instances[inst_id] = SubCircuitInstance.from_dict(inst_data)
+        
+        return sc_def
 
 
 class Document:
@@ -27,6 +112,10 @@ class Document:
         # get_all_pages() and serialization order.
         self.page_order: List[str] = []
         self.id_manager = IDManager()
+        
+        # Sub-circuit definitions and instances
+        # Structure: {sub_circuit_id: SubCircuitDefinition}
+        self.sub_circuits: Dict[str, 'SubCircuitDefinition'] = {}
     
     # === Page Management ===
     
@@ -186,6 +275,53 @@ class Document:
         """
         return len(self.pages)
     
+    # === Sub-Circuit Management ===
+    
+    def add_sub_circuit_definition(self, definition: SubCircuitDefinition) -> bool:
+        """
+        Add a sub-circuit definition to the document.
+        
+        Args:
+            definition: SubCircuitDefinition instance
+            
+        Returns:
+            bool: True if added, False if sub_circuit_id already exists
+        """
+        if definition.sub_circuit_id in self.sub_circuits:
+            return False
+        
+        self.sub_circuits[definition.sub_circuit_id] = definition
+        self.id_manager.register_id(definition.sub_circuit_id)
+        return True
+    
+    def get_sub_circuit_definition(self, sub_circuit_id: str) -> Optional[SubCircuitDefinition]:
+        """
+        Get sub-circuit definition by ID.
+        
+        Args:
+            sub_circuit_id: Sub-circuit ID
+            
+        Returns:
+            SubCircuitDefinition: Definition or None
+        """
+        return self.sub_circuits.get(sub_circuit_id)
+    
+    def remove_sub_circuit_definition(self, sub_circuit_id: str) -> Optional[SubCircuitDefinition]:
+        """
+        Remove a sub-circuit definition (and all its instances).
+        
+        Args:
+            sub_circuit_id: Sub-circuit ID to remove
+            
+        Returns:
+            SubCircuitDefinition: Removed definition or None
+        """
+        definition = self.sub_circuits.pop(sub_circuit_id, None)
+        if definition:
+            self.id_manager.release_id(sub_circuit_id)
+            # TODO: Also remove all SubCircuit components referencing this definition
+        return definition
+    
     # === Component Queries ===
     
     def get_component(self, component_id: str) -> Optional['Component']:
@@ -300,6 +436,12 @@ class Document:
         if self.metadata:
             result['metadata'] = self.metadata.copy()
         
+        # Optional sub_circuits (only include if not empty)
+        if self.sub_circuits:
+            result['sub_circuits'] = {}
+            for sc_id, sc_def in self.sub_circuits.items():
+                result['sub_circuits'][sc_id] = sc_def.to_dict()
+        
         return result
     
     @staticmethod
@@ -335,7 +477,94 @@ class Document:
         # Ensure page_order is consistent even if older code mutated pages.
         doc.reorder_pages(doc.page_order)
         
+        # Load sub-circuits (if present)
+        if 'sub_circuits' in data:
+            for sc_id, sc_data in data['sub_circuits'].items():
+                sc_def = SubCircuitDefinition.from_dict(sc_data, component_factory)
+                doc.sub_circuits[sc_id] = sc_def
+        
+        # Restore SubCircuit component references
+        doc._restore_sub_circuit_references()
+        
         return doc
+    
+    def _restore_sub_circuit_references(self):
+        """
+        Restore document references in SubCircuit components after loading from file.
+        
+        SubCircuit components need access to the document for bridge creation
+        during simulation. This method is called after deserialization to restore
+        the document reference and rebuild the pin-to-link mapping.
+        """
+        for page in self.get_all_pages():
+            for component in page.get_all_components():
+                # Check if this is a SubCircuit component
+                if component.component_type == "SubCircuit":
+                    # Set document reference
+                    component._document = self
+                    
+                    # Rebuild pin-to-link mapping
+                    self._rebuild_pin_to_link_map(component)
+    
+    def _rebuild_pin_to_link_map(self, sub_circuit_component):
+        """
+        Rebuild the pin-to-link mapping for a SubCircuit component.
+        
+        This mapping is needed during simulation to create bridges between
+        external pins and internal FOOTPRINT Link components.
+        
+        Args:
+            sub_circuit_component: SubCircuit component to rebuild mapping for
+        """
+        if not sub_circuit_component.sub_circuit_id or not sub_circuit_component.instance_id:
+            return
+        
+        # Get the sub-circuit definition
+        sc_def = self.sub_circuits.get(sub_circuit_component.sub_circuit_id)
+        if not sc_def:
+            return
+        
+        # Get the instance
+        instance = sc_def.instances.get(sub_circuit_component.instance_id)
+        if not instance:
+            return
+        
+        # Find the FOOTPRINT page in the template
+        footprint_template_page = None
+        for page in sc_def.template_pages:
+            if page.name == "FOOTPRINT":
+                footprint_template_page = page
+                break
+        
+        if not footprint_template_page:
+            return
+        
+        # Get the instance FOOTPRINT page ID
+        instance_footprint_page_id = instance.page_id_map.get(footprint_template_page.page_id)
+        if not instance_footprint_page_id:
+            return
+        
+        # Find the instance FOOTPRINT page
+        instance_footprint_page = self.get_page(instance_footprint_page_id)
+        if not instance_footprint_page:
+            return
+        
+        # Map each pin to its corresponding instance Link
+        # Strategy: Match by link_name
+        for pin_id, pin in sub_circuit_component.pins.items():
+            # Extract link name from pin ID (format: component_id.link_name)
+            pin_parts = pin_id.split('.')
+            if len(pin_parts) < 2:
+                continue
+            
+            link_name = pin_parts[1]  # e.g., "SUB_IN" from "727ab2ad.SUB_IN"
+            
+            # Find the Link component with this link_name in the instance FOOTPRINT page
+            for comp in instance_footprint_page.components.values():
+                if comp.component_type == "Link" and comp.link_name == link_name:
+                    # Found matching Link - store mapping
+                    sub_circuit_component._pin_to_link_map[pin_id] = comp.component_id
+                    break
     
     def __repr__(self):
         return f"Document(pages={len(self.pages)}, components={len(self.get_all_components())})"

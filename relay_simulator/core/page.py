@@ -33,6 +33,11 @@ class Page:
         self.canvas_x: float = 0.0
         self.canvas_y: float = 0.0
         self.canvas_zoom: float = 1.0
+        
+        # Sub-circuit instance tracking
+        self.is_sub_circuit_page: bool = False  # True if this is an instance page
+        self.parent_instance_id: Optional[str] = None  # Instance ID if this is an instance page
+        self.parent_sub_circuit_id: Optional[str] = None  # Sub-circuit definition ID
     
     # === Component Management ===
     
@@ -194,6 +199,14 @@ class Page:
         if self.junctions:
             result['junctions'] = [junction.to_dict() for junction in self.junctions.values()]
         
+        # Include sub-circuit tracking fields if this is an instance page
+        if self.is_sub_circuit_page:
+            result['is_sub_circuit_page'] = True
+            if self.parent_instance_id:
+                result['parent_instance_id'] = self.parent_instance_id
+            if self.parent_sub_circuit_id:
+                result['parent_sub_circuit_id'] = self.parent_sub_circuit_id
+        
         return result
     
     @staticmethod
@@ -219,6 +232,11 @@ class Page:
         page.canvas_x = data.get('canvas_x', 0.0)
         page.canvas_y = data.get('canvas_y', 0.0)
         page.canvas_zoom = data.get('canvas_zoom', 1.0)
+        
+        # Restore sub-circuit tracking fields
+        page.is_sub_circuit_page = data.get('is_sub_circuit_page', False)
+        page.parent_instance_id = data.get('parent_instance_id', None)
+        page.parent_sub_circuit_id = data.get('parent_sub_circuit_id', None)
         
         # Deserialize components (if factory provided)
         if component_factory and 'components' in data:

@@ -115,6 +115,10 @@ class LinkResolver:
         """
         Build a map of link names to component information.
         
+        Includes components from:
+        - Main pages
+        - Sub-circuit instance pages
+        
         Args:
             document: Document to scan for link names
             
@@ -123,7 +127,7 @@ class LinkResolver:
         """
         link_map: Dict[str, List[Tuple[str, str, List[str]]]] = defaultdict(list)
         
-        # Scan all components in all pages
+        # Scan all components in all pages (including instance pages)
         for page in document.get_all_pages():
             for component in page.get_all_components():
                 # Support components that provide per-pin link mappings.
