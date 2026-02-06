@@ -47,9 +47,9 @@ class ExportImageDialog:
 
         # State vars
         self._mode_var = tk.StringVar(value=default_mode)
-        self._bg_var = tk.StringVar(value="black")
-        self._grid_var = tk.BooleanVar(value=True)
-        self._scale_var = tk.StringVar(value="2x" if (default_mode or "").strip().lower() == "full" else "1x")
+        self._bg_var = tk.StringVar(value="white")
+        self._grid_var = tk.BooleanVar(value=False)
+        self._scale_var = tk.StringVar(value="4x")
         self._filename_var = tk.StringVar(value=str(Path(suggested_filename)))
 
         self._preview_photo = None

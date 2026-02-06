@@ -11,14 +11,6 @@ from gui.theme import VSCodeTheme
 class RelayRenderer(ComponentRenderer):
     """
     Renderer for DPDTRelay components.
-    
-    Visual appearance matching the provided design:
-    - Tall narrow rectangular body
-    - Coil section (darker rectangle) at top-left
-    - 7 connection points arranged vertically
-    - "Relay" text label in center
-    - Minimal, clean design
-    
     Supports rotation and flipping transformations.
     """
     
@@ -86,12 +78,27 @@ class RelayRenderer(ComponentRenderer):
         x = cx - width / 2
         y = cy - height / 2
         
-        # Determine fill color based on energized state
+        # Determine fill color based on energized state.
+        # Base body color is user-configurable via component properties.
         is_energized = self.component._is_energized
+        body_base = self.component.properties.get('body_color', '#3a4a5a')
+        if not (isinstance(body_base, str) and len(body_base) == 7 and body_base.startswith('#')):
+            body_base = '#3a4a5a'
+
+        body_fill = body_base
         if is_energized and self.powered:
-            body_fill = '#4a5a6a'  # Lighter blue-gray when energized
-        else:
-            body_fill = '#3a4a5a'  # Dark blue-gray
+            # Legacy behavior: brighten body fill slightly when energized.
+            try:
+                r = int(body_base[1:3], 16)
+                g = int(body_base[3:5], 16)
+                b = int(body_base[5:7], 16)
+                bump = 0x10
+                r = min(255, r + bump)
+                g = min(255, g + bump)
+                b = min(255, b + bump)
+                body_fill = f"#{r:02x}{g:02x}{b:02x}"
+            except Exception:
+                body_fill = body_base
             
         # Outline color (highlight if selected)
         outline_color = '#808080' if not self.selected else '#ffffff'
@@ -177,9 +184,6 @@ class RelayRenderer(ComponentRenderer):
             )
         
         # Draw contact lines showing relay state
-        # Pin positions (from component center):
-        # Left side: COM1 (x=-30, y=-20), COM2 (x=-30, y=+60)
-        # Right side: NO1 (x=+30, y=-40), NC1 (x=+30, y=0), NO2 (x=+30, y=+40), NC2 (x=+30, y=+80)
         
         # Import PinState for checking if pins are HIGH
         from core.state import PinState

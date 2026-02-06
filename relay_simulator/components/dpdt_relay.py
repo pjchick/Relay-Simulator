@@ -102,6 +102,9 @@ class DPDTRelay(Component):
         self.properties["label"] = ""
         self.properties["label_position"] = "top"
         self.properties["color"] = "blue"
+        # GUI-only: relay body/background fill color (hex). Used by RelayRenderer.
+        # Default matches the legacy hardcoded renderer color.
+        self.properties["body_color"] = "#CCCCCC"
         self.properties["flip_horizontal"] = False
         self.properties["flip_vertical"] = False
         
