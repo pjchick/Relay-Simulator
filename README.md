@@ -46,7 +46,7 @@ A Python-based relay logic circuit simulator with a modern tkinter GUI designer 
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/pjchick/Relay-Simulator-III.git
+   git clone https://github.com/pjchick/Relay-Simulator.git
    cd "Relay Simulator"
    ```
 
@@ -65,11 +65,6 @@ A Python-based relay logic circuit simulator with a modern tkinter GUI designer 
    **Windows (Command Prompt):**
    ```cmd
    .venv\Scripts\activate.bat
-   ```
-   
-   **Linux/macOS:**
-   ```bash
-   source .venv/bin/activate
    ```
 
 4. **Install dependencies:**
@@ -193,8 +188,8 @@ This project is licensed under the GNUv3 License- see the LICENSE file for detai
 - **Repository**: [https://github.com/pjchick/Relay-Simulator](https://github.com/pjchick/Relay-Simulator)
 - **Issues**: [https://github.com/pjchick/Relay-Simulator/issues](https://github.com/pjchick/Relay-Simulator/issues)
 
-**website**: https://chickfamily.net
-**mail**: peter@chickfamily.net
+- **website**: https://chickfamily.net
+- **mail**: peter@chickfamily.net
 ---
 
 **Version**: 0.1.0  
