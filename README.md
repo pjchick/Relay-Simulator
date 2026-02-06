@@ -194,6 +194,7 @@ This project is licensed under the GNUv3 License- see the LICENSE file for detai
 - **Issues**: [https://github.com/pjchick/Relay-Simulator/issues](https://github.com/pjchick/Relay-Simulator/issues)
 
 **website**: https://chickfamily.net
+**mail**: peter@chickfamily.net
 ---
 
 **Version**: 0.1.0  
