@@ -270,6 +270,24 @@ LOGIC_ANALYSER_CONFIG_SCHEMA = {
         "description": "List of channels in this configuration",
         "item_schema": LOGIC_ANALYSER_CHANNEL_SCHEMA,
         "default": []
+    },
+    "trigger_enabled": {
+        "type": FieldType.BOOLEAN,
+        "required": False,
+        "description": "Whether trigger mode is enabled",
+        "default": False
+    },
+    "trigger_link_name": {
+        "type": FieldType.STRING,
+        "required": False,
+        "description": "Link name to monitor for trigger",
+        "default": ""
+    },
+    "trigger_mode": {
+        "type": FieldType.STRING,
+        "required": False,
+        "description": "Trigger mode: rising, falling, or change",
+        "default": "rising"
     }
 }
 

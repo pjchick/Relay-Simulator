@@ -262,7 +262,10 @@ class Document:
         self.logic_analyser_configs[config_id] = {
             'config_id': config_id,
             'name': name,
-            'channels': channels or []
+            'channels': channels or [],
+            'trigger_enabled': False,
+            'trigger_link_name': '',
+            'trigger_mode': 'rising'
         }
         self.id_manager.register_id(config_id)
         return True
@@ -305,7 +308,9 @@ class Document:
         """
         return list(self.logic_analyser_configs.values())
     
-    def update_logic_analyser_config(self, config_id: str, name: str = None, channels: List[dict] = None) -> bool:
+    def update_logic_analyser_config(self, config_id: str, name: str = None, channels: List[dict] = None,
+                                     trigger_enabled: bool = None, trigger_link_name: str = None,
+                                     trigger_mode: str = None) -> bool:
         """
         Update a logic analyser configuration.
         
@@ -313,6 +318,9 @@ class Document:
             config_id: Configuration ID
             name: New name (optional)
             channels: New channels list (optional)
+            trigger_enabled: Whether trigger is enabled (optional)
+            trigger_link_name: Link name for trigger (optional)
+            trigger_mode: Trigger mode - rising, falling, or change (optional)
             
         Returns:
             bool: True if updated, False if not found
@@ -325,6 +333,12 @@ class Document:
             config['name'] = name
         if channels is not None:
             config['channels'] = channels
+        if trigger_enabled is not None:
+            config['trigger_enabled'] = trigger_enabled
+        if trigger_link_name is not None:
+            config['trigger_link_name'] = trigger_link_name
+        if trigger_mode is not None:
+            config['trigger_mode'] = trigger_mode
         
         return True
     

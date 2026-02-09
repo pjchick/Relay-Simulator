@@ -187005,7 +187005,10 @@
           "link_name": "S5'",
           "color": "#4ec9b0"
         }
-      ]
+      ],
+      "trigger_enabled": true,
+      "trigger_link_name": "S1'",
+      "trigger_mode": "rising"
     },
     {
       "config_id": "0777f1c1",

@@ -72,13 +72,20 @@ class LogicAnalyserWindow:
         self.cursor_x: Optional[int] = None  # X position of cursor in canvas coordinates
         self.cursor_visible = False  # Whether cursor is shown
         
+        # Trigger configuration
+        self.trigger_enabled = False  # Whether trigger mode is enabled
+        self.trigger_link_name = ""  # Link name to monitor for trigger
+        self.trigger_mode = "rising"  # "rising", "falling", or "change"
+        self.waiting_for_trigger = False  # True when armed and waiting for trigger
+        self.last_trigger_state: Optional[PinState] = None  # Last state of trigger signal
+        
         # Create modeless dialog window
         self.window = tk.Toplevel(parent)
         self.window.title("Logic Analyser")
         self.window.geometry("900x600")
         
-        # Make it stay on top initially but allow user to switch
-        self.window.transient(parent)
+        # Ensure window is resizable and has native maximize/minimize buttons
+        self.window.resizable(True, True)
         
         # Apply theme
         self.window.configure(bg=VSCodeTheme.BG_PRIMARY)
@@ -157,6 +164,15 @@ class LogicAnalyserWindow:
             **button_style
         )
         self.clear_button.pack(side=tk.LEFT, padx=5, pady=4)
+        
+        # Trigger button
+        self.trigger_button = tk.Button(
+            toolbar,
+            text="⚡ Trigger",
+            command=self._on_trigger,
+            **button_style
+        )
+        self.trigger_button.pack(side=tk.LEFT, padx=5, pady=4)
         
         # Separator
         separator = tk.Frame(toolbar, bg=VSCodeTheme.BORDER_DEFAULT, width=2)
@@ -1021,12 +1037,22 @@ class LogicAnalyserWindow:
         
         # Start capturing
         self.is_capturing = True
-        self.start_time = time.time()
         self.sample_count = 0
         self.start_button.config(state=tk.DISABLED)
         self.stop_button.config(state=tk.NORMAL)
         self.clear_button.config(state=tk.DISABLED)  # Disable clear during capture
-        self.status_label.config(text="Capturing...", fg=VSCodeTheme.ACCENT_GREEN)
+        self.trigger_button.config(state=tk.DISABLED)  # Disable trigger during capture
+        
+        # Check if trigger mode is enabled
+        if self.trigger_enabled and self.trigger_link_name:
+            self.waiting_for_trigger = True
+            self.last_trigger_state = None
+            self.start_time = 0.0  # Don't start timer until trigger is detected
+            self.status_label.config(text="Waiting for trigger...", fg=VSCodeTheme.ACCENT_ORANGE)
+        else:
+            self.waiting_for_trigger = False
+            self.start_time = time.time()  # Start timer immediately
+            self.status_label.config(text="Capturing...", fg=VSCodeTheme.ACCENT_GREEN)
         
         # Register callback with simulation engine to capture on stability
         if self.main_window.simulation_engine:
@@ -1035,8 +1061,9 @@ class LogicAnalyserWindow:
         # Start display refresh timer to keep waveforms scrolling
         self._start_display_timer()
         
-        # Capture initial state at time 0
-        self._capture_sample(0.0)
+        # Capture initial state at time 0 (only if not waiting for trigger)
+        if not self.waiting_for_trigger:
+            self._capture_sample(0.0)
     
     def _on_stop(self):
         """Handle Stop button click."""
@@ -1053,7 +1080,9 @@ class LogicAnalyserWindow:
         # Update UI
         self.start_button.config(state=tk.NORMAL)
         self.stop_button.config(state=tk.DISABLED)
-        self.clear_button.config(state=tk.NORMAL)  # Re-enable clear
+        self.clear_button.config(state=tk.NORMAL)
+        self.trigger_button.config(state=tk.NORMAL)
+        self.waiting_for_trigger = False  # Re-enable clear
         
         # Display total trace duration
         if self.channels and self.channels[0].trace_data:
@@ -1082,6 +1111,174 @@ class LogicAnalyserWindow:
         self.sample_count = 0
         self._draw_waveforms()
         self.status_label.config(text="Cleared", fg=VSCodeTheme.FG_SECONDARY)
+    
+    def _on_trigger(self):
+        """Handle Trigger button click - open trigger configuration dialog."""
+        # Create trigger configuration dialog
+        dialog = tk.Toplevel(self.window)
+        dialog.title("Trigger Configuration")
+        dialog.geometry("400x350")
+        dialog.configure(bg=VSCodeTheme.BG_PRIMARY)
+        dialog.transient(self.window)
+        dialog.grab_set()
+        
+        # Center dialog on parent window
+        dialog.update_idletasks()
+        x = self.window.winfo_x() + (self.window.winfo_width() // 2) - (dialog.winfo_width() // 2)
+        y = self.window.winfo_y() + (self.window.winfo_height() // 2) - (dialog.winfo_height() // 2)
+        dialog.geometry(f"+{x}+{y}")
+        
+        # Main frame
+        main_frame = tk.Frame(dialog, bg=VSCodeTheme.BG_PRIMARY, padx=20, pady=20)
+        main_frame.pack(fill=tk.BOTH, expand=True)
+        
+        # Enable/Disable trigger checkbox
+        trigger_var = tk.BooleanVar(value=self.trigger_enabled)
+        enable_check = tk.Checkbutton(
+            main_frame,
+            text="Enable Trigger",
+            variable=trigger_var,
+            bg=VSCodeTheme.BG_PRIMARY,
+            fg=VSCodeTheme.FG_PRIMARY,
+            selectcolor=VSCodeTheme.BG_TERTIARY,
+            activebackground=VSCodeTheme.BG_PRIMARY,
+            activeforeground=VSCodeTheme.FG_PRIMARY,
+            font=(VSCodeTheme.FONT_FAMILY_UI, VSCodeTheme.FONT_SIZE_NORMAL, "bold")
+        )
+        enable_check.pack(anchor=tk.W, pady=(0, 15))
+        
+        # Link name section
+        link_frame = tk.Frame(main_frame, bg=VSCodeTheme.BG_PRIMARY)
+        link_frame.pack(fill=tk.X, pady=(0, 15))
+        
+        link_label = tk.Label(
+            link_frame,
+            text="Trigger Link Name:",
+            bg=VSCodeTheme.BG_PRIMARY,
+            fg=VSCodeTheme.FG_SECONDARY,
+            font=(VSCodeTheme.FONT_FAMILY_UI, VSCodeTheme.FONT_SIZE_NORMAL)
+        )
+        link_label.pack(anchor=tk.W, pady=(0, 5))
+        
+        link_entry = tk.Entry(
+            link_frame,
+            bg=VSCodeTheme.BG_TERTIARY,
+            fg=VSCodeTheme.FG_PRIMARY,
+            font=(VSCodeTheme.FONT_FAMILY_UI, VSCodeTheme.FONT_SIZE_NORMAL),
+            relief=tk.FLAT,
+            insertbackground=VSCodeTheme.FG_PRIMARY
+        )
+        link_entry.pack(fill=tk.X)
+        link_entry.insert(0, self.trigger_link_name)
+        
+        # Trigger mode section
+        mode_frame = tk.Frame(main_frame, bg=VSCodeTheme.BG_PRIMARY)
+        mode_frame.pack(fill=tk.X, pady=(0, 20))
+        
+        mode_label = tk.Label(
+            mode_frame,
+            text="Trigger Condition:",
+            bg=VSCodeTheme.BG_PRIMARY,
+            fg=VSCodeTheme.FG_SECONDARY,
+            font=(VSCodeTheme.FONT_FAMILY_UI, VSCodeTheme.FONT_SIZE_NORMAL)
+        )
+        mode_label.pack(anchor=tk.W, pady=(0, 5))
+        
+        mode_var = tk.StringVar(value=self.trigger_mode)
+        
+        # Radio buttons for trigger modes
+        rising_radio = tk.Radiobutton(
+            mode_frame,
+            text="Rising Edge (FLOAT → HIGH)",
+            variable=mode_var,
+            value="rising",
+            bg=VSCodeTheme.BG_PRIMARY,
+            fg=VSCodeTheme.FG_PRIMARY,
+            selectcolor=VSCodeTheme.BG_TERTIARY,
+            activebackground=VSCodeTheme.BG_PRIMARY,
+            activeforeground=VSCodeTheme.FG_PRIMARY,
+            font=(VSCodeTheme.FONT_FAMILY_UI, VSCodeTheme.FONT_SIZE_NORMAL)
+        )
+        rising_radio.pack(anchor=tk.W, pady=2)
+        
+        falling_radio = tk.Radiobutton(
+            mode_frame,
+            text="Falling Edge (HIGH → FLOAT)",
+            variable=mode_var,
+            value="falling",
+            bg=VSCodeTheme.BG_PRIMARY,
+            fg=VSCodeTheme.FG_PRIMARY,
+            selectcolor=VSCodeTheme.BG_TERTIARY,
+            activebackground=VSCodeTheme.BG_PRIMARY,
+            activeforeground=VSCodeTheme.FG_PRIMARY,
+            font=(VSCodeTheme.FONT_FAMILY_UI, VSCodeTheme.FONT_SIZE_NORMAL)
+        )
+        falling_radio.pack(anchor=tk.W, pady=2)
+        
+        change_radio = tk.Radiobutton(
+            mode_frame,
+            text="Any State Change",
+            variable=mode_var,
+            value="change",
+            bg=VSCodeTheme.BG_PRIMARY,
+            fg=VSCodeTheme.FG_PRIMARY,
+            selectcolor=VSCodeTheme.BG_TERTIARY,
+            activebackground=VSCodeTheme.BG_PRIMARY,
+            activeforeground=VSCodeTheme.FG_PRIMARY,
+            font=(VSCodeTheme.FONT_FAMILY_UI, VSCodeTheme.FONT_SIZE_NORMAL)
+        )
+        change_radio.pack(anchor=tk.W, pady=2)
+        
+        # Buttons
+        button_frame = tk.Frame(main_frame, bg=VSCodeTheme.BG_PRIMARY)
+        button_frame.pack(fill=tk.X, pady=(15, 0))
+        
+        def on_ok():
+            self.trigger_enabled = trigger_var.get()
+            self.trigger_link_name = link_entry.get().strip()
+            self.trigger_mode = mode_var.get()
+            
+            # Update trigger button appearance to show if enabled
+            if self.trigger_enabled and self.trigger_link_name:
+                self.trigger_button.config(bg=VSCodeTheme.ACCENT_BLUE)
+            else:
+                self.trigger_button.config(bg=VSCodeTheme.BUTTON_BG)
+            
+            # Save trigger settings to current configuration
+            self._save_current_configuration()
+            
+            dialog.destroy()
+        
+        def on_cancel():
+            dialog.destroy()
+        
+        ok_button = tk.Button(
+            button_frame,
+            text="OK",
+            command=on_ok,
+            bg=VSCodeTheme.BUTTON_BG,
+            fg=VSCodeTheme.FG_PRIMARY,
+            font=(VSCodeTheme.FONT_FAMILY_UI, VSCodeTheme.FONT_SIZE_NORMAL),
+            relief=tk.FLAT,
+            cursor='hand2',
+            padx=20,
+            pady=5
+        )
+        ok_button.pack(side=tk.RIGHT, padx=5)
+        
+        cancel_button = tk.Button(
+            button_frame,
+            text="Cancel",
+            command=on_cancel,
+            bg=VSCodeTheme.BUTTON_BG,
+            fg=VSCodeTheme.FG_PRIMARY,
+            font=(VSCodeTheme.FONT_FAMILY_UI, VSCodeTheme.FONT_SIZE_NORMAL),
+            relief=tk.FLAT,
+            cursor='hand2',
+            padx=20,
+            pady=5
+        )
+        cancel_button.pack(side=tk.RIGHT, padx=5)
     
     def _on_simulation_stable(self):
         """Callback when simulation reaches stable state - capture a sample."""
@@ -1114,6 +1311,39 @@ class LogicAnalyserWindow:
         if not engine:
             return
         
+        # If waiting for trigger, check trigger condition first
+        if self.waiting_for_trigger:
+            trigger_state = self._get_link_state(self.trigger_link_name, tab, engine)
+            
+            # Check if trigger condition is met
+            trigger_detected = False
+            if self.last_trigger_state is not None:
+                if self.trigger_mode == "rising":
+                    # Rising edge: FLOAT → HIGH
+                    if self.last_trigger_state == PinState.FLOAT and trigger_state == PinState.HIGH:
+                        trigger_detected = True
+                elif self.trigger_mode == "falling":
+                    # Falling edge: HIGH → FLOAT
+                    if self.last_trigger_state == PinState.HIGH and trigger_state == PinState.FLOAT:
+                        trigger_detected = True
+                elif self.trigger_mode == "change":
+                    # Any state change
+                    if self.last_trigger_state != trigger_state:
+                        trigger_detected = True
+            
+            self.last_trigger_state = trigger_state
+            
+            if trigger_detected:
+                # Trigger condition met - start recording
+                self.waiting_for_trigger = False
+                self.start_time = time.time()  # Reset start time to trigger moment
+                self.status_label.config(text="Triggered! Capturing...", fg=VSCodeTheme.ACCENT_GREEN)
+                # Start with timestamp 0 from the trigger point
+                timestamp = 0.0
+            else:
+                # Still waiting for trigger - don't record samples
+                return
+        
         # Capture state for each channel
         for channel in self.channels:
             if not channel.link_name:
@@ -1121,41 +1351,8 @@ class LogicAnalyserWindow:
                 channel.trace_data.append((timestamp, PinState.FLOAT))
                 continue
             
-            # Find component with matching link_name across all pages
-            # (can be any component type: Clock, Link, Indicator, etc.)
-            target_component = None
-            for page in tab.document.pages.values():
-                for component in page.components.values():
-                    if (hasattr(component, 'link_name') and 
-                        component.link_name == channel.link_name):
-                        target_component = component
-                        break
-                if target_component:
-                    break
-            
-            # Get state from the VNET that the component is connected to
-            state = PinState.FLOAT  # Default to FLOAT
-            
-            if target_component:
-                # Get a tab from the component to find its VNET
-                tab_id = None
-                
-                # Try to get a tab from the component's pin(s)
-                if hasattr(target_component, '_pin') and target_component._pin:
-                    # Single pin components (Clock, Link, Indicator, etc.)
-                    if hasattr(target_component._pin, 'tabs') and target_component._pin.tabs:
-                        tab_id = next(iter(target_component._pin.tabs.keys()), None)
-                elif hasattr(target_component, 'pins') and target_component.pins:
-                    # Multi-pin components - use first pin's first tab
-                    first_pin = next(iter(target_component.pins.values()), None)
-                    if first_pin and hasattr(first_pin, 'tabs') and first_pin.tabs:
-                        tab_id = next(iter(first_pin.tabs.keys()), None)
-                
-                # If we found a tab, get the VNET state
-                if tab_id and engine.vnet_manager:
-                    vnet = engine.vnet_manager.get_vnet_for_tab(tab_id)
-                    if vnet:
-                        state = vnet.state
+            # Get state from the VNET
+            state = self._get_link_state(channel.link_name, tab, engine)
             
             # Append trace data
             channel.trace_data.append((timestamp, state))
@@ -1168,6 +1365,57 @@ class LogicAnalyserWindow:
             text=f"Capturing... {self.sample_count} samples ({timestamp:.2f}s)",
             fg=VSCodeTheme.ACCENT_GREEN
         )
+    
+    def _get_link_state(self, link_name: str, tab, engine) -> PinState:
+        """Get the current state of a link by name.
+        
+        Args:
+            link_name: Name of the link to find
+            tab: Active document tab
+            engine: Simulation engine
+            
+        Returns:
+            Current PinState of the link (HIGH or FLOAT)
+        """
+        if not link_name or not tab or not engine:
+            return PinState.FLOAT
+        
+        # Find component with matching link_name across all pages
+        target_component = None
+        for page in tab.document.pages.values():
+            for component in page.components.values():
+                if (hasattr(component, 'link_name') and 
+                    component.link_name == link_name):
+                    target_component = component
+                    break
+            if target_component:
+                break
+        
+        # Get state from the VNET that the component is connected to
+        state = PinState.FLOAT  # Default to FLOAT
+        
+        if target_component:
+            # Get a tab from the component to find its VNET
+            tab_id = None
+            
+            # Try to get a tab from the component's pin(s)
+            if hasattr(target_component, '_pin') and target_component._pin:
+                # Single pin components (Clock, Link, Indicator, etc.)
+                if hasattr(target_component._pin, 'tabs') and target_component._pin.tabs:
+                    tab_id = next(iter(target_component._pin.tabs.keys()), None)
+            elif hasattr(target_component, 'pins') and target_component.pins:
+                # Multi-pin components - use first pin's first tab
+                first_pin = next(iter(target_component.pins.values()), None)
+                if first_pin and hasattr(first_pin, 'tabs') and first_pin.tabs:
+                    tab_id = next(iter(first_pin.tabs.keys()), None)
+            
+            # If we found a tab, get the VNET state
+            if tab_id and engine.vnet_manager:
+                vnet = engine.vnet_manager.get_vnet_for_tab(tab_id)
+                if vnet:
+                    state = vnet.state
+        
+        return state
     
     def _start_display_timer(self):
         """Start the display refresh timer."""
@@ -1266,11 +1514,14 @@ class LogicAnalyserWindow:
                 'color': channel.color
             })
         
-        # Update configuration in document
+        # Update configuration in document (including trigger settings)
         tab.document.update_logic_analyser_config(
             self.current_config_id,
             name=self.current_config_name,
-            channels=channels_data
+            channels=channels_data,
+            trigger_enabled=self.trigger_enabled,
+            trigger_link_name=self.trigger_link_name,
+            trigger_mode=self.trigger_mode
         )
     
     def _apply_configuration(self, config: dict):
@@ -1286,6 +1537,17 @@ class LogicAnalyserWindow:
             )
             channel.color = channel_data.get('color', VSCodeTheme.ACCENT_GREEN)
             self.channels.append(channel)
+        
+        # Load trigger settings from config
+        self.trigger_enabled = config.get('trigger_enabled', False)
+        self.trigger_link_name = config.get('trigger_link_name', '')
+        self.trigger_mode = config.get('trigger_mode', 'rising')
+        
+        # Update trigger button appearance
+        if self.trigger_enabled and self.trigger_link_name:
+            self.trigger_button.config(bg=VSCodeTheme.ACCENT_BLUE)
+        else:
+            self.trigger_button.config(bg=VSCodeTheme.BUTTON_BG)
         
         # If no channels, add one default
         if not self.channels:
@@ -1366,6 +1628,12 @@ class LogicAnalyserWindow:
         # Clear channels and add one default
         self.channels.clear()
         self._add_channel()
+        
+        # Reset trigger settings to defaults for new config
+        self.trigger_enabled = False
+        self.trigger_link_name = ''
+        self.trigger_mode = 'rising'
+        self.trigger_button.config(bg=VSCodeTheme.BUTTON_BG)
         
         self._refresh_config_dropdown()
         self._refresh_channel_list()
