@@ -355,62 +355,6 @@
             "label": "",
             "pin_position": "bottom"
           }
-        },
-        {
-          "component_id": "eb2db0f1",
-          "component_type": "Link",
-          "position": {
-            "x": 420,
-            "y": 240
-          },
-          "pins": [
-            {
-              "pin_id": "eb2db0f1.pin1",
-              "tabs": [
-                {
-                  "tab_id": "eb2db0f1.pin1.tab1",
-                  "position": {
-                    "x": 10,
-                    "y": 0
-                  }
-                }
-              ]
-            }
-          ],
-          "rotation": 180,
-          "link_name": "LINK_NO",
-          "properties": {
-            "label": "LINK_NO",
-            "label_position": "right"
-          }
-        },
-        {
-          "component_id": "504cde88",
-          "component_type": "Link",
-          "position": {
-            "x": 420.0,
-            "y": 280.0
-          },
-          "pins": [
-            {
-              "pin_id": "504cde88.pin1",
-              "tabs": [
-                {
-                  "tab_id": "504cde88.pin1.tab1",
-                  "position": {
-                    "x": 10,
-                    "y": 0
-                  }
-                }
-              ]
-            }
-          ],
-          "rotation": 180,
-          "link_name": "LINK_NC",
-          "properties": {
-            "label": "LINK_NC",
-            "label_position": "right"
-          }
         }
       ],
       "wires": [
@@ -438,16 +382,6 @@
           "wire_id": "8bfd4750",
           "start_tab_id": "edd8f174.pin1.tab1",
           "end_tab_id": "8ca3f682.COM2.tab0"
-        },
-        {
-          "wire_id": "2dbab054",
-          "start_tab_id": "eb2db0f1.pin1.tab1",
-          "end_tab_id": "8ca3f682.NO2.tab0"
-        },
-        {
-          "wire_id": "a5e87656",
-          "start_tab_id": "504cde88.pin1.tab1",
-          "end_tab_id": "8ca3f682.NC2.tab0"
         }
       ]
     }
@@ -476,6 +410,22 @@
         },
         {
           "name": "Channel 3",
+          "link_name": "NC",
+          "color": "#4ec9b0"
+        }
+      ]
+    },
+    {
+      "config_id": "0d620f7f",
+      "name": "Clock and NC",
+      "channels": [
+        {
+          "name": "Channel 1",
+          "link_name": "Clock",
+          "color": "#4ec9b0"
+        },
+        {
+          "name": "Channel 2",
           "link_name": "NC",
           "color": "#4ec9b0"
         }
