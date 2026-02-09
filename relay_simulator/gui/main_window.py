@@ -1126,7 +1126,24 @@ class MainWindow:
             + len(self.selected_waypoints)
         )
         if total_selected > 0:
-            self.properties_panel.set_component(None)
+            # Update properties panel for selected components
+            if len(self.selected_components) > 0:
+                selected_comps = [page.components.get(cid) for cid in self.selected_components]
+                selected_comps = [c for c in selected_comps if c]  # Filter out None values
+                
+                if selected_comps:
+                    component_types = set(type(c) for c in selected_comps)
+                    if len(component_types) == 1:
+                        # All same type - enable multi-component editing
+                        self.properties_panel.set_components(selected_comps)
+                    else:
+                        # Mixed types - clear properties panel
+                        self.properties_panel.set_component(None)
+                else:
+                    self.properties_panel.set_component(None)
+            else:
+                self.properties_panel.set_component(None)
+            
             self.menu_bar.enable_edit_menu(has_selection=True)
             self.set_status(
                 f"Selected all: {len(self.selected_components)} component(s), {len(self.selected_wires)} wire(s), "
@@ -4995,9 +5012,31 @@ class MainWindow:
                 self.menu_bar.enable_edit_menu(has_selection=True)
                 self.set_status(f"Selected {clicked_component.__class__.__name__} ({clicked_component.component_id})")
             elif len(self.selected_components) > 1:
-                self.properties_panel.set_component(None)
+                # Get all selected component objects
+                page = self._get_active_file_page()
+                if page:
+                    selected_comps = [page.components.get(cid) for cid in self.selected_components]
+                    selected_comps = [c for c in selected_comps if c]  # Filter out None values
+                    
+                    # Check if all components are the same type
+                    if selected_comps:
+                        component_types = set(type(c) for c in selected_comps)
+                        if len(component_types) == 1:
+                            # All same type - enable multi-component editing
+                            self.properties_panel.set_components(selected_comps)
+                            comp_type = selected_comps[0].__class__.__name__
+                            self.set_status(f"Selected {len(self.selected_components)} {comp_type}s")
+                        else:
+                            # Mixed types - clear properties panel
+                            self.properties_panel.set_component(None)
+                            self.set_status(f"Selected {len(self.selected_components)} components (mixed types)")
+                    else:
+                        self.properties_panel.set_component(None)
+                        self.set_status(f"Selected {len(self.selected_components)} components")
+                else:
+                    self.properties_panel.set_component(None)
+                    self.set_status(f"Selected {len(self.selected_components)} components")
                 self.menu_bar.enable_edit_menu(has_selection=True)
-                self.set_status(f"Selected {len(self.selected_components)} components")
             else:
                 self.properties_panel.set_component(None)
                 self.menu_bar.enable_edit_menu(has_selection=False)
@@ -5278,6 +5317,21 @@ class MainWindow:
         )
         if total_selected > 0:
             self.menu_bar.enable_edit_menu(has_selection=True)
+            
+            # Update properties panel for selected components
+            if len(self.selected_components) > 0:
+                selected_comps = [page.components.get(cid) for cid in self.selected_components]
+                selected_comps = [c for c in selected_comps if c]  # Filter out None values
+                
+                if selected_comps:
+                    component_types = set(type(c) for c in selected_comps)
+                    if len(component_types) == 1:
+                        # All same type - enable multi-component editing
+                        self.properties_panel.set_components(selected_comps)
+                    else:
+                        # Mixed types - clear properties panel
+                        self.properties_panel.set_component(None)
+            
             self.set_status(
                 f"Selected {len(self.selected_components)} component(s), {len(self.selected_wires)} wire(s), "
                 f"{len(self.selected_junctions)} junction(s), {len(self.selected_waypoints)} waypoint(s)"

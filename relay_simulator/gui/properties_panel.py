@@ -1033,7 +1033,8 @@ class PropertiesPanel:
             parent: Parent widget
         """
         self.parent = parent
-        self.current_component = None
+        self.current_component = None  # For backward compatibility
+        self.current_components: List = []  # Track multiple components for batch editing
         self.property_editors: Dict[str, PropertyEditor] = {}
         self._active_definition_by_key: Dict[str, Dict[str, Any]] = {}
         
@@ -1111,20 +1112,53 @@ class PropertiesPanel:
         )
         message.pack(pady=20)
     
+    def _show_mixed_selection(self):
+        """Show message when multiple components of different types are selected."""
+        for section in self.sections.values():
+            section.clear()
+        message = tk.Label(
+            self.sections['Component'].content,
+            text=f"Multiple component types selected ({len(self.current_components)} items)",
+            bg=VSCodeTheme.BG_PRIMARY,
+            fg=VSCodeTheme.FG_SECONDARY,
+            font=("Segoe UI", 9, "italic")
+        )
+        message.pack(pady=20)
+    
     def set_component(self, component) -> None:
         """
-        Display properties for a component.
+        Display properties for a single component.
         
         Args:
-            component: Component to display properties for
+            component: Component to display properties for (None to clear)
         """
-        self.current_component = component
+        if component:
+            self.set_components([component])
+        else:
+            self.set_components([])
+    
+    def set_components(self, components: List) -> None:
+        """
+        Display properties for multiple components.
+        If all components are the same type, shows shared properties for batch editing.
+        
+        Args:
+            components: List of components to display properties for
+        """
+        self.current_components = components
+        self.current_component = components[0] if len(components) == 1 else None
         self.property_editors.clear()
         for section in self.sections.values():
             section.clear()
         
-        if not component:
+        if not components:
             self._show_no_selection()
+            return
+        
+        # Check if all components are the same type
+        component_types = set(type(c) for c in components)
+        if len(component_types) > 1:
+            self._show_mixed_selection()
             return
         
         self._add_component_header_and_id()
@@ -1132,32 +1166,38 @@ class PropertiesPanel:
     
     def _add_component_header_and_id(self):
         """Add the component header (with type) and ID field."""
-        if not self.current_component:
+        if not self.current_components:
             return
 
         # Update header with component type
         try:
-            comp_type_name = self.current_component.__class__.__name__
-            self.sections['Component'].title_label.config(
-                text=f"Component — {comp_type_name}"
-            )
+            comp_type_name = self.current_components[0].__class__.__name__
+            if len(self.current_components) == 1:
+                self.sections['Component'].title_label.config(
+                    text=f"Component — {comp_type_name}"
+                )
+            else:
+                self.sections['Component'].title_label.config(
+                    text=f"Multiple Components — {comp_type_name} ({len(self.current_components)} selected)"
+                )
         except Exception:
             pass
 
-        # ID (editable with validation) — single line: label left, value right
-        id_row = self.sections['Component'].add_property_row("ID:")
-        id_editor = TextPropertyEditor(id_row)
-        id_editor.set_value(self.current_component.component_id)
-        id_editor.set_on_change(lambda v: self._update_component_id(v))
-        id_editor.widget.pack(side=tk.LEFT, fill=tk.X, expand=True)
-        self.property_editors['id'] = id_editor
+        # ID field - only show for single component selection
+        if len(self.current_components) == 1:
+            id_row = self.sections['Component'].add_property_row("ID:")
+            id_editor = TextPropertyEditor(id_row)
+            id_editor.set_value(self.current_components[0].component_id)
+            id_editor.set_on_change(lambda v: self._update_component_id(v))
+            id_editor.widget.pack(side=tk.LEFT, fill=tk.X, expand=True)
+            self.property_editors['id'] = id_editor
 
     def _render_schema_properties(self):
         """Render properties based on the registry for the current component type."""
-        if not self.current_component:
+        if not self.current_components:
             return
 
-        comp_type = self.current_component.__class__.__name__
+        comp_type = self.current_components[0].__class__.__name__
         
         # Text and Box components don't need label fields
         if comp_type in ('Text', 'Box'):
@@ -1186,8 +1226,8 @@ class PropertiesPanel:
             # Store editor for future reference
             self.property_editors[definition['key']] = editor
 
-        # Add custom controls for Memory component
-        if comp_type == 'Memory':
+        # Add custom controls for Memory component (only for single selection)
+        if comp_type == 'Memory' and len(self.current_components) == 1:
             self._add_memory_actions()
 
     def _create_editor_for_definition(self, parent: tk.Widget, definition: Dict[str, Any]) -> Optional[PropertyEditor]:
@@ -1243,18 +1283,24 @@ class PropertiesPanel:
         return editor
     
     def _get_property_value(self, key: str, target: str, default: Any):
-        if not self.current_component:
+        """Get property value from the first component (for display)."""
+        if not self.current_components:
             return default
+        
+        # Use first component's value
+        component = self.current_components[0]
+        
         if target == 'attr':
-            return getattr(self.current_component, key, default)
+            return getattr(component, key, default)
         # default to properties dict
-        props = getattr(self.current_component, 'properties', None)
+        props = getattr(component, 'properties', None)
         if isinstance(props, dict):
             return props.get(key, default)
         return default
 
     def _set_property_value(self, key: str, target: str, value: Any, coerce_fn=None):
-        if not self.current_component:
+        """Set property value on all selected components."""
+        if not self.current_components:
             return
 
         # Allow the main window to snapshot state before a mutation.
@@ -1273,29 +1319,31 @@ class PropertiesPanel:
         if isinstance(value, str) and key in ('color', 'label_position'):
             value = value.strip().lower()
 
-        if target == 'attr':
-            setattr(self.current_component, key, value)
-        else:
-            if not hasattr(self.current_component, 'properties') or not isinstance(self.current_component.properties, dict):
-                self.current_component.properties = {}
-
-            # Special-case: changing a component's "color" should also update
-            # its derived on/off shades when the component supports presets.
-            if key == 'color' and hasattr(self.current_component, 'set_color') and callable(getattr(self.current_component, 'set_color')):
-                try:
-                    self.current_component.set_color(str(value))
-                except Exception:
-                    self.current_component.properties[key] = value
+        # Apply property change to ALL selected components
+        for component in self.current_components:
+            if target == 'attr':
+                setattr(component, key, value)
             else:
-                self.current_component.properties[key] = value
+                if not hasattr(component, 'properties') or not isinstance(component.properties, dict):
+                    component.properties = {}
 
-        # Optional hook for components that need to respond to property changes
-        # (e.g., dynamic pin layouts).
-        if hasattr(self.current_component, 'on_property_changed') and callable(getattr(self.current_component, 'on_property_changed')):
-            try:
-                self.current_component.on_property_changed(key)
-            except Exception:
-                pass
+                # Special-case: changing a component's "color" should also update
+                # its derived on/off shades when the component supports presets.
+                if key == 'color' and hasattr(component, 'set_color') and callable(getattr(component, 'set_color')):
+                    try:
+                        component.set_color(str(value))
+                    except Exception:
+                        component.properties[key] = value
+                else:
+                    component.properties[key] = value
+
+            # Optional hook for components that need to respond to property changes
+            # (e.g., dynamic pin layouts).
+            if hasattr(component, 'on_property_changed') and callable(getattr(component, 'on_property_changed')):
+                try:
+                    component.on_property_changed(key)
+                except Exception:
+                    pass
 
         self._refresh_readonly_fields()
 
@@ -1303,7 +1351,7 @@ class PropertiesPanel:
 
     def _refresh_readonly_fields(self) -> None:
         """Recompute and refresh any read-only fields (e.g. computed attrs like BUS link_ids)."""
-        if not self.current_component:
+        if not self.current_components:
             return
 
         for key, definition in self._active_definition_by_key.items():
