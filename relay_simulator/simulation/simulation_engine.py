@@ -142,6 +142,9 @@ class SimulationEngine:
         
         # GUI callback for async updates (e.g., relay timer completion)
         self._gui_restart_callback = None
+        
+        # Callback for logic analyser to capture samples on stability
+        self._on_stable_callback = None
 
         # Debug controls (off by default).
         # PowerShell:
@@ -304,6 +307,18 @@ class SimulationEngine:
         """
         self._gui_restart_callback = callback
     
+    def set_on_stable_callback(self, callback):
+        """
+        Set callback to be called when simulation reaches stable state.
+        
+        This is used by the logic analyser to capture samples only when
+        the simulation is stable (no dirty VNETs).
+        
+        Args:
+            callback: Function to call when stable (no arguments)
+        """
+        self._on_stable_callback = callback
+    
     def run(self) -> SimulationStatistics:
         """
         Run the main simulation loop until stable or max iterations/timeout.
@@ -429,6 +444,13 @@ class SimulationEngine:
                     
                     with self._state_lock:
                         self.state = SimulationState.STABLE
+                    
+                    # Notify logic analyser of stable state
+                    if self._on_stable_callback:
+                        try:
+                            self._on_stable_callback()
+                        except Exception:
+                            pass
                     
                     self._running = False
                     self._debug_dump_vnets(iteration=iteration, phase="stable_reached")

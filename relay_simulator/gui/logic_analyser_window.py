@@ -54,10 +54,23 @@ class LogicAnalyserWindow:
         self.channels: List[Channel] = []
         self.is_capturing = False
         self.start_time = 0.0
-        self.capture_timer_id: Optional[str] = None  # Timer for periodic trace capture
-        self.capture_interval_ms = 50  # Capture every 50ms
+        self.sample_count = 0  # Track number of samples captured
+        self.display_timer_id: Optional[str] = None  # Timer for display refresh
+        self.display_refresh_ms = 100  # Refresh display every 100ms
         self.current_config_id: Optional[str] = None  # Currently selected configuration
         self.current_config_name: str = "Untitled Configuration"
+        
+        # Time base setting (seconds per division)
+        self.time_base_seconds: float = 2.0  # Default: 2 seconds per division
+        
+        # Drag and drop state for channel reordering
+        self.drag_channel_idx: Optional[int] = None  # Index of channel being dragged
+        self.drag_start_y: Optional[int] = None  # Y position where drag started
+        self.drag_indicator: Optional[tk.Frame] = None  # Visual indicator for drop position
+        
+        # Cursor state for time measurement (visible when stopped)
+        self.cursor_x: Optional[int] = None  # X position of cursor in canvas coordinates
+        self.cursor_visible = False  # Whether cursor is shown
         
         # Create modeless dialog window
         self.window = tk.Toplevel(parent)
@@ -217,6 +230,33 @@ class LogicAnalyserWindow:
         separator2 = tk.Frame(toolbar, bg=VSCodeTheme.BORDER_DEFAULT, width=2)
         separator2.pack(side=tk.LEFT, fill=tk.Y, padx=10)
         
+        # Time base label
+        time_base_label = tk.Label(
+            toolbar,
+            text="Time/Div:",
+            bg=VSCodeTheme.BG_SECONDARY,
+            fg=VSCodeTheme.FG_SECONDARY,
+            font=(VSCodeTheme.FONT_FAMILY_UI, VSCodeTheme.FONT_SIZE_SMALL)
+        )
+        time_base_label.pack(side=tk.LEFT, padx=(10, 5))
+        
+        # Time base dropdown
+        self.time_base_var = tk.StringVar(value="2s")
+        self.time_base_dropdown = ttk.Combobox(
+            toolbar,
+            textvariable=self.time_base_var,
+            state='readonly',
+            width=8,
+            font=(VSCodeTheme.FONT_FAMILY_UI, VSCodeTheme.FONT_SIZE_SMALL),
+            values=["1s", "2s", "5s", "10s"]
+        )
+        self.time_base_dropdown.pack(side=tk.LEFT, padx=5)
+        self.time_base_dropdown.bind('<<ComboboxSelected>>', self._on_time_base_changed)
+        
+        # Separator
+        separator3 = tk.Frame(toolbar, bg=VSCodeTheme.BORDER_DEFAULT, width=2)
+        separator3.pack(side=tk.LEFT, fill=tk.Y, padx=10)
+        
         # Status label
         self.status_label = tk.Label(
             toolbar,
@@ -364,6 +404,10 @@ class LogicAnalyserWindow:
         
         self.waveform_canvas.configure(xscrollcommand=h_scrollbar.set)
         
+        # Bind mouse events for cursor
+        self.waveform_canvas.bind('<Motion>', self._on_mouse_move)
+        self.waveform_canvas.bind('<Leave>', self._on_mouse_leave)
+        
         # Draw initial grid and labels
         self._draw_waveforms()
     
@@ -414,6 +458,9 @@ class LogicAnalyserWindow:
         )
         frame.pack(fill=tk.X, pady=2)
         
+        # Make the frame draggable by binding to the frame and its children
+        self._make_draggable(frame, idx)
+        
         # Channel name
         name_label = tk.Label(
             frame,
@@ -421,9 +468,11 @@ class LogicAnalyserWindow:
             bg=VSCodeTheme.BG_TERTIARY,
             fg=VSCodeTheme.FG_PRIMARY,
             font=(VSCodeTheme.FONT_FAMILY_UI, VSCodeTheme.FONT_SIZE_NORMAL, "bold"),
-            anchor=tk.W
+            anchor=tk.W,
+            cursor="hand2"  # Show draggable cursor
         )
         name_label.pack(fill=tk.X, padx=8, pady=(6, 2))
+        self._make_draggable(name_label, idx)
         
         # LINK name label
         link_label = tk.Label(
@@ -432,9 +481,11 @@ class LogicAnalyserWindow:
             bg=VSCodeTheme.BG_TERTIARY,
             fg=VSCodeTheme.FG_SECONDARY,
             font=(VSCodeTheme.FONT_FAMILY_UI, VSCodeTheme.FONT_SIZE_SMALL),
-            anchor=tk.W
+            anchor=tk.W,
+            cursor="hand2"  # Show draggable cursor
         )
         link_label.pack(fill=tk.X, padx=8, pady=(2, 0))
+        self._make_draggable(link_label, idx)
         
         # LINK name entry
         link_entry = tk.Entry(
@@ -463,6 +514,125 @@ class LogicAnalyserWindow:
         channel.link_name = new_name.strip()
         self._save_current_configuration()
     
+    def _make_draggable(self, widget, channel_idx: int):
+        """
+        Make a widget draggable for channel reordering.
+        
+        Args:
+            widget: Widget to make draggable
+            channel_idx: Index of the channel this widget belongs to
+        """
+        widget.bind('<Button-1>', lambda e: self._on_drag_start(e, channel_idx))
+        widget.bind('<B1-Motion>', self._on_drag_motion)
+        widget.bind('<ButtonRelease-1>', self._on_drag_end)
+    
+    def _on_drag_start(self, event, channel_idx: int):
+        """Handle start of drag operation."""
+        self.drag_channel_idx = channel_idx
+        self.drag_start_y = event.y_root
+        
+        # Highlight the channel being dragged
+        widgets = self.channel_list_frame.winfo_children()
+        if channel_idx < len(widgets):
+            widgets[channel_idx].configure(relief=tk.RAISED, borderwidth=2)
+    
+    def _on_drag_motion(self, event):
+        """Handle drag motion to show drop position indicator."""
+        if self.drag_channel_idx is None:
+            return
+        
+        # Calculate which position the channel would be dropped at
+        drop_idx = self._get_drop_index(event.y_root)
+        
+        # Remove old indicator
+        if self.drag_indicator:
+            self.drag_indicator.destroy()
+            self.drag_indicator = None
+        
+        # Show drop position indicator
+        if drop_idx is not None and drop_idx != self.drag_channel_idx and drop_idx != self.drag_channel_idx + 1:
+            self.drag_indicator = tk.Frame(
+                self.channel_list_frame,
+                bg=VSCodeTheme.ACCENT_BLUE,
+                height=3
+            )
+            
+            # Insert indicator at the drop position
+            widgets = self.channel_list_frame.winfo_children()
+            if drop_idx < len(widgets):
+                self.drag_indicator.pack(before=widgets[drop_idx], fill=tk.X)
+            else:
+                self.drag_indicator.pack(fill=tk.X)
+    
+    def _on_drag_end(self, event):
+        """Handle end of drag operation - reorder channels."""
+        if self.drag_channel_idx is None:
+            return
+        
+        # Calculate drop position
+        drop_idx = self._get_drop_index(event.y_root)
+        
+        # Remove highlight from dragged channel
+        widgets = self.channel_list_frame.winfo_children()
+        if self.drag_channel_idx < len(widgets):
+            widgets[self.drag_channel_idx].configure(relief=tk.FLAT, borderwidth=1)
+        
+        # Remove drop indicator
+        if self.drag_indicator:
+            self.drag_indicator.destroy()
+            self.drag_indicator = None
+        
+        # Perform reordering if valid drop position
+        if drop_idx is not None and drop_idx != self.drag_channel_idx:
+            # Adjust drop index if dragging downward
+            if drop_idx > self.drag_channel_idx:
+                drop_idx -= 1
+            
+            # Reorder the channels list
+            channel = self.channels.pop(self.drag_channel_idx)
+            self.channels.insert(drop_idx, channel)
+            
+            # Refresh display
+            self._refresh_channel_list()
+            self._draw_waveforms()
+            self._save_current_configuration()
+        
+        # Reset drag state
+        self.drag_channel_idx = None
+        self.drag_start_y = None
+    
+    def _get_drop_index(self, y_root: int) -> Optional[int]:
+        """
+        Calculate the drop index based on mouse Y position.
+        
+        Args:
+            y_root: Mouse Y position in root window coordinates
+            
+        Returns:
+            Index where channel should be dropped, or None if invalid
+        """
+        widgets = self.channel_list_frame.winfo_children()
+        
+        # Find which channel widget the mouse is over
+        for idx, widget in enumerate(widgets):
+            if isinstance(widget, tk.Frame) and widget != self.drag_indicator:
+                widget_y = widget.winfo_rooty()
+                widget_height = widget.winfo_height()
+                widget_mid = widget_y + widget_height / 2
+                
+                # If mouse is in top half of widget, drop before it
+                # If in bottom half, drop after it
+                if y_root < widget_mid:
+                    return idx
+                elif y_root < widget_y + widget_height:
+                    return idx + 1
+        
+        # If mouse is below all widgets, drop at end
+        if widgets and y_root > widgets[-1].winfo_rooty() + widgets[-1].winfo_height():
+            return len(widgets)
+        
+        return None
+    
     def _draw_waveforms(self):
         """Draw the waveform display with captured trace data."""
         self.waveform_canvas.delete("all")
@@ -489,7 +659,9 @@ class LogicAnalyserWindow:
         LABEL_WIDTH = 100  # Width reserved for channel labels
         TIME_AXIS_HEIGHT = 30  # Height reserved for time axis at bottom
         MARGIN = 10
-        PIXELS_PER_SECOND = 200  # Fixed time scale for scrolling
+        PIXELS_PER_DIVISION = 100  # Fixed pixels per time division
+        # Calculate pixels per second based on time base setting
+        PIXELS_PER_SECOND = PIXELS_PER_DIVISION / self.time_base_seconds
         CHANNEL_HEIGHT = 87  # Fixed height per channel to match left panel channel boxes
         
         # Waveform area dimensions
@@ -498,7 +670,7 @@ class LogicAnalyserWindow:
         # Channel layout - use fixed height instead of dividing canvas
         channel_height = CHANNEL_HEIGHT
         
-        # Determine time range from trace data
+        # Determine time range from trace data or current elapsed time
         max_time = 0.0
         has_data = False
         for channel in self.channels:
@@ -506,6 +678,12 @@ class LogicAnalyserWindow:
                 has_data = True
                 if channel.trace_data:
                     max_time = max(max_time, channel.trace_data[-1][0])
+        
+        # If capturing, extend time range to current elapsed time
+        if self.is_capturing and self.start_time > 0:
+            current_time = time.time() - self.start_time
+            max_time = max(max_time, current_time)
+            has_data = True  # Consider we have data if we're capturing
         
         # If no data, show placeholder
         if not has_data:
@@ -594,6 +772,56 @@ class LogicAnalyserWindow:
                     y_low,
                     PIXELS_PER_SECOND
                 )
+        
+        # Draw cursor if visible (when stopped)
+        if self.cursor_visible and self.cursor_x is not None:
+            # Draw vertical line at cursor position
+            self.waveform_canvas.create_line(
+                self.cursor_x, 0,
+                self.cursor_x, waveform_height,
+                fill=VSCodeTheme.ACCENT_BLUE,
+                width=2
+            )
+            
+            # Calculate time at cursor position
+            time_at_cursor = (self.cursor_x - LABEL_WIDTH) / PIXELS_PER_SECOND
+            if time_at_cursor >= 0:
+                # Format time nicely
+                time_text = self._format_time(time_at_cursor)
+                
+                # Draw time label with background
+                text_x = self.cursor_x + 5
+                text_y = 5
+                
+                # Create text to measure its size
+                text_id = self.waveform_canvas.create_text(
+                    text_x, text_y,
+                    text=time_text,
+                    fill=VSCodeTheme.FG_PRIMARY,
+                    font=(VSCodeTheme.FONT_FAMILY_MONO, VSCodeTheme.FONT_SIZE_SMALL, "bold"),
+                    anchor=tk.NW
+                )
+                
+                # Get text bounding box and draw background
+                bbox = self.waveform_canvas.bbox(text_id)
+                if bbox:
+                    padding = 3
+                    self.waveform_canvas.create_rectangle(
+                        bbox[0] - padding, bbox[1] - padding,
+                        bbox[2] + padding, bbox[3] + padding,
+                        fill=VSCodeTheme.BG_TERTIARY,
+                        outline=VSCodeTheme.ACCENT_BLUE,
+                        width=1
+                    )
+                    # Redraw text on top of background
+                    self.waveform_canvas.delete(text_id)
+                    self.waveform_canvas.create_text(
+                        text_x, text_y,
+                        text=time_text,
+                        fill=VSCodeTheme.FG_PRIMARY,
+                        font=(VSCodeTheme.FONT_FAMILY_MONO, VSCodeTheme.FONT_SIZE_SMALL, "bold"),
+                        anchor=tk.NW
+                    )
     
     def _draw_channel_waveform(self, channel: Channel, x_offset: int, y_high: float, y_low: float, pixels_per_second: float):
         """
@@ -645,6 +873,38 @@ class LogicAnalyserWindow:
             
             prev_x = x
             prev_y = y
+        
+        # If capturing, extend the last state to current time
+        if self.is_capturing and self.start_time > 0 and prev_x is not None and prev_y is not None:
+            current_time = time.time() - self.start_time
+            current_x = x_offset + (current_time * pixels_per_second)
+            
+            # Draw horizontal line from last sample to current time
+            self.waveform_canvas.create_line(
+                prev_x, prev_y,
+                current_x, prev_y,
+                fill=channel.color,
+                width=2
+            )
+    
+    def _format_time(self, seconds: float) -> str:
+        """
+        Format time value for display.
+        
+        Args:
+            seconds: Time in seconds
+            
+        Returns:
+            Formatted string (e.g., "1.234s", "123.4ms", "12.34μs")
+        """
+        if seconds >= 1.0:
+            return f"{seconds:.3f}s"
+        elif seconds >= 0.001:
+            return f"{seconds * 1000:.3f}ms"
+        elif seconds >= 0.000001:
+            return f"{seconds * 1000000:.3f}μs"
+        else:
+            return f"{seconds * 1000000000:.3f}ns"
     
     def _draw_time_axis(self, x_offset: int, y_pos: float, width: float, max_time: float):
         """
@@ -711,8 +971,30 @@ class LogicAnalyserWindow:
             
             time_marker += chosen_interval
     
+    def _on_mouse_move(self, event):
+        """Handle mouse movement over waveform canvas."""
+        # Only show cursor when not capturing (i.e., stopped with data)
+        if not self.is_capturing:
+            # Check if we have any trace data
+            has_data = any(channel.trace_data for channel in self.channels)
+            if has_data:
+                self.cursor_x = self.waveform_canvas.canvasx(event.x)
+                self.cursor_visible = True
+                self._draw_waveforms()
+    
+    def _on_mouse_leave(self, event):
+        """Handle mouse leaving waveform canvas."""
+        if self.cursor_visible:
+            self.cursor_visible = False
+            self.cursor_x = None
+            self._draw_waveforms()
+    
     def _on_start(self):
         """Handle Start button click."""
+        # Hide cursor when starting capture
+        self.cursor_visible = False
+        self.cursor_x = None
+        
         # Check if simulation is running
         if not self.main_window.simulation_mode or not self.main_window.simulation_engine:
             from tkinter import messagebox
@@ -740,27 +1022,33 @@ class LogicAnalyserWindow:
         # Start capturing
         self.is_capturing = True
         self.start_time = time.time()
+        self.sample_count = 0
         self.start_button.config(state=tk.DISABLED)
         self.stop_button.config(state=tk.NORMAL)
         self.clear_button.config(state=tk.DISABLED)  # Disable clear during capture
         self.status_label.config(text="Capturing...", fg=VSCodeTheme.ACCENT_GREEN)
         
-        # Start periodic capture timer
-        self._capture_trace_data()
-        self._draw_waveforms()
+        # Register callback with simulation engine to capture on stability
+        if self.main_window.simulation_engine:
+            self.main_window.simulation_engine.set_on_stable_callback(self._on_simulation_stable)
+        
+        # Start display refresh timer to keep waveforms scrolling
+        self._start_display_timer()
+        
+        # Capture initial state at time 0
+        self._capture_sample(0.0)
     
     def _on_stop(self):
         """Handle Stop button click."""
         # Stop capturing
         self.is_capturing = False
         
-        # Cancel timer if active
-        if self.capture_timer_id:
-            try:
-                self.window.after_cancel(self.capture_timer_id)
-            except Exception:
-                pass
-            self.capture_timer_id = None
+        # Stop display refresh timer
+        self._stop_display_timer()
+        
+        # Unregister callback from simulation engine
+        if self.main_window.simulation_engine:
+            self.main_window.simulation_engine.set_on_stable_callback(None)
         
         # Update UI
         self.start_button.config(state=tk.NORMAL)
@@ -771,7 +1059,7 @@ class LogicAnalyserWindow:
         if self.channels and self.channels[0].trace_data:
             duration = time.time() - self.start_time
             self.status_label.config(
-                text=f"Stopped - {len(self.channels[0].trace_data)} samples ({duration:.2f}s)",
+                text=f"Stopped - {self.sample_count} samples ({duration:.2f}s)",
                 fg=VSCodeTheme.FG_SECONDARY
             )
         else:
@@ -791,14 +1079,14 @@ class LogicAnalyserWindow:
             channel.trace_data.clear()
         
         self.start_time = 0.0
+        self.sample_count = 0
         self._draw_waveforms()
         self.status_label.config(text="Cleared", fg=VSCodeTheme.FG_SECONDARY)
     
-    def _capture_trace_data(self):
-        """Capture trace data from LINKs during simulation."""
-        # Stop if no longer capturing
+    def _on_simulation_stable(self):
+        """Callback when simulation reaches stable state - capture a sample."""
+        # Only capture if still in capturing mode
         if not self.is_capturing:
-            self.capture_timer_id = None
             return
         
         # Stop if simulation has ended
@@ -806,21 +1094,24 @@ class LogicAnalyserWindow:
             self._on_stop()
             return
         
-        # Calculate elapsed time
+        # Calculate elapsed time and capture sample
         timestamp = time.time() - self.start_time
+        self._capture_sample(timestamp)
+    
+    def _capture_sample(self, timestamp: float):
+        """Capture state of all channels at the given timestamp.
         
+        Args:
+            timestamp: Time in seconds since capture started
+        """
         # Get active document
         tab = self.main_window.file_tabs.get_active_tab()
         if not tab or not tab.document:
-            # Re-schedule and return
-            self.capture_timer_id = self.window.after(self.capture_interval_ms, self._capture_trace_data)
             return
         
         # Get simulation engine
         engine = self.main_window.simulation_engine
         if not engine:
-            # Re-schedule and return
-            self.capture_timer_id = self.window.after(self.capture_interval_ms, self._capture_trace_data)
             return
         
         # Capture state for each channel
@@ -869,20 +1160,41 @@ class LogicAnalyserWindow:
             # Append trace data
             channel.trace_data.append((timestamp, state))
         
-        # Update status with sample count
-        if self.channels and self.channels[0].trace_data:
-            sample_count = len(self.channels[0].trace_data)
-            self.status_label.config(
-                text=f"Capturing... {sample_count} samples ({timestamp:.2f}s)",
-                fg=VSCodeTheme.ACCENT_GREEN
-            )
-            
-            # Update waveform display periodically (every 10 samples for performance)
-            if sample_count % 10 == 0:
-                self._draw_waveforms()
+        # Update sample count
+        self.sample_count += 1
         
-        # Schedule next capture
-        self.capture_timer_id = self.window.after(self.capture_interval_ms, self._capture_trace_data)
+        # Update status (display is updated by timer)
+        self.status_label.config(
+            text=f"Capturing... {self.sample_count} samples ({timestamp:.2f}s)",
+            fg=VSCodeTheme.ACCENT_GREEN
+        )
+    
+    def _start_display_timer(self):
+        """Start the display refresh timer."""
+        if self.display_timer_id is None:
+            self._refresh_display()
+    
+    def _stop_display_timer(self):
+        """Stop the display refresh timer."""
+        if self.display_timer_id:
+            try:
+                self.window.after_cancel(self.display_timer_id)
+            except Exception:
+                pass
+            self.display_timer_id = None
+    
+    def _refresh_display(self):
+        """Refresh the waveform display periodically."""
+        # Stop if no longer capturing
+        if not self.is_capturing:
+            self.display_timer_id = None
+            return
+        
+        # Update the waveform display
+        self._draw_waveforms()
+        
+        # Schedule next refresh
+        self.display_timer_id = self.window.after(self.display_refresh_ms, self._refresh_display)
     
     # === Configuration Management ===
     
@@ -1001,6 +1313,20 @@ class LogicAnalyserWindow:
                 self.current_config_name = config['name']
                 self._apply_configuration(config)
                 break
+    
+    def _on_time_base_changed(self, event):
+        """Handle time base selection change."""
+        # Parse the time base value (e.g., "2s" -> 2.0)
+        value_str = self.time_base_var.get()
+        try:
+            # Remove the 's' suffix and convert to float
+            self.time_base_seconds = float(value_str.rstrip('s'))
+        except ValueError:
+            # Default to 2 seconds if parsing fails
+            self.time_base_seconds = 2.0
+        
+        # Redraw waveforms with new time scale
+        self._draw_waveforms()
     
     def _add_new_config(self):
         """Add a new configuration."""

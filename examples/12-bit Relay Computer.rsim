@@ -5,7 +5,7 @@
       "page_id": "a00bb4cb",
       "name": "Front Page",
       "canvas_x": 0.0,
-      "canvas_y": 44.0,
+      "canvas_y": 0.0,
       "canvas_zoom": 0.7663119939853885,
       "components": [
         {
@@ -7272,7 +7272,7 @@
       "page_id": "0e7faf05",
       "name": "Pulse Distrubution",
       "canvas_x": 0.0,
-      "canvas_y": 147.0,
+      "canvas_y": 0.0,
       "canvas_zoom": 0.9999999999999994,
       "components": [
         {
@@ -186954,5 +186954,104 @@
     "created": "",
     "modified": "",
     "description": ""
-  }
+  },
+  "logic_analyser_configs": [
+    {
+      "config_id": "972719f3",
+      "name": "Sequencer",
+      "channels": [
+        {
+          "name": "Channel 1",
+          "link_name": "CLK",
+          "color": "#4ec9b0"
+        },
+        {
+          "name": "Channel 2",
+          "link_name": "S1'",
+          "color": "#4ec9b0"
+        },
+        {
+          "name": "Channel 3",
+          "link_name": "S2'",
+          "color": "#4ec9b0"
+        },
+        {
+          "name": "Channel 4",
+          "link_name": "S2",
+          "color": "#4ec9b0"
+        },
+        {
+          "name": "Channel 5",
+          "link_name": "S3'",
+          "color": "#4ec9b0"
+        },
+        {
+          "name": "Channel 6",
+          "link_name": "S3",
+          "color": "#4ec9b0"
+        },
+        {
+          "name": "Channel 7",
+          "link_name": "S4'",
+          "color": "#4ec9b0"
+        },
+        {
+          "name": "Channel 8",
+          "link_name": "S4",
+          "color": "#4ec9b0"
+        },
+        {
+          "name": "Channel 9",
+          "link_name": "S5'",
+          "color": "#4ec9b0"
+        }
+      ]
+    },
+    {
+      "config_id": "0777f1c1",
+      "name": "Pulse Distribution",
+      "channels": [
+        {
+          "name": "Channel 1",
+          "link_name": "P-A",
+          "color": "#4ec9b0"
+        },
+        {
+          "name": "Channel 2",
+          "link_name": "P-B",
+          "color": "#4ec9b0"
+        },
+        {
+          "name": "Channel 3",
+          "link_name": "P-C",
+          "color": "#4ec9b0"
+        },
+        {
+          "name": "Channel 4",
+          "link_name": "P-D",
+          "color": "#4ec9b0"
+        },
+        {
+          "name": "Channel 5",
+          "link_name": "P-E",
+          "color": "#4ec9b0"
+        },
+        {
+          "name": "Channel 6",
+          "link_name": "P-F",
+          "color": "#4ec9b0"
+        },
+        {
+          "name": "Channel 7",
+          "link_name": "P-G",
+          "color": "#4ec9b0"
+        },
+        {
+          "name": "Channel 8",
+          "link_name": "P-H",
+          "color": "#4ec9b0"
+        }
+      ]
+    }
+  ]
 }

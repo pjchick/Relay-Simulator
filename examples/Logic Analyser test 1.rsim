@@ -462,7 +462,7 @@
   "logic_analyser_configs": [
     {
       "config_id": "9d0eb1ea",
-      "name": "Default Configuration",
+      "name": "Clock and LED's",
       "channels": [
         {
           "name": "Channel 1",
