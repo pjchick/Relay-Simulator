@@ -66,6 +66,7 @@ class MenuBar:
             'zoom_out': None,
             'reset_zoom': None,
             'toggle_properties': None,
+            'logic_analyser': None,
             'about': None,
         }
         
@@ -74,6 +75,7 @@ class MenuBar:
         self._create_edit_menu()
         self._create_simulation_menu()
         self._create_view_menu()
+        self._create_tools_menu()
         self._create_help_menu()
         
     def _create_file_menu(self) -> None:
@@ -271,6 +273,21 @@ class MenuBar:
         self.parent.bind('<Control-minus>', lambda e: self._on_zoom_out())
         self.parent.bind('<Control-Key-0>', lambda e: self._on_reset_zoom())
     
+    def _create_tools_menu(self) -> None:
+        """Create the Tools menu."""
+        self.tools_menu = tk.Menu(self.menubar, tearoff=0)
+        self.menubar.add_cascade(label="Tools", menu=self.tools_menu)
+        
+        self.tools_menu.add_command(
+            label="Logic Analyser...",
+            accelerator="Ctrl+L",
+            command=self._on_logic_analyser
+        )
+        
+        # Bind keyboard shortcut
+        self.parent.bind('<Control-l>', lambda e: self._on_logic_analyser())
+        self.parent.bind('<Control-L>', lambda e: self._on_logic_analyser())
+    
     def _create_help_menu(self) -> None:
         """Create the Help menu."""
         self.help_menu = tk.Menu(self.menubar, tearoff=0)
@@ -379,7 +396,12 @@ class MenuBar:
         """Handle Reset Zoom command."""
         if self.callbacks['reset_zoom']:
             self.callbacks['reset_zoom']()
-    
+
+    def _on_logic_analyser(self) -> None:
+        """Handle Logic Analyser command."""
+        if self.callbacks['logic_analyser']:
+            self.callbacks['logic_analyser']()
+
     def _on_toggle_properties(self) -> None:
         """Handle Toggle Properties Panel command."""
         if self.callbacks['toggle_properties']:

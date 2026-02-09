@@ -233,6 +233,46 @@ WIRE_SCHEMA = {
 # Update circular reference
 JUNCTION_SCHEMA["child_wires"]["item_schema"] = WIRE_SCHEMA
 
+LOGIC_ANALYSER_CHANNEL_SCHEMA = {
+    "name": {
+        "type": FieldType.STRING,
+        "required": True,
+        "description": "Display name of the channel"
+    },
+    "link_name": {
+        "type": FieldType.STRING,
+        "required": False,
+        "description": "Name of LINK to monitor",
+        "default": ""
+    },
+    "color": {
+        "type": FieldType.STRING,
+        "required": False,
+        "description": "Waveform color for this channel (hex color)",
+        "default": "#4ec9b0"
+    }
+}
+
+LOGIC_ANALYSER_CONFIG_SCHEMA = {
+    "config_id": {
+        "type": FieldType.UUID,
+        "required": True,
+        "description": "Unique 8-character identifier for this configuration"
+    },
+    "name": {
+        "type": FieldType.STRING,
+        "required": True,
+        "description": "Display name of the configuration"
+    },
+    "channels": {
+        "type": FieldType.ARRAY,
+        "required": False,
+        "description": "List of channels in this configuration",
+        "item_schema": LOGIC_ANALYSER_CHANNEL_SCHEMA,
+        "default": []
+    }
+}
+
 PAGE_SCHEMA = {
     "page_id": {
         "type": FieldType.UUID,
@@ -311,6 +351,13 @@ DOCUMENT_SCHEMA = {
         "description": "Collection of pages in document",
         "item_schema": PAGE_SCHEMA,
         "min_items": 1
+    },
+    "logic_analyser_configs": {
+        "type": FieldType.ARRAY,
+        "required": False,
+        "description": "Logic analyser configurations",
+        "item_schema": LOGIC_ANALYSER_CONFIG_SCHEMA,
+        "default": []
     }
 }
 
@@ -325,7 +372,9 @@ def get_schema_for_type(type_name: str) -> Optional[Dict[str, Any]]:
         "junction": JUNCTION_SCHEMA,
         "waypoint": WAYPOINT_SCHEMA,
         "pin": PIN_SCHEMA,
-        "tab": TAB_SCHEMA
+        "tab": TAB_SCHEMA,
+        "logic_analyser_config": LOGIC_ANALYSER_CONFIG_SCHEMA,
+        "logic_analyser_channel": LOGIC_ANALYSER_CHANNEL_SCHEMA
     }
     return schemas.get(type_name.lower())
 

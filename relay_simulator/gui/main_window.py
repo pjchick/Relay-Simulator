@@ -26,6 +26,7 @@ from gui.page_tabs import PageTabBar
 from gui.canvas import DesignCanvas
 from gui.toolbox import ToolboxPanel
 from gui.properties_panel import PropertiesPanel
+from gui.logic_analyser_window import LogicAnalyserWindow
 from core.document import Document
 from core.vnet_builder import VnetBuilder
 from core.vnet import VNET
@@ -93,6 +94,9 @@ class MainWindow:
         
         # Track wire info dialog
         self._wire_info_dialog = None
+        
+        # Track logic analyser window
+        self._logic_analyser_window = None
 
         # Diagnostics
         self._logger = get_logger()
@@ -170,6 +174,9 @@ class MainWindow:
         self.menu_bar.set_callback('zoom_out', self._menu_zoom_out)
         self.menu_bar.set_callback('reset_zoom', self._menu_reset_zoom)
         self.menu_bar.set_callback('toggle_properties', self._menu_toggle_properties)
+        
+        # Tools menu
+        self.menu_bar.set_callback('logic_analyser', self._menu_logic_analyser)
         
         # Help menu
         self.menu_bar.set_callback('about', self._menu_about)
@@ -1792,6 +1799,15 @@ class MainWindow:
             self.properties_panel.frame.pack(side=tk.RIGHT, fill=tk.Y, padx=(1, 0))
         else:
             self.properties_panel.frame.pack_forget()
+    
+    def _menu_logic_analyser(self) -> None:
+        """Handle Tools > Logic Analyser."""
+        # Create or show the logic analyser window
+        if self._logic_analyser_window is None or not self._logic_analyser_window.window.winfo_exists():
+            self._logic_analyser_window = LogicAnalyserWindow(self.root, self)
+        else:
+            # Window exists, just bring it to front
+            self._logic_analyser_window.show()
     
     def _menu_about(self) -> None:
         """Handle Help > About."""

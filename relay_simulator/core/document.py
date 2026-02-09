@@ -26,6 +26,7 @@ class Document:
         # Explicit page ordering (tab order). This is the source of truth for
         # get_all_pages() and serialization order.
         self.page_order: List[str] = []
+        self.logic_analyser_configs: Dict[str, dict] = {}  # {config_id: {...}}
         self.id_manager = IDManager()
     
     # === Page Management ===
@@ -241,6 +242,92 @@ class Document:
                 result.append(component)
         return result
     
+    # === Logic Analyser Configuration Management ===
+    
+    def add_logic_analyser_config(self, config_id: str, name: str, channels: List[dict] = None) -> bool:
+        """
+        Add a logic analyser configuration.
+        
+        Args:
+            config_id: Unique 8-character identifier
+            name: Configuration name
+            channels: List of channel dicts with 'name', 'link_name', 'color' keys
+            
+        Returns:
+            bool: True if added, False if config_id already exists
+        """
+        if config_id in self.logic_analyser_configs:
+            return False
+        
+        self.logic_analyser_configs[config_id] = {
+            'config_id': config_id,
+            'name': name,
+            'channels': channels or []
+        }
+        self.id_manager.register_id(config_id)
+        return True
+    
+    def remove_logic_analyser_config(self, config_id: str) -> bool:
+        """
+        Remove a logic analyser configuration.
+        
+        Args:
+            config_id: Configuration ID to remove
+            
+        Returns:
+            bool: True if removed, False if not found
+        """
+        if config_id not in self.logic_analyser_configs:
+            return False
+        
+        del self.logic_analyser_configs[config_id]
+        self.id_manager.release_id(config_id)
+        return True
+    
+    def get_logic_analyser_config(self, config_id: str) -> Optional[dict]:
+        """
+        Get a logic analyser configuration by ID.
+        
+        Args:
+            config_id: Configuration ID
+            
+        Returns:
+            dict: Configuration data or None
+        """
+        return self.logic_analyser_configs.get(config_id)
+    
+    def get_all_logic_analyser_configs(self) -> List[dict]:
+        """
+        Get all logic analyser configurations.
+        
+        Returns:
+            list: List of configuration dicts
+        """
+        return list(self.logic_analyser_configs.values())
+    
+    def update_logic_analyser_config(self, config_id: str, name: str = None, channels: List[dict] = None) -> bool:
+        """
+        Update a logic analyser configuration.
+        
+        Args:
+            config_id: Configuration ID
+            name: New name (optional)
+            channels: New channels list (optional)
+            
+        Returns:
+            bool: True if updated, False if not found
+        """
+        if config_id not in self.logic_analyser_configs:
+            return False
+        
+        config = self.logic_analyser_configs[config_id]
+        if name is not None:
+            config['name'] = name
+        if channels is not None:
+            config['channels'] = channels
+        
+        return True
+    
     # === Validation ===
     
     def validate_ids(self) -> tuple:
@@ -300,6 +387,10 @@ class Document:
         if self.metadata:
             result['metadata'] = self.metadata.copy()
         
+        # Optional logic analyser configs (only include if not empty)
+        if self.logic_analyser_configs:
+            result['logic_analyser_configs'] = list(self.logic_analyser_configs.values())
+        
         return result
     
     @staticmethod
@@ -334,6 +425,13 @@ class Document:
 
         # Ensure page_order is consistent even if older code mutated pages.
         doc.reorder_pages(doc.page_order)
+        
+        # Load logic analyser configurations (optional)
+        for config_data in data.get('logic_analyser_configs', []):
+            config_id = config_data.get('config_id')
+            if config_id:
+                doc.logic_analyser_configs[config_id] = config_data
+                doc.id_manager.register_id(config_id)
         
         return doc
     

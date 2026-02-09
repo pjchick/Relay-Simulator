@@ -129,6 +129,25 @@ class DocumentLoader:
         
         if len(data['pages']) == 0:
             raise ValueError("Document must contain at least one page")
+        
+        # Validate logic analyser configs structure (optional field)
+        if 'logic_analyser_configs' in data:
+            if not isinstance(data['logic_analyser_configs'], list):
+                raise ValueError("Field 'logic_analyser_configs' must be an array")
+            
+            # Validate each config has required fields
+            for i, config in enumerate(data['logic_analyser_configs']):
+                if not isinstance(config, dict):
+                    raise ValueError(f"Logic analyser config {i} must be an object")
+                
+                if 'config_id' not in config:
+                    raise ValueError(f"Logic analyser config {i} missing required field: config_id")
+                
+                if 'name' not in config:
+                    raise ValueError(f"Logic analyser config {i} missing required field: name")
+                
+                if 'channels' in config and not isinstance(config['channels'], list):
+                    raise ValueError(f"Logic analyser config {i} field 'channels' must be an array")
     
     def _validate_unique_ids(self, document: Document):
         """
@@ -181,6 +200,14 @@ class DocumentLoader:
                 
                 # Check junction IDs (recursive, wire stores as dict internally)
                 self._check_junction_ids(list(wire.junctions.values()), all_ids, duplicates)
+        
+        # Check logic analyser config IDs
+        for config in document.get_all_logic_analyser_configs():
+            config_id = config.get('config_id')
+            if config_id:
+                if config_id in all_ids:
+                    duplicates.add(config_id)
+                all_ids.add(config_id)
         
         if duplicates:
             raise ValueError(

@@ -1,0 +1,485 @@
+{
+  "version": "1.0.0",
+  "pages": [
+    {
+      "page_id": "bae54151",
+      "name": "Page 1",
+      "canvas_x": 0.0,
+      "canvas_y": 0.0,
+      "canvas_zoom": 1.0,
+      "components": [
+        {
+          "component_id": "bb6759a5",
+          "component_type": "Clock",
+          "position": {
+            "x": 160,
+            "y": 120
+          },
+          "pins": [
+            {
+              "pin_id": "bb6759a5.pin1",
+              "tabs": [
+                {
+                  "tab_id": "bb6759a5.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "bb6759a5.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "bb6759a5.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "bb6759a5.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "link_name": "Clock",
+          "properties": {
+            "label": "CLK",
+            "label_position": "bottom",
+            "color": "red",
+            "frequency": "2 sec",
+            "enable_on_sim_start": false,
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "8ca3f682",
+          "component_type": "DPDTRelay",
+          "position": {
+            "x": 310,
+            "y": 200
+          },
+          "pins": [
+            {
+              "pin_id": "8ca3f682.COIL",
+              "tabs": [
+                {
+                  "tab_id": "8ca3f682.COIL.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "8ca3f682.COM1",
+              "tabs": [
+                {
+                  "tab_id": "8ca3f682.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "8ca3f682.COM2",
+              "tabs": [
+                {
+                  "tab_id": "8ca3f682.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "8ca3f682.NO1",
+              "tabs": [
+                {
+                  "tab_id": "8ca3f682.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "8ca3f682.NC1",
+              "tabs": [
+                {
+                  "tab_id": "8ca3f682.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "8ca3f682.NO2",
+              "tabs": [
+                {
+                  "tab_id": "8ca3f682.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "8ca3f682.NC2",
+              "tabs": [
+                {
+                  "tab_id": "8ca3f682.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 80
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "fe43a0db",
+          "component_type": "VCC",
+          "position": {
+            "x": 240,
+            "y": 180
+          },
+          "pins": [
+            {
+              "pin_id": "fe43a0db.pin1",
+              "tabs": [
+                {
+                  "tab_id": "fe43a0db.pin1.tab1",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "pin_position": "bottom"
+          }
+        },
+        {
+          "component_id": "ee516834",
+          "component_type": "Indicator",
+          "position": {
+            "x": 440,
+            "y": 160
+          },
+          "pins": [
+            {
+              "pin_id": "ee516834.pin1",
+              "tabs": [
+                {
+                  "tab_id": "ee516834.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "ee516834.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "ee516834.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "ee516834.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "link_name": "NO",
+          "properties": {
+            "label": "LED",
+            "label_position": "right",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "04d091d2",
+          "component_type": "Indicator",
+          "position": {
+            "x": 500,
+            "y": 200
+          },
+          "pins": [
+            {
+              "pin_id": "04d091d2.pin1",
+              "tabs": [
+                {
+                  "tab_id": "04d091d2.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "04d091d2.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "04d091d2.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "04d091d2.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "link_name": "NC",
+          "properties": {
+            "label": "LED",
+            "label_position": "right",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "edd8f174",
+          "component_type": "VCC",
+          "position": {
+            "x": 240,
+            "y": 260
+          },
+          "pins": [
+            {
+              "pin_id": "edd8f174.pin1",
+              "tabs": [
+                {
+                  "tab_id": "edd8f174.pin1.tab1",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "pin_position": "bottom"
+          }
+        },
+        {
+          "component_id": "eb2db0f1",
+          "component_type": "Link",
+          "position": {
+            "x": 420,
+            "y": 240
+          },
+          "pins": [
+            {
+              "pin_id": "eb2db0f1.pin1",
+              "tabs": [
+                {
+                  "tab_id": "eb2db0f1.pin1.tab1",
+                  "position": {
+                    "x": 10,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 180,
+          "link_name": "LINK_NO",
+          "properties": {
+            "label": "LINK_NO",
+            "label_position": "right"
+          }
+        },
+        {
+          "component_id": "504cde88",
+          "component_type": "Link",
+          "position": {
+            "x": 420.0,
+            "y": 280.0
+          },
+          "pins": [
+            {
+              "pin_id": "504cde88.pin1",
+              "tabs": [
+                {
+                  "tab_id": "504cde88.pin1.tab1",
+                  "position": {
+                    "x": 10,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 180,
+          "link_name": "LINK_NC",
+          "properties": {
+            "label": "LINK_NC",
+            "label_position": "right"
+          }
+        }
+      ],
+      "wires": [
+        {
+          "wire_id": "aa5418ee",
+          "start_tab_id": "bb6759a5.pin1.tab3",
+          "end_tab_id": "8ca3f682.COIL.tab0"
+        },
+        {
+          "wire_id": "caba0059",
+          "start_tab_id": "fe43a0db.pin1.tab1",
+          "end_tab_id": "8ca3f682.COM1.tab0"
+        },
+        {
+          "wire_id": "c3392fe3",
+          "start_tab_id": "ee516834.pin1.tab9",
+          "end_tab_id": "8ca3f682.NO1.tab0"
+        },
+        {
+          "wire_id": "9edd4bc7",
+          "start_tab_id": "04d091d2.pin1.tab9",
+          "end_tab_id": "8ca3f682.NC1.tab0"
+        },
+        {
+          "wire_id": "8bfd4750",
+          "start_tab_id": "edd8f174.pin1.tab1",
+          "end_tab_id": "8ca3f682.COM2.tab0"
+        },
+        {
+          "wire_id": "2dbab054",
+          "start_tab_id": "eb2db0f1.pin1.tab1",
+          "end_tab_id": "8ca3f682.NO2.tab0"
+        },
+        {
+          "wire_id": "a5e87656",
+          "start_tab_id": "504cde88.pin1.tab1",
+          "end_tab_id": "8ca3f682.NC2.tab0"
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "author": "",
+    "created": "",
+    "modified": "",
+    "description": ""
+  },
+  "logic_analyser_configs": [
+    {
+      "config_id": "9d0eb1ea",
+      "name": "Default Configuration",
+      "channels": [
+        {
+          "name": "Channel 1",
+          "link_name": "Clock",
+          "color": "#4ec9b0"
+        },
+        {
+          "name": "Channel 2",
+          "link_name": "NO",
+          "color": "#4ec9b0"
+        },
+        {
+          "name": "Channel 3",
+          "link_name": "NC",
+          "color": "#4ec9b0"
+        }
+      ]
+    }
+  ]
+}
