@@ -1,0 +1,105 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on version tags like v1.0.0, v1.2.3, etc.
+  workflow_dispatch:  # Allow manual triggering
+
+permissions:
+  contents: write  # Required for creating releases
+
+jobs:
+  build-windows-exe:
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+          pip install -r relay_simulator/requirements.txt
+      
+      - name: Build executable
+        run: python build_exe.py
+      
+      - name: Verify build
+        run: |
+          if (Test-Path "dist\RelaySimulator.exe") {
+            Write-Host "✓ Build successful! Executable found at dist\RelaySimulator.exe"
+            $fileSize = (Get-Item "dist\RelaySimulator.exe").Length / 1MB
+            Write-Host "  File size: $([math]::Round($fileSize, 2)) MB"
+          } else {
+            Write-Error "✗ Build failed - executable not found"
+            exit 1
+          }
+        shell: pwsh
+      
+      - name: Extract version from tag
+        id: get_version
+        run: |
+          if ($env:GITHUB_REF -match "refs/tags/(.*)") {
+            $version = $matches[1]
+          } else {
+            $version = "manual-build"
+          }
+          echo "VERSION=$version" >> $env:GITHUB_OUTPUT
+          echo "Version: $version"
+        shell: pwsh
+      
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Relay Simulator ${{ steps.get_version.outputs.VERSION }}
+          body: |
+            ## Relay Simulator ${{ steps.get_version.outputs.VERSION }}
+            
+            ### Downloads
+            - **Windows Executable**: RelaySimulator.exe (standalone, no installation required)
+            
+            ### Installation
+            1. Download `RelaySimulator.exe`
+            2. Run the executable - no installation needed!
+            
+            ### Requirements
+            - Windows 10 or later
+            - No Python installation required
+            
+            ### What's New
+            See the commit history for details on changes in this release.
+            
+            ---
+            **Note**: Windows Defender may flag the executable on first run. This is a false positive common with PyInstaller executables. You can safely allow it to run.
+          draft: false
+          prerelease: false
+      
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/RelaySimulator.exe
+          asset_name: RelaySimulator.exe
+          asset_content_type: application/vnd.microsoft.portable-executable
+      
+      - name: Upload Build Artifact (for manual workflow runs)
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: RelaySimulator-${{ steps.get_version.outputs.VERSION }}
+          path: dist/RelaySimulator.exe
+          retention-days: 30

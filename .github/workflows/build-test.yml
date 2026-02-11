@@ -1,0 +1,53 @@
+name: Build Test
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  test-build:
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+          pip install -r relay_simulator/requirements.txt
+      
+      - name: Build executable
+        run: python build_exe.py
+      
+      - name: Verify build
+        run: |
+          if (Test-Path "dist\RelaySimulator.exe") {
+            Write-Host "✓ Build successful! Executable found at dist\RelaySimulator.exe"
+            $fileSize = (Get-Item "dist\RelaySimulator.exe").Length / 1MB
+            Write-Host "  File size: $([math]::Round($fileSize, 2)) MB"
+          } else {
+            Write-Error "✗ Build failed - executable not found"
+            exit 1
+          }
+        shell: pwsh
+      
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: RelaySimulator-test-build
+          path: dist/RelaySimulator.exe
+          retention-days: 7
