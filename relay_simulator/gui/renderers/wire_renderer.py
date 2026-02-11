@@ -276,11 +276,11 @@ class WireRenderer:
         y *= zoom
         radius = 5 * zoom  # Junction radius
         
-        # Determine junction color: red if powered, gray if unpowered, blue if selected
+        # Determine junction color: green if powered, gray if unpowered, blue if selected
         if self.selected:
             fill_color = VSCodeTheme.WIRE_SELECTED  # Blue when selected
         elif self.powered:
-            fill_color = '#ff0000'  # Red when powered (HIGH)
+            fill_color = VSCodeTheme.ACCENT_GREEN  # Green when powered (HIGH)
         else:
             fill_color = VSCodeTheme.WIRE_UNPOWERED  # Gray when unpowered
         

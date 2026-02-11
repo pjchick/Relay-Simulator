@@ -840,7 +840,7 @@ class DesignCanvas:
                 # Check if junction is powered by checking connected wires
                 powered = self._is_junction_powered(junction, simulation_engine)
                 if powered:
-                    fill_color = '#ff0000'  # Red when powered
+                    fill_color = VSCodeTheme.ACCENT_GREEN  # Green when powered
             
             item = self.canvas.create_oval(
                 x - radius, y - radius,
