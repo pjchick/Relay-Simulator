@@ -198,6 +198,54 @@ PROPERTY_SCHEMAS: Dict[str, List[Dict[str, Any]]] = {
             'target': 'prop',
         }
     ],
+    'GroundDPDTRelay': [
+        {
+            'section': 'Format',
+            'key': 'rotation',
+            'label': 'Rotation',
+            'type': 'dropdown',
+            'options': ['0', '90', '180', '270'],
+            'default': 0,
+            'target': 'attr',
+            'coerce': int,
+        },
+        {
+            'section': 'Format',
+            'key': 'body_color',
+            'label': 'Body Color',
+            'type': 'dropdown',
+            'options': [
+                {'label': 'White', 'value': '#FFFFFF'},
+                {'label': 'Light Gray', 'value': '#CCCCCC'},
+                {'label': 'Gray', 'value': '#888888'},
+                {'label': 'Red', 'value': '#D08080'},
+                {'label': 'Green', 'value': '#80C080'},
+                {'label': 'Blue', 'value': '#8080C0'},
+                {'label': 'Yellow', 'value': '#C0C080'},
+                {'label': 'Orange', 'value': '#D0A070'},
+                {'label': 'Cyan', 'value': '#80C0C0'},
+                {'label': 'Magenta', 'value': '#C080C0'},
+            ],
+            'default': '#CCCCCC',
+            'target': 'prop',
+        },
+        {
+            'section': 'Format',
+            'key': 'flip_horizontal',
+            'label': 'Flip Horizontal',
+            'type': 'boolean',
+            'default': False,
+            'target': 'prop',
+        },
+        {
+            'section': 'Format',
+            'key': 'flip_vertical',
+            'label': 'Flip Vertical',
+            'type': 'boolean',
+            'default': False,
+            'target': 'prop',
+        }
+    ],
     'VCC': [
     ],
     'Link': [

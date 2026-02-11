@@ -112,9 +112,9 @@ class GroundRelayRenderer(ComponentRenderer):
             tags=('component', f'component_{self.component.component_id}')
         )
         
-        # Draw coil section (60px wide x 20px tall, spanning full width of relay)
-        # COIL on left, GND on right, both at y = -80
-        coil_width = 60 * zoom
+        # Draw coil section (40px wide x 20px tall, same as regular DPDT relay)
+        # Horizontally centered on relay body, positioned at COIL pin height
+        coil_width = 40 * zoom
         coil_height = 20 * zoom
         
         # Coil center point (before transformations)
@@ -140,11 +140,42 @@ class GroundRelayRenderer(ComponentRenderer):
             tags=('coil', f'coil_{self.component.component_id}')
         )
         
+        # Get rotation for label positioning
+        rotation = self.get_rotation()
+        
+        # Draw 'C' label inside coil (left side)
+        coil_label_x, coil_label_y = self._apply_flip(cx - 12 * zoom, cy - 80 * zoom, cx, cy)
+        # Apply rotation to label position
+        if rotation != 0:
+            coil_label_x, coil_label_y = self.rotate_point(coil_label_x, coil_label_y, cx, cy, rotation)
+        self.draw_text(
+            coil_label_x, coil_label_y,
+            text='C',
+            font_size=10,
+            fill='#a0a0a0',
+            anchor='center',
+            tags=('pin_label', f'coil_label_{self.component.component_id}')
+        )
+        
+        # Draw 'G' label inside coil (right side)
+        gnd_label_x, gnd_label_y = self._apply_flip(cx + 12 * zoom, cy - 80 * zoom, cx, cy)
+        # Apply rotation to label position
+        if rotation != 0:
+            gnd_label_x, gnd_label_y = self.rotate_point(gnd_label_x, gnd_label_y, cx, cy, rotation)
+        self.draw_text(
+            gnd_label_x, gnd_label_y,
+            text='G',
+            font_size=10,
+            fill='#569cd6',  # Blue color to indicate ground
+            anchor='center',
+            tags=('pin_label', f'gnd_label_{self.component.component_id}')
+        )
+        
         # Draw label with position support
         label = self.component.properties.get('label', '')
         if label:
             label_pos = self.component.properties.get('label_position', 'top')
-            rotation = self.get_rotation()
+            # Use rotation already retrieved above
             
             # Calculate offset based on relay orientation
             if rotation in [0, 180]:
