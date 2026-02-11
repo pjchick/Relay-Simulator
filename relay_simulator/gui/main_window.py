@@ -1196,6 +1196,12 @@ class MainWindow:
             messagebox.showerror("Simulation Error", f"Failed to build simulation:\n{e}")
             return
         
+        # Validate GND connection rules in all VNETs
+        validation_error = self._validate_gnd_vnets(vnets, tabs)
+        if validation_error:
+            messagebox.showerror("Invalid Ground Network Detected", validation_error)
+            return
+        
         # Create and initialize simulation engine
         try:
             self.simulation_engine = SimulationEngine(
@@ -1388,6 +1394,23 @@ class MainWindow:
         if stats is None:
             self.set_status("Simulation Error: no statistics")
             return
+        
+        # Validate GND connections after simulation step
+        if self.simulation_engine:
+            validation_error = self._validate_gnd_vnets(
+                self.simulation_engine.vnets,
+                self.simulation_engine.tabs
+            )
+            if validation_error:
+                # GND violation detected - stop simulation and show error
+                self._menu_stop_simulation()
+                self.root.after(100, lambda: messagebox.showerror(
+                    "Invalid Ground Network During Simulation",
+                    f"{validation_error}\n\n"
+                    f"This violation occurred when relay contacts switched.\n"
+                    f"Simulation has been stopped."
+                ))
+                return
 
         # Update visual feedback (GUI thread)
         try:
@@ -3218,6 +3241,15 @@ class MainWindow:
         from core.wire import Junction, Wire, Waypoint
         junction_id = tab.document.id_manager.generate_id()
         junction = Junction(junction_id, (int(waypoint.position[0]), int(waypoint.position[1])))
+        
+        # Validate GND connection rules before creating junction and wire
+        # Check if connecting wire_start_tab to the existing wire would violate GND rules
+        if not self._validate_gnd_connection(self.wire_start_tab, host_wire.start_tab_id, page):
+            self._clear_wire_preview()
+            self.wire_start_tab = None
+            self.wire_temp_waypoints = []
+            return  # Validation failed, don't create junction or wire
+        
         page.add_junction(junction)
 
         # Split waypoints around the clicked waypoint to preserve geometry
@@ -4223,6 +4255,13 @@ class MainWindow:
         junction = page.get_junction(junction_id)
         if not junction:
             return
+        
+        # Validate GND connection rules before creating wire
+        if not self._validate_gnd_connection(self.wire_start_tab, junction_id, page):
+            self._clear_wire_preview()
+            self.wire_start_tab = None
+            self.wire_temp_waypoints = []
+            return  # Validation failed, don't create wire
 
         # Snapshot state before mutating the document
         self._capture_undo_checkpoint()
@@ -4290,6 +4329,14 @@ class MainWindow:
         junction_x = round(canvas_x / snap_size) * snap_size
         junction_y = round(canvas_y / snap_size) * snap_size
         junction_pos = (int(junction_x), int(junction_y))
+        
+        # Validate GND connection rules before creating junction
+        # Check if connecting wire_start_tab to the clicked wire would violate GND rules
+        if not self._validate_gnd_connection(self.wire_start_tab, clicked_wire.start_tab_id, page):
+            self._clear_wire_preview()
+            self.wire_start_tab = None
+            self.wire_temp_waypoints = []
+            return  # Validation failed, don't create junction
         
         # Generate junction ID
         junction_id = tab.document.id_manager.generate_id()
@@ -4377,6 +4424,279 @@ class MainWindow:
         
         self.set_status(f"Junction created at wire intersection. Three wires now connected.")
     
+    def _validate_gnd_connection(self, start_tab_id: str, end_tab_id: str, page) -> bool:
+        """
+        Validate that Relay GND connections follow design rules.
+        
+        Design Rule: A Relay GND can only be connected to:
+        - Other GND components
+        - Ground DPDT Relay pins (COM1, COM2, NC1, NC2, NO1, NO2, GND)
+        - LINK components
+        
+        Args:
+            start_tab_id: Starting tab ID
+            end_tab_id: Ending tab ID
+            page: Current page
+            
+        Returns:
+            True if connection is valid, False otherwise
+        """
+        # Get components for both tabs
+        start_comp_info = self._get_tab_component_info(start_tab_id, page)
+        end_comp_info = self._get_tab_component_info(end_tab_id, page)
+        
+        if not start_comp_info or not end_comp_info:
+            return True  # Can't validate, allow connection
+        
+        start_comp, start_pin_name = start_comp_info
+        end_comp, end_pin_name = end_comp_info
+        
+        # Check if either component is a GND
+        has_gnd = (start_comp.component_type == "GND") or (end_comp.component_type == "GND")
+        
+        if not has_gnd:
+            return True  # No GND involved, no restriction
+        
+        # Collect all tabs that would be in the resulting network
+        connected_tabs = self._find_connected_tabs_network(start_tab_id, end_tab_id, page)
+        
+        # Validate all components in the network
+        for tab_id in connected_tabs:
+            comp_info = self._get_tab_component_info(tab_id, page)
+            if not comp_info:
+                continue
+            
+            comp, pin_name = comp_info
+            
+            # Check if this component type is allowed
+            if not self._is_gnd_compatible_component(comp, pin_name):
+                messagebox.showerror(
+                    "Invalid Ground Connection",
+                    f"Relay GND cannot be connected to {comp.component_type}.\n\n"
+                    f"Relay GND can only connect to:\n"
+                    f"  • Other Relay GND components\n"
+                    f"  • DPDT Relay contacts (COM1, COM2, NC1, NC2, NO1, NO2)\n"
+                    f"  • Ground DPDT Relay contacts (COM1, COM2, NC1, NC2, NO1, NO2, GND)\n"
+                    f"  • LINK components\n\n"
+                    f"Note: COIL pins are NOT allowed on GND networks."
+                )
+                return False
+        
+        return True
+    
+    def _get_tab_component_info(self, tab_id: str, page) -> Optional[Tuple[Component, str]]:
+        """
+        Get component and pin name for a tab.
+        
+        Args:
+            tab_id: Tab ID in format "component_id.pin_name.tab_name"
+            page: Current page
+            
+        Returns:
+            Tuple of (Component, pin_name) or None if not found
+        """
+        try:
+            parts = tab_id.split('.')
+            if len(parts) < 2:
+                return None
+            
+            component_id = parts[0]
+            pin_name = parts[1]
+            
+            component = page.components.get(component_id)
+            if not component:
+                return None
+            
+            return (component, pin_name)
+        except Exception:
+            return None
+    
+    def _is_gnd_compatible_component(self, component: Component, pin_name: str) -> bool:
+        """
+        Check if a component/pin is compatible with GND connections.
+        
+        Args:
+            component: Component to check
+            pin_name: Pin name
+            
+        Returns:
+            True if compatible with GND, False otherwise
+        """
+        comp_type = getattr(component, 'component_type', '')
+        
+        # GND components are always compatible
+        if comp_type == "GND":
+            return True
+        
+        # LINK components are always compatible
+        if comp_type == "Link":
+            return True
+        
+        # Ground DPDT Relay pins are compatible (except COIL)
+        if comp_type == "GroundDPDTRelay":
+            allowed_pins = ["COM1", "COM2", "NC1", "NC2", "NO1", "NO2", "GND"]
+            return pin_name in allowed_pins
+        
+        # Regular DPDT Relay pins are also compatible (except COIL)
+        if comp_type == "DPDTRelay":
+            allowed_pins = ["COM1", "COM2", "NC1", "NC2", "NO1", "NO2"]
+            return pin_name in allowed_pins
+        
+        # All other components are not compatible
+        return False
+    
+    def _find_connected_tabs_network(self, start_tab_id: str, end_tab_id: str, page) -> set:
+        """
+        Find all tabs that would be connected after creating a wire between start and end.
+        
+        Uses BFS to traverse existing wires from both tabs. Handles junctions.
+        
+        Args:
+            start_tab_id: Starting tab ID (can be junction ID)
+            end_tab_id: Ending tab ID (can be junction ID)
+            page: Current page
+            
+        Returns:
+            Set of all tab IDs in the connected network (excludes junction IDs)
+        """
+        visited_tabs = set()
+        visited_junctions = set()
+        queue = [start_tab_id, end_tab_id]
+        
+        while queue:
+            current_id = queue.pop(0)
+            
+            # Check if this is a junction
+            if page.get_junction(current_id):
+                if current_id in visited_junctions:
+                    continue
+                visited_junctions.add(current_id)
+                
+                # Find all wires connected to this junction
+                for wire in page.wires.values():
+                    if wire.start_tab_id == current_id and wire.end_tab_id:
+                        if wire.end_tab_id not in visited_tabs and wire.end_tab_id not in visited_junctions:
+                            queue.append(wire.end_tab_id)
+                    elif wire.end_tab_id == current_id:
+                        if wire.start_tab_id not in visited_tabs and wire.start_tab_id not in visited_junctions:
+                            queue.append(wire.start_tab_id)
+                continue
+            
+            # Regular tab
+            if current_id in visited_tabs:
+                continue
+            
+            visited_tabs.add(current_id)
+            
+            # Find all wires connected to this tab
+            for wire in page.wires.values():
+                other_id = None
+                
+                if wire.start_tab_id == current_id and wire.end_tab_id:
+                    other_id = wire.end_tab_id
+                elif wire.end_tab_id == current_id:
+                    other_id = wire.start_tab_id
+                
+                if other_id and other_id not in visited_tabs and other_id not in visited_junctions:
+                    queue.append(other_id)
+        
+        return visited_tabs
+    
+    def _validate_gnd_vnets(self, vnets: Dict[str, VNET], tabs: Dict[str, Tab]) -> Optional[str]:
+        """
+        Validate that all VNETs containing GND components follow GND connection rules.
+        
+        This validation traverses through bridges to detect violations across
+        electrically connected VNETs.
+        
+        Args:
+            vnets: Dictionary of VNET ID -> VNET
+            tabs: Dictionary of Tab ID -> Tab
+            
+        Returns:
+            Error message string if validation fails, None if valid
+        """
+        # Check each VNET that contains a GND component
+        for vnet in vnets.values():
+            # Check if this VNET contains a GND component
+            has_gnd = False
+            for tab_id in vnet.tab_ids:
+                tab = tabs.get(tab_id)
+                if tab and tab.parent_pin and tab.parent_pin.parent_component:
+                    component = tab.parent_pin.parent_component
+                    if hasattr(component, 'component_type') and component.component_type == "GND":
+                        has_gnd = True
+                        break
+            
+            if not has_gnd:
+                continue  # No GND in this VNET, skip validation
+            
+            # Use BFS to traverse all connected VNETs through bridges
+            visited_vnets = set()
+            queue = [vnet.vnet_id]
+            
+            while queue:
+                current_vnet_id = queue.pop(0)
+                
+                if current_vnet_id in visited_vnets:
+                    continue
+                
+                visited_vnets.add(current_vnet_id)
+                current_vnet = vnets.get(current_vnet_id)
+                
+                if not current_vnet:
+                    continue
+                
+                # Validate all tabs in this VNET
+                for tab_id in current_vnet.tab_ids:
+                    tab = tabs.get(tab_id)
+                    if not tab or not tab.parent_pin or not tab.parent_pin.parent_component:
+                        continue
+                    
+                    component = tab.parent_pin.parent_component
+                    
+                    # Extract pin name from tab_id (format: component_id.pin_name.tab_name)
+                    try:
+                        parts = tab_id.split('.')
+                        if len(parts) >= 2:
+                            pin_name = parts[1]
+                        else:
+                            continue
+                    except Exception:
+                        continue
+                    
+                    # Check if this component/pin is compatible with GND
+                    if not self._is_gnd_compatible_component(component, pin_name):
+                        comp_type = getattr(component, 'component_type', 'Unknown')
+                        return (
+                            f"Invalid Ground Network detected.\n\n"
+                            f"A Relay GND component is connected to {comp_type} (pin: {pin_name}).\n\n"
+                            f"Relay GND can only connect to:\n"
+                            f"  • Other Relay GND components\n"
+                            f"  • DPDT Relay contacts (COM1, COM2, NC1, NC2, NO1, NO2)\n"
+                            f"  • Ground DPDT Relay contacts (COM1, COM2, NC1, NC2, NO1, NO2, GND)\n"
+                            f"  • LINK components\n\n"
+                            f"Note: COIL pins are NOT allowed on GND networks.\n\n"
+                            f"Please fix the wiring before starting simulation."
+                        )
+                
+                # Follow bridges to connected VNETs
+                for bridge_id in current_vnet.bridge_ids:
+                    # Find other VNETs that share this bridge
+                    for other_vnet_id, other_vnet in vnets.items():
+                        if other_vnet_id != current_vnet_id and bridge_id in other_vnet.bridge_ids:
+                            if other_vnet_id not in visited_vnets:
+                                queue.append(other_vnet_id)
+                
+                # Follow link names to connected VNETs (cross-page connections)
+                for link_name in current_vnet.link_names:
+                    for other_vnet_id, other_vnet in vnets.items():
+                        if other_vnet_id != current_vnet_id and other_vnet.has_link(link_name):
+                            if other_vnet_id not in visited_vnets:
+                                queue.append(other_vnet_id)
+        
+        return None  # All VNETs are valid
+    
     def _create_wire(self, start_tab_id: str, end_tab_id: str, waypoints: list = None) -> None:
         """
         Create a wire between two tabs.
@@ -4397,6 +4717,10 @@ class MainWindow:
         page = tab.document.get_page(active_page_id)
         if not page:
             return
+        
+        # Validate GND connection rules before creating wire
+        if not self._validate_gnd_connection(start_tab_id, end_tab_id, page):
+            return  # Validation failed, don't create wire
 
         # Snapshot state before mutating the document
         self._capture_undo_checkpoint()
@@ -6222,6 +6546,14 @@ class MainWindow:
                 wire_obj = Wire.from_dict(remapped)
             except Exception:
                 continue
+            
+            # Validate GND connection rules before adding wire
+            start_id = wire_obj.start_tab_id
+            end_id = wire_obj.end_tab_id
+            if start_id and end_id:
+                if not self._validate_gnd_connection(start_id, end_id, page):
+                    continue  # Skip this wire if it violates GND rules
+            
             page.add_wire(wire_obj)
             pasted_wire_ids.append(wire_obj.wire_id)
             self.selected_wires.add(wire_obj.wire_id)
