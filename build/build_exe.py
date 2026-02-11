@@ -11,28 +11,30 @@ import PyInstaller.__main__
 import os
 import sys
 
-# Get the directory of this script
+# Get the directory of this script (build directory)
 script_dir = os.path.dirname(os.path.abspath(__file__))
+# Get the repository root directory (parent of build directory)
+repo_dir = os.path.dirname(script_dir)
 
 # Build arguments for PyInstaller
 args = [
-    os.path.join(script_dir, 'relay_simulator', 'app.py'),  # Entry point
+    os.path.join(repo_dir, 'relay_simulator', 'app.py'),  # Entry point
     '--name=RelaySimulator',  # Executable name
     '--onefile',  # Create a single executable file
     '--windowed',  # No console window (GUI app)
     '--clean',  # Clean PyInstaller cache
     
     # Add relay_simulator to Python path so imports work correctly
-    '--paths=' + os.path.join(script_dir, 'relay_simulator'),
+    '--paths=' + os.path.join(repo_dir, 'relay_simulator'),
     
     # Add all the package directories
-    '--add-data=' + os.path.join(script_dir, 'relay_simulator', 'gui') + os.pathsep + 'gui',
-    '--add-data=' + os.path.join(script_dir, 'relay_simulator', 'components') + os.pathsep + 'components',
-    '--add-data=' + os.path.join(script_dir, 'relay_simulator', 'core') + os.pathsep + 'core',
-    '--add-data=' + os.path.join(script_dir, 'relay_simulator', 'engine') + os.pathsep + 'engine',
-    '--add-data=' + os.path.join(script_dir, 'relay_simulator', 'fileio') + os.pathsep + 'fileio',
-    '--add-data=' + os.path.join(script_dir, 'relay_simulator', 'simulation') + os.pathsep + 'simulation',
-    '--add-data=' + os.path.join(script_dir, 'relay_simulator', 'rendering') + os.pathsep + 'rendering',
+    '--add-data=' + os.path.join(repo_dir, 'relay_simulator', 'gui') + os.pathsep + 'gui',
+    '--add-data=' + os.path.join(repo_dir, 'relay_simulator', 'components') + os.pathsep + 'components',
+    '--add-data=' + os.path.join(repo_dir, 'relay_simulator', 'core') + os.pathsep + 'core',
+    '--add-data=' + os.path.join(repo_dir, 'relay_simulator', 'engine') + os.pathsep + 'engine',
+    '--add-data=' + os.path.join(repo_dir, 'relay_simulator', 'fileio') + os.pathsep + 'fileio',
+    '--add-data=' + os.path.join(repo_dir, 'relay_simulator', 'simulation') + os.pathsep + 'simulation',
+    '--add-data=' + os.path.join(repo_dir, 'relay_simulator', 'rendering') + os.pathsep + 'rendering',
     
     # Hidden imports for dynamically loaded modules
     '--hidden-import=tkinter',
@@ -56,9 +58,9 @@ args = [
     '--exclude-module=pytest-cov',
     
     # Output directory
-    '--distpath=' + os.path.join(script_dir, 'dist'),
-    '--workpath=' + os.path.join(script_dir, 'build'),
-    '--specpath=' + os.path.join(script_dir, 'build'),
+    '--distpath=' + os.path.join(repo_dir, 'dist'),
+    '--workpath=' + os.path.join(repo_dir, 'build'),
+    '--specpath=' + os.path.join(repo_dir, 'build'),
 ]
 
 print("Building Relay Simulator executable...")
@@ -69,4 +71,4 @@ PyInstaller.__main__.run(args)
 
 print()
 print("Build complete!")
-print(f"Executable location: {os.path.join(script_dir, 'dist', 'RelaySimulator.exe')}")
+print(f"Executable location: {os.path.join(repo_dir, 'dist', 'RelaySimulator.exe')}")
