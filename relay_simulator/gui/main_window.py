@@ -1320,8 +1320,8 @@ class MainWindow:
         This is called from the relay's timer thread, so we need to schedule
         the simulation restart on the GUI thread.
         """
-        # Schedule simulation restart on GUI thread
-        self.root.after(10, self._run_simulation_step)
+        # Schedule simulation restart on GUI thread (0ms = immediate)
+        self.root.after(0, self._run_simulation_step)
     
     def _run_simulation_step(self):
         """
@@ -1411,7 +1411,7 @@ class MainWindow:
             pass
 
         if run_again:
-            self.root.after(10, self._run_simulation_step)
+            self.root.after(0, self._run_simulation_step)
 
     def _poll_simulation_stopped(self) -> None:
         """Wait (without blocking the UI thread) for any in-flight simulation run to stop."""
@@ -1466,7 +1466,13 @@ class MainWindow:
         self.set_status("Design Mode - Ready")
 
         # Redraw canvas to clear powered state visual feedback
-        self._redraw_canvas()
+        tab = self.file_tabs.get_active_tab()
+        if tab and tab.document:
+            active_page_id = self.page_tabs.get_active_page_id()
+            if active_page_id:
+                page = tab.document.get_page(active_page_id)
+                if page:
+                    self._set_canvas_page(page)
     
     def _update_simulation_visuals(self):
         """Update visual feedback for powered components and wires."""
@@ -1489,8 +1495,6 @@ class MainWindow:
                             elapsed,
                             len(page.get_all_components()) if hasattr(page, 'get_all_components') else None,
                         )
-        
-        # (debug logging removed)
     
     def _handle_switch_toggle(self, canvas_x: float, canvas_y: float):
         """Backward-compatible wrapper for simulation switch click handling."""
@@ -1553,7 +1557,7 @@ class MainWindow:
 
                 self.simulation_engine.dirty_manager.mark_all_dirty()
                 self._update_simulation_visuals()
-                self.root.after(10, self._run_simulation_step)
+                self.root.after(0, self._run_simulation_step)
 
         except Exception as e:
             print(f"Error interacting with thumbwheel: {e}")
@@ -1646,7 +1650,7 @@ class MainWindow:
                                         except Exception:
                                             pass
                                         self._update_simulation_visuals()
-                                        self.root.after(10, self._run_simulation_step)
+                                        self.root.after(0, self._run_simulation_step)
                                     else:
                                         # Design mode: mark document modified and redraw.
                                         try:
@@ -1740,7 +1744,7 @@ class MainWindow:
                     self._update_simulation_visuals()
 
                     # Re-run simulation to propagate change
-                    self.root.after(10, self._run_simulation_step)
+                    self.root.after(0, self._run_simulation_step)
         except Exception as e:
             print(f"Error interacting with switch: {e}")
             import traceback
@@ -1769,7 +1773,7 @@ class MainWindow:
                 )
                 self.simulation_engine.dirty_manager.mark_all_dirty()
                 self._update_simulation_visuals()
-                self.root.after(10, self._run_simulation_step)
+                self.root.after(0, self._run_simulation_step)
         except Exception as e:
             print(f"Error releasing switch: {e}")
             import traceback

@@ -26,6 +26,8 @@ from simulation.vnet_evaluator import VnetEvaluator
 from simulation.state_propagator import StatePropagator
 from simulation.dirty_flag_manager import DirtyFlagManager
 from simulation.component_update_coordinator import ComponentUpdateCoordinator
+from simulation.vnet_manager import VnetManager
+from simulation.bridge_manager import BridgeManager
 from thread_pool_pkg.thread_pool import ThreadPoolManager, WorkItem
 from components.thread_safe_component import ThreadSafeComponent, ComponentExecutionCoordinator
 
@@ -127,6 +129,12 @@ class ThreadedSimulationEngine:
         self.dirty_manager = DirtyFlagManager(vnets)
         self.coordinator = ComponentUpdateCoordinator(components, tabs)
         
+        # Create managers for component interface
+        from core.id_manager import IDManager
+        self.id_manager = IDManager()  # For generating bridge IDs
+        self.vnet_manager = VnetManager(vnets, tabs, self.dirty_manager)
+        self.bridge_manager = BridgeManager(bridges, self.id_manager, vnets, self.coordinator)
+        
         # Phase 5 - Thread pool
         self.thread_pool = ThreadPoolManager(thread_count=thread_count)
         
@@ -171,7 +179,7 @@ class ThreadedSimulationEngine:
                 raise Exception("Failed to start thread pool")
             
             # Reset statistics
-            with self._stats_lock:
+            with self._stats_lock:self.vnet_manager, self.bridge_manager
                 self.statistics = SimulationStatistics()
             
             # Call sim_start on all components

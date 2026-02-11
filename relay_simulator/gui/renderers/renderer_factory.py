@@ -9,7 +9,9 @@ from gui.renderers.base_renderer import ComponentRenderer
 from gui.renderers.switch_renderer import SwitchRenderer
 from gui.renderers.indicator_renderer import IndicatorRenderer
 from gui.renderers.relay_renderer import RelayRenderer
+from gui.renderers.ground_relay_renderer import GroundRelayRenderer
 from gui.renderers.vcc_renderer import VCCRenderer
+from gui.renderers.gnd_renderer import GNDRenderer
 from gui.renderers.bus_renderer import BUSRenderer
 from gui.renderers.seven_segment_display_renderer import SevenSegmentDisplayRenderer
 from gui.renderers.thumbwheel_renderer import ThumbwheelRenderer
@@ -34,7 +36,9 @@ class RendererFactory:
         'Switch': SwitchRenderer,
         'Indicator': IndicatorRenderer,
         'DPDTRelay': RelayRenderer,
+        'GroundDPDTRelay': GroundRelayRenderer,
         'VCC': VCCRenderer,
+        'GND': GNDRenderer,
         'BUS': BUSRenderer,
         'SevenSegmentDisplay': SevenSegmentDisplayRenderer,
         'Thumbwheel': ThumbwheelRenderer,

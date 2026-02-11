@@ -10,7 +10,9 @@ from components.base import Component
 from components.switch import Switch
 from components.indicator import Indicator
 from components.dpdt_relay import DPDTRelay
+from components.ground_dpdt_relay import GroundDPDTRelay
 from components.vcc import VCC
+from components.gnd import GND
 from components.bus import BUS
 from components.seven_segment_display import SevenSegmentDisplay
 from components.thumbwheel import Thumbwheel
@@ -43,7 +45,9 @@ class ComponentFactory:
         self.register_component("Switch", Switch)
         self.register_component("Indicator", Indicator)
         self.register_component("DPDTRelay", DPDTRelay)
+        self.register_component("GroundDPDTRelay", GroundDPDTRelay)
         self.register_component("VCC", VCC)
+        self.register_component("GND", GND)
         self.register_component("BUS", BUS)
         self.register_component("SevenSegmentDisplay", SevenSegmentDisplay)
         self.register_component("Thumbwheel", Thumbwheel)

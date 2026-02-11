@@ -130,7 +130,7 @@ class SimulationEngine:
         from core.id_manager import IDManager
         self.id_manager = IDManager()  # For generating bridge IDs
         self.vnet_manager = VnetManager(vnets, tabs, self.dirty_manager)
-        self.bridge_manager = BridgeManager(bridges, self.id_manager, vnets)
+        self.bridge_manager = BridgeManager(bridges, self.id_manager, vnets, self.coordinator)
         
         # Statistics
         self.statistics = SimulationStatistics()
@@ -506,9 +506,7 @@ class SimulationEngine:
                         finally:
                             self.coordinator.mark_update_complete(component.component_id)
                     
-                    # Wait for all updates to complete
-                    self.coordinator.wait_for_completion(timeout=1.0)
-                    # No global post-component VNET scan here.
+                    # No need to wait - components execute synchronously in single-threaded engine
                     # Components are responsible for marking affected VNETs dirty via VnetManager,
                     # and bridge changes (add/remove) already mark VNETs dirty.
                 

@@ -1,18 +1,18 @@
 """
-DPDT Relay Component for Relay Logic Simulator
+Ground DPDT Relay Component for Relay Logic Simulator
 
-A Double Pole Double Throw (DPDT) relay with realistic timing behavior.
-The relay switches two independent poles between normally-closed (NC) and 
-normally-open (NO) contacts based on coil energization.
+A Double Pole Double Throw (DPDT) relay with realistic timing behavior and
+ground reference requirement. This relay requires both a HIGH coil signal AND
+a proper ground connection to energize.
 
-Visual: Relay symbol with coil and two poles
-Pins: 7 pins total
-  - 1 coil pin (COIL)
+Visual: Relay symbol with coil (with GND pin) and two poles
+Pins: 8 pins total
+  - 2 coil pins (COIL and GND)
   - Pole 1: COM1, NO1, NC1 (3 pins)
   - Pole 2: COM2, NO2, NC2 (3 pins)
 
 Timing: 10ms delay when coil state changes before contacts switch
-State: Energized when coil is HIGH, De-energized when coil is FLOAT
+State: Energized when COIL is HIGH AND GND pin is connected to a GND component
 """
 
 from typing import Dict, Any, Optional
@@ -24,12 +24,14 @@ from core.tab import Tab
 from core.state import PinState
 
 
-class DPDTRelay(Component):
+class GroundDPDTRelay(Component):
     """
-    DPDT Relay component - Electromechanical relay with two poles.
+    Ground DPDT Relay component - Electromechanical relay with two poles and ground reference.
     
     Each pole switches between NC (normally-closed) and NO (normally-open)
     contacts when the coil is energized. Includes realistic 10ms switching delay.
+    
+    Requires both COIL pin HIGH and GND pin connected to a GND component to energize.
     
     Properties:
         label: Display label (optional)
@@ -42,7 +44,8 @@ class DPDTRelay(Component):
         flip_vertical: True/False
     
     Pin Configuration:
-        COIL: Energizes relay when HIGH
+        COIL: Energizes relay when HIGH (if GND is connected)
+        GND: Must be connected to a GND component
         Pole 1: COM1, NO1, NC1
         Pole 2: COM2, NO2, NC2
     
@@ -51,7 +54,7 @@ class DPDTRelay(Component):
         Energized: COM1→NO1, COM2→NO2
     """
     
-    component_type = "DPDTRelay"
+    component_type = "GroundDPDTRelay"
     
     # Default colors for different color options
     COLOR_PRESETS = {
@@ -69,7 +72,7 @@ class DPDTRelay(Component):
     
     def __init__(self, component_id: str, page_id: str):
         """
-        Initialize DPDT relay component.
+        Initialize Ground DPDT relay component.
         
         Args:
             component_id: Unique identifier for this component
@@ -91,6 +94,7 @@ class DPDTRelay(Component):
         
         # Pin references (set during pin creation)
         self._coil_pin: Optional[Pin] = None
+        self._gnd_pin: Optional[Pin] = None
         self._com1_pin: Optional[Pin] = None
         self._no1_pin: Optional[Pin] = None
         self._nc1_pin: Optional[Pin] = None
@@ -120,23 +124,24 @@ class DPDTRelay(Component):
     
     def _create_pins_and_tabs(self):
         """
-        Create all 7 pins with a single tab each.
+        Create all 8 pins with a single tab each.
         
         Visual layout matching the design:
-        - Component: 60px wide x 220px tall
+        - Component: 60px wide x 200px tall (same as regular DPDT)
         - Pins arranged vertically along left and right edges
         
         Pin positions (relative to component center):
         Left side (x = -30, at left edge):
           - COIL: top-left (y = -80)
           - COM1: mid-upper-left (y = -20)
-          - COM2: mid-lower-left (y = +50)
+          - COM2: mid-lower-left (y = +60)
         
         Right side (x = +30, at right edge):
-          - NO1: top-right (y = -50)
-          - NC1: upper-mid-right (y = +10)
-          - NO2: lower-mid-right (y = +30)
-          - NC2: bottom-right (y = +70)
+          - GND: top-right (y = -80, vertically aligned with COIL)
+          - NO1: upper-right (y = -40)
+          - NC1: upper-mid-right (y = 0)
+          - NO2: lower-mid-right (y = +40)
+          - NC2: bottom-right (y = +80)
         """
         
         # Helper function to create a pin with a single tab
@@ -145,7 +150,7 @@ class DPDTRelay(Component):
             Create a pin with a single tab at the pin position.
             
             Args:
-                pin_name: Name of the pin (COIL, COM1, etc.)
+                pin_name: Name of the pin (COIL, GND, COM1, etc.)
                 pin_offset_x: X offset from component center
                 pin_offset_y: Y offset from component center
             """
@@ -177,6 +182,10 @@ class DPDTRelay(Component):
         # Right side pins (x = +30, touching right edge of relay box)
         right_x = 30
         
+        # GND pin (top-right, y = -80, aligned with COIL)
+        self._gnd_pin = create_pin_with_tab("GND", right_x, -80)
+        self.add_pin(self._gnd_pin)
+        
         # NO1 pin (top-right, y = -40)
         self._no1_pin = create_pin_with_tab("NO1", right_x, -40)
         self.add_pin(self._no1_pin)
@@ -193,12 +202,74 @@ class DPDTRelay(Component):
         self._nc2_pin = create_pin_with_tab("NC2", right_x, 80)
         self.add_pin(self._nc2_pin)
     
+    def _is_gnd_connected(self, vnet_manager) -> bool:
+        """
+        Check if the GND pin is connected to a GND component.
+        Traverses bridges to find GND components through relay contacts.
+        
+        Args:
+            vnet_manager: VnetManager instance
+            
+        Returns:
+            True if GND pin is connected to a GND component, False otherwise
+        """
+        if not self._gnd_pin or not self._gnd_pin.tabs:
+            return False
+        
+        # Get the VNET for the GND pin
+        gnd_tab = next(iter(self._gnd_pin.tabs.values()))
+        start_vnet = vnet_manager.get_vnet_for_tab(gnd_tab.tab_id)
+        
+        if not start_vnet:
+            return False
+        
+        # Use BFS to traverse VNETs through bridges to find a GND component
+        visited_vnets = set()
+        queue = [start_vnet.vnet_id]
+        
+        while queue:
+            current_vnet_id = queue.pop(0)
+            
+            if current_vnet_id in visited_vnets:
+                continue
+            
+            visited_vnets.add(current_vnet_id)
+            current_vnet = vnet_manager.vnets.get(current_vnet_id)
+            
+            if not current_vnet:
+                continue
+            
+            # Check all tabs in this VNET for a GND component
+            for tab_id in current_vnet.tab_ids:
+                tab = vnet_manager.tabs.get(tab_id)
+                if tab and tab.parent_pin and tab.parent_pin.parent_component:
+                    component = tab.parent_pin.parent_component
+                    if hasattr(component, 'component_type') and component.component_type == "GND":
+                        return True
+            
+            # Follow bridges to connected VNETs
+            for bridge_id in current_vnet.bridge_ids:
+                # Get the bridge to find the other VNET
+                # Bridges connect two VNETs, so we need to find the other one
+                # We can access this through the vnet_manager if it has a bridges dict
+                # or we can check other VNETs for this bridge_id
+                for other_vnet_id, other_vnet in vnet_manager.vnets.items():
+                    if other_vnet_id != current_vnet_id and bridge_id in other_vnet.bridge_ids:
+                        if other_vnet_id not in visited_vnets:
+                            queue.append(other_vnet_id)
+        
+        return False
+    
     def simulate_logic(self, vnet_manager, bridge_manager=None):
         """
         Execute relay logic with timer-based switching.
         
-        Reads coil pin state and starts a 10ms timer if state change detected.
+        Reads coil pin state and GND connection status. Starts a 10ms timer if state change detected.
         When timer completes, switches bridges between NC and NO contacts.
+        
+        Relay energizes only if:
+        1. COIL pin is HIGH
+        2. GND pin is connected to a GND component
         
         Args:
             vnet_manager: VnetManager instance for state tracking
@@ -207,22 +278,36 @@ class DPDTRelay(Component):
         if bridge_manager is None:
             return  # Cannot operate without bridge_manager
 
-        if not self._coil_pin:
+        if not self._coil_pin or not self._gnd_pin:
             return
 
         # Read current coil state from VNET (passive input reads VNET directly)
         if not self._coil_pin.tabs:
-            print("DPDTRelay: ERROR - coil pin has no tabs!")
             return
 
         coil_tab = next(iter(self._coil_pin.tabs.values()))
         coil_vnet = vnet_manager.get_vnet_for_tab(coil_tab.tab_id)
         if not coil_vnet:
-            print("DPDTRelay: ERROR - coil tab has no VNET!")
             return
 
         coil_state = coil_vnet.state
-        target_energized = (coil_state == PinState.HIGH)
+        
+        # Check both conditions for energization
+        coil_is_high = (coil_state == PinState.HIGH)
+        gnd_is_connected = self._is_gnd_connected(vnet_manager)
+        
+        # Only energize if both conditions are met
+        target_energized = coil_is_high and gnd_is_connected
+        
+        # CRITICAL: If GND is disconnected while relay is energized, force immediate de-energization
+        # No callback needed - we're already in a simulation cycle, changes will be picked up
+        if self._is_energized and not gnd_is_connected:
+            with self._timer_lock:
+                self._target_energized = False
+                self._is_energized = False
+                self._switch_contacts(vnet_manager, bridge_manager)
+                # Don't call callback - we're already in simulation, avoid extra scheduling overhead
+            return
 
         # If state change needed, start/update timer
         with self._timer_lock:
@@ -243,6 +328,7 @@ class DPDTRelay(Component):
         Timer callback that executes after SWITCHING_DELAY.
         
         Switches bridges and updates relay state, then triggers simulation restart.
+        If target state changed again while timer was running, restart the timer.
         
         Args:
             vnet_manager: VnetManager instance
@@ -260,8 +346,6 @@ class DPDTRelay(Component):
                     self._on_contacts_switched_callback()
 
             self._timer_active = False
-    
-
     
     def _switch_contacts(self, vnet_manager, bridge_manager):
         """Switch relay contacts by moving bridges."""
@@ -321,7 +405,7 @@ class DPDTRelay(Component):
         """
         Initialize relay for simulation start.
         
-        Sets coil to FLOAT and creates initial bridges in de-energized state.
+        Sets coil and GND to FLOAT and creates initial bridges in de-energized state.
         
         Args:
             vnet_manager: VnetManager instance
@@ -332,9 +416,11 @@ class DPDTRelay(Component):
         self._target_energized = False
         self._timer_active = False
         
-        # Initialize coil pin to FLOAT
+        # Initialize coil and GND pins to FLOAT
         if self._coil_pin:
             self._coil_pin.set_state(PinState.FLOAT)
+        if self._gnd_pin:
+            self._gnd_pin.set_state(PinState.FLOAT)
         
         # Initialize all contact pins to FLOAT
         for pin in [self._com1_pin, self._no1_pin, self._nc1_pin,
@@ -417,7 +503,7 @@ class DPDTRelay(Component):
         
         # Draw relay symbol (simplified - actual rendering depends on canvas adapter)
         # This is a placeholder for the visual representation
-        canvas_adapter.draw_rectangle(abs_x - 30, abs_y - 40, 60, 80, color)
+        canvas_adapter.draw_rectangle(abs_x - 30, abs_y - 50, 60, 100, color)
         
         # Draw label if present
         if self.properties.get("label"):
@@ -429,7 +515,7 @@ class DPDTRelay(Component):
             )
     
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'DPDTRelay':
+    def from_dict(cls, data: Dict[str, Any]) -> 'GroundDPDTRelay':
         """
         Deserialize relay from dictionary.
         
@@ -437,7 +523,7 @@ class DPDTRelay(Component):
             data: Serialized component data
             
         Returns:
-            DPDTRelay instance
+            GroundDPDTRelay instance
         """
         relay = cls(data["component_id"], data.get("page_id", "page001"))
         
@@ -499,13 +585,14 @@ class DPDTRelay(Component):
         Get pin by name for testing/debugging.
         
         Args:
-            name: Pin name (COIL, COM1, NO1, NC1, COM2, NO2, NC2)
+            name: Pin name (COIL, GND, COM1, NO1, NC1, COM2, NO2, NC2)
             
         Returns:
             Pin instance or None
         """
         pin_map = {
             "COIL": self._coil_pin,
+            "GND": self._gnd_pin,
             "COM1": self._com1_pin,
             "NO1": self._no1_pin,
             "NC1": self._nc1_pin,

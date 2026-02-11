@@ -1,0 +1,556 @@
+{
+  "version": "1.0.0",
+  "pages": [
+    {
+      "page_id": "db5b6b56",
+      "name": "Page 1",
+      "canvas_x": 0.0,
+      "canvas_y": 0.0,
+      "canvas_zoom": 1.0,
+      "components": [
+        {
+          "component_id": "9db39534",
+          "component_type": "GroundDPDTRelay",
+          "position": {
+            "x": 270,
+            "y": 230
+          },
+          "pins": [
+            {
+              "pin_id": "9db39534.COIL",
+              "tabs": [
+                {
+                  "tab_id": "9db39534.COIL.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "9db39534.COM1",
+              "tabs": [
+                {
+                  "tab_id": "9db39534.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "9db39534.COM2",
+              "tabs": [
+                {
+                  "tab_id": "9db39534.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "9db39534.GND",
+              "tabs": [
+                {
+                  "tab_id": "9db39534.GND.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "9db39534.NO1",
+              "tabs": [
+                {
+                  "tab_id": "9db39534.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "9db39534.NC1",
+              "tabs": [
+                {
+                  "tab_id": "9db39534.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "9db39534.NO2",
+              "tabs": [
+                {
+                  "tab_id": "9db39534.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "9db39534.NC2",
+              "tabs": [
+                {
+                  "tab_id": "9db39534.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 80
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "RELAY A",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "3be60c97",
+          "component_type": "Switch",
+          "position": {
+            "x": 140,
+            "y": 150
+          },
+          "pins": [
+            {
+              "pin_id": "3be60c97.pin1",
+              "tabs": [
+                {
+                  "tab_id": "3be60c97.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "3be60c97.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "3be60c97.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "3be60c97.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SW",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "7109986c",
+          "component_type": "VCC",
+          "position": {
+            "x": 170,
+            "y": 290
+          },
+          "pins": [
+            {
+              "pin_id": "7109986c.pin1",
+              "tabs": [
+                {
+                  "tab_id": "7109986c.pin1.tab1",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "pin_position": "bottom"
+          }
+        },
+        {
+          "component_id": "b1236069",
+          "component_type": "GND",
+          "page_id": "db5b6b56",
+          "position": {
+            "x": 580,
+            "y": 370
+          },
+          "rotation": 0,
+          "properties": {
+            "label": ""
+          },
+          "link_name": null
+        },
+        {
+          "component_id": "3c78dd48",
+          "component_type": "DPDTRelay",
+          "position": {
+            "x": 460,
+            "y": 230
+          },
+          "pins": [
+            {
+              "pin_id": "3c78dd48.COIL",
+              "tabs": [
+                {
+                  "tab_id": "3c78dd48.COIL.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "3c78dd48.COM1",
+              "tabs": [
+                {
+                  "tab_id": "3c78dd48.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "3c78dd48.COM2",
+              "tabs": [
+                {
+                  "tab_id": "3c78dd48.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "3c78dd48.NO1",
+              "tabs": [
+                {
+                  "tab_id": "3c78dd48.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "3c78dd48.NC1",
+              "tabs": [
+                {
+                  "tab_id": "3c78dd48.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "3c78dd48.NO2",
+              "tabs": [
+                {
+                  "tab_id": "3c78dd48.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "3c78dd48.NC2",
+              "tabs": [
+                {
+                  "tab_id": "3c78dd48.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 80
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "RELAY B",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "23a01b7d",
+          "component_type": "Switch",
+          "position": {
+            "x": 140,
+            "y": 50
+          },
+          "pins": [
+            {
+              "pin_id": "23a01b7d.pin1",
+              "tabs": [
+                {
+                  "tab_id": "23a01b7d.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "23a01b7d.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "23a01b7d.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "23a01b7d.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "ENABLE",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "10d3c3bd",
+          "component_type": "Indicator",
+          "position": {
+            "x": 350,
+            "y": 270
+          },
+          "pins": [
+            {
+              "pin_id": "10d3c3bd.pin1",
+              "tabs": [
+                {
+                  "tab_id": "10d3c3bd.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "10d3c3bd.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "10d3c3bd.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "10d3c3bd.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        }
+      ],
+      "wires": [
+        {
+          "wire_id": "3eebf761",
+          "start_tab_id": "3be60c97.pin1.tab3",
+          "end_tab_id": "9db39534.COIL.tab0"
+        },
+        {
+          "wire_id": "9fd69c50",
+          "start_tab_id": "7109986c.pin1.tab1",
+          "end_tab_id": "9db39534.COM2.tab0"
+        },
+        {
+          "wire_id": "5a8ffd16",
+          "start_tab_id": "9db39534.GND.tab0",
+          "end_tab_id": "3c78dd48.COM1.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "21637e39",
+              "position": {
+                "x": 360,
+                "y": 150
+              }
+            },
+            {
+              "waypoint_id": "ba407b1d",
+              "position": {
+                "x": 360,
+                "y": 210
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "67ce481e",
+          "start_tab_id": "23a01b7d.pin1.tab3",
+          "end_tab_id": "3c78dd48.COIL.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "9f84cec9",
+              "position": {
+                "x": 400,
+                "y": 50
+              }
+            },
+            {
+              "waypoint_id": "362b94a7",
+              "position": {
+                "x": 400,
+                "y": 150
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "6a1b435a",
+          "start_tab_id": "3c78dd48.NO1.tab0",
+          "end_tab_id": "b1236069.pin1.tab1",
+          "waypoints": [
+            {
+              "waypoint_id": "c61b29ab",
+              "position": {
+                "x": 580,
+                "y": 190
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "4ac36ac1",
+          "start_tab_id": "9db39534.NO2.tab0",
+          "end_tab_id": "10d3c3bd.pin1.tab9"
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "author": "",
+    "created": "",
+    "modified": "",
+    "description": ""
+  }
+}

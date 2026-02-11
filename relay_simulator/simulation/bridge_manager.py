@@ -7,10 +7,13 @@ This provides components (particularly relays) with methods to:
 - Query existing bridges
 """
 
-from typing import Dict, Optional
+from typing import Dict, Optional, TYPE_CHECKING
 from core.bridge import Bridge
 from core.id_manager import IDManager
 from core.vnet import VNET
+
+if TYPE_CHECKING:
+    from simulation.component_update_coordinator import ComponentUpdateCoordinator
 
 
 class BridgeManager:
@@ -23,7 +26,7 @@ class BridgeManager:
     - Query bridges
     """
     
-    def __init__(self, bridges: Dict[str, Bridge], id_manager: IDManager, vnets: Dict[str, VNET]):
+    def __init__(self, bridges: Dict[str, Bridge], id_manager: IDManager, vnets: Dict[str, VNET], coordinator: Optional['ComponentUpdateCoordinator'] = None):
         """
         Initialize bridge manager.
         
@@ -31,10 +34,12 @@ class BridgeManager:
             bridges: Dictionary of all bridges by ID
             id_manager: ID manager for generating bridge IDs
             vnets: Dictionary of all VNETs by ID (needed to update bridge_ids)
+            coordinator: Component update coordinator (optional, for marking components dirty)
         """
         self.bridges = bridges
         self.id_manager = id_manager
         self.vnets = vnets
+        self.coordinator = coordinator
     
     def create_bridge(self, vnet1_id: str, vnet2_id: str, component_id: str) -> str:
         """
@@ -74,14 +79,22 @@ class BridgeManager:
         """
         bridge = self.bridges.pop(bridge_id, None)
         
-        # Remove bridge from both VNETs
+        # Remove bridge from both VNETs and mark connected components dirty
         if bridge:
             vnet1 = self.vnets.get(bridge.vnet_id1)
             vnet2 = self.vnets.get(bridge.vnet_id2)
+            
             if vnet1:
                 vnet1.remove_bridge(bridge_id)
+                # Mark all components connected to this VNET as dirty
+                if self.coordinator:
+                    self.coordinator.queue_components_for_vnet(vnet1)
+            
             if vnet2:
                 vnet2.remove_bridge(bridge_id)
+                # Mark all components connected to this VNET as dirty
+                if self.coordinator:
+                    self.coordinator.queue_components_for_vnet(vnet2)
         
         return bridge
     
@@ -98,7 +111,7 @@ class BridgeManager:
         return [b for b in self.bridges.values() if b.component_id == component_id]
     
     def remove_bridges_for_component(self, component_id: str):
-        """
+        """remove_bridge(bridge_id)  # Use remove_bridge to trigger component queuing
         Remove all bridges created by a component.
         
         Args:
