@@ -666,6 +666,9 @@ class DesignCanvas:
                 if simulation_engine:
                     powered = self._is_wire_powered(wire, simulation_engine)
                     renderer.set_powered(powered)
+                    
+                    grounded = self._is_wire_grounded(wire, simulation_engine)
+                    renderer.set_grounded(grounded)
                 
                 self.wire_renderers[wire.wire_id] = renderer
                 renderer.render(self.zoom_level)
@@ -720,6 +723,84 @@ class DesignCanvas:
             return False
         except Exception as e:
             print(f"Error checking wire powered state: {e}")
+            return False
+    
+    def _is_wire_grounded(self, wire, simulation_engine) -> bool:
+        """
+        Check if a wire is connected to a GND component (even through bridges).
+        
+        Uses BFS to traverse VNETs through bridges to detect GND component connection.
+        
+        Args:
+            wire: Wire to check
+            simulation_engine: SimulationEngine instance
+            
+        Returns:
+            True if wire is connected to GND component, False otherwise
+        """
+        try:
+            # Check if start_tab_id is actually a junction
+            if self.current_page:
+                junction = self.current_page.get_junction(wire.start_tab_id)
+                if junction:
+                    # Wire starts from a junction - check junction's wires
+                    # For simplicity, check the first connected wire's tab
+                    # TODO: More sophisticated junction handling if needed
+                    pass
+            
+            # Get the starting VNET for this wire
+            start_vnet = None
+            if wire.start_tab_id:
+                for vnet in simulation_engine.vnets.values():
+                    if wire.start_tab_id in vnet.tab_ids:
+                        start_vnet = vnet
+                        break
+            
+            if not start_vnet:
+                return False
+            
+            # Use BFS to traverse VNETs through bridges to find a GND component
+            visited_vnets = set()
+            queue = [start_vnet.vnet_id]
+            
+            while queue:
+                current_vnet_id = queue.pop(0)
+                
+                if current_vnet_id in visited_vnets:
+                    continue
+                
+                visited_vnets.add(current_vnet_id)
+                current_vnet = simulation_engine.vnets.get(current_vnet_id)
+                
+                if not current_vnet:
+                    continue
+                
+                # Check all tabs in this VNET for a GND component
+                for tab_id in current_vnet.tab_ids:
+                    tab = simulation_engine.tabs.get(tab_id)
+                    if tab and tab.parent_pin and tab.parent_pin.parent_component:
+                        component = tab.parent_pin.parent_component
+                        if hasattr(component, 'component_type') and component.component_type == "GND":
+                            return True
+                
+                # Follow bridges to connected VNETs
+                for bridge_id in current_vnet.bridge_ids:
+                    # Find other VNETs that share this bridge
+                    for other_vnet_id, other_vnet in simulation_engine.vnets.items():
+                        if other_vnet_id != current_vnet_id and bridge_id in other_vnet.bridge_ids:
+                            if other_vnet_id not in visited_vnets:
+                                queue.append(other_vnet_id)
+                
+                # Follow link names to connected VNETs (cross-page connections)
+                for link_name in current_vnet.link_names:
+                    for other_vnet_id, other_vnet in simulation_engine.vnets.items():
+                        if other_vnet_id != current_vnet_id and other_vnet.has_link(link_name):
+                            if other_vnet_id not in visited_vnets:
+                                queue.append(other_vnet_id)
+            
+            return False
+        except Exception as e:
+            print(f"Error checking wire grounded state: {e}")
             return False
     
     def clear_wires(self) -> None:

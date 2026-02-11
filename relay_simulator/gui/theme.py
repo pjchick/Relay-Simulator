@@ -58,6 +58,7 @@ class VSCodeTheme:
     # Wire Colors
     WIRE_UNPOWERED = "#656565"      # Unpowered wire
     WIRE_POWERED = "#4ec9b0"        # Powered wire
+    WIRE_GROUNDED = "#569cd6"       # Wire connected to GND
     WIRE_SELECTED = "#007acc"       # Selected wire
     WIRE_WAYPOINT = "#cccccc"       # Waypoint marker
     WIRE_JUNCTION = "#ce9178"       # Junction marker

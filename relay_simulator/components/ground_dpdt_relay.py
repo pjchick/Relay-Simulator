@@ -257,6 +257,13 @@ class GroundDPDTRelay(Component):
                     if other_vnet_id != current_vnet_id and bridge_id in other_vnet.bridge_ids:
                         if other_vnet_id not in visited_vnets:
                             queue.append(other_vnet_id)
+            
+            # Follow link names to connected VNETs (cross-page connections)
+            for link_name in current_vnet.link_names:
+                for other_vnet_id, other_vnet in vnet_manager.vnets.items():
+                    if other_vnet_id != current_vnet_id and other_vnet.has_link(link_name):
+                        if other_vnet_id not in visited_vnets:
+                            queue.append(other_vnet_id)
         
         return False
     

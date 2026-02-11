@@ -52,6 +52,7 @@ class WireRenderer:
         self.canvas_items = []  # Track created canvas items for cleanup
         self.selected = False
         self.powered = False
+        self.grounded = False
         self.hovered_waypoint = hovered_waypoint
         self.selected_waypoints = selected_waypoints
     
@@ -78,6 +79,8 @@ class WireRenderer:
             color = VSCodeTheme.WIRE_SELECTED
         elif self.powered:
             color = VSCodeTheme.WIRE_POWERED
+        elif self.grounded:
+            color = VSCodeTheme.WIRE_GROUNDED
         else:
             color = VSCodeTheme.WIRE_UNPOWERED
         
@@ -112,6 +115,7 @@ class WireRenderer:
                 )
                 child_renderer.selected = self.selected
                 child_renderer.powered = self.powered
+                child_renderer.grounded = self.grounded
                 child_renderer.render(zoom)
     
     def _get_wire_path(self) -> List[Tuple[float, float]]:
@@ -314,3 +318,12 @@ class WireRenderer:
             powered: True if wire is powered, False otherwise
         """
         self.powered = powered
+    
+    def set_grounded(self, grounded: bool) -> None:
+        """
+        Set wire grounded state (for simulation mode).
+        
+        Args:
+            grounded: True if wire is connected to GND, False otherwise
+        """
+        self.grounded = grounded

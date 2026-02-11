@@ -99,7 +99,7 @@ class ToolboxPanel(tk.Frame):
         ('DPDTRelay', 'DPDT Relay'),
         ('GroundDPDTRelay', 'Ground DPDT Relay'),
         ('VCC', 'VCC Source'),
-        ('GND', 'GND'),
+        ('GND', 'Relay GND'),
         ('Link', 'Link'),
         ('BUS', 'BUS'),
         ('SevenSegmentDisplay', '7-Segment Display'),

@@ -1,8 +1,9 @@
 """
-GND Component for Relay Logic Simulator
+Relay GND Component for Relay Logic Simulator
 
-A ground reference component that marks a net as grounded.
-This component is used to identify ground connections in the circuit.
+A ground reference component specifically designed for relay circuits.
+This component marks a net as grounded and is used by Ground DPDT Relays
+to determine energization state.
 
 Visual: Ground symbol (three horizontal lines decreasing in length)
 Pins: 1 pin with 1 tab at 12 o'clock position (top)
@@ -18,11 +19,11 @@ from core.state import PinState
 
 class GND(Component):
     """
-    GND component - Ground reference point.
+    Relay GND component - Ground reference point for relay circuits.
     
     This is a passive component that marks a net as connected to ground.
-    Other components (like relays) can check if their nets are grounded
-    by looking for GND components on connected VNETs.
+    Ground DPDT Relays check if their GND pin is connected to this component
+    to determine if they should energize.
     
     Properties:
         label: Display label (optional, defaults to "GND")
