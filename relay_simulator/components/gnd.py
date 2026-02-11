@@ -47,6 +47,9 @@ class GND(Component):
         # Properties
         self.properties["label"] = ""
         
+        # Set default rotation
+        self.rotation = 0
+        
         # Create pin and tab
         self._create_pin_and_tab()
     
