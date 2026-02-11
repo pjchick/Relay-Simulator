@@ -130430,9 +130430,9 @@
     {
       "page_id": "2416f1b4",
       "name": "ALU_S",
-      "canvas_x": 0.0,
-      "canvas_y": 355.0,
-      "canvas_zoom": 0.7387068200134169,
+      "canvas_x": 52.0,
+      "canvas_y": 344.0,
+      "canvas_zoom": 0.8412454226588322,
       "components": [
         {
           "component_id": "1a8ee0e0",
@@ -130532,7 +130532,7 @@
             "label": "",
             "label_position": "top",
             "color": "blue",
-            "body_color": "#CCCCCC",
+            "body_color": "#8080C0",
             "flip_horizontal": false,
             "flip_vertical": false,
             "on_color": [
@@ -130585,7 +130585,9 @@
             "bus_name": "B-Register",
             "start_pin": 4,
             "number_of_pins": 2,
-            "pin_spacing": 4
+            "pin_spacing": 4,
+            "label": "B4-B5",
+            "label_position": "right"
           }
         },
         {
@@ -130593,7 +130595,7 @@
           "component_type": "BUS",
           "position": {
             "x": 740.0,
-            "y": 330.0
+            "y": 350.0
           },
           "pins": [
             {
@@ -130626,7 +130628,9 @@
             "bus_name": "B-Register",
             "start_pin": 8,
             "number_of_pins": 2,
-            "pin_spacing": 4
+            "pin_spacing": 4,
+            "label": "B9-B8",
+            "label_position": "right"
           }
         },
         {
@@ -130634,7 +130638,7 @@
           "component_type": "BUS",
           "position": {
             "x": 1660.0,
-            "y": 300.0
+            "y": 290.0
           },
           "pins": [
             {
@@ -130667,7 +130671,9 @@
             "bus_name": "C-Register",
             "start_pin": 0,
             "number_of_pins": 2,
-            "pin_spacing": 4
+            "pin_spacing": 4,
+            "label": "C1-C0",
+            "label_position": "right"
           }
         },
         {
@@ -130708,7 +130714,9 @@
             "bus_name": "C-Register",
             "start_pin": 8,
             "number_of_pins": 2,
-            "pin_spacing": 4
+            "pin_spacing": 4,
+            "label": "C9-C8",
+            "label_position": "right"
           }
         },
         {
@@ -130716,7 +130724,7 @@
           "component_type": "BUS",
           "position": {
             "x": 1460.0,
-            "y": 340.0
+            "y": 350.0
           },
           "pins": [
             {
@@ -130749,7 +130757,9 @@
             "bus_name": "B-Register",
             "start_pin": 2,
             "number_of_pins": 2,
-            "pin_spacing": 4
+            "pin_spacing": 4,
+            "label": "B3-B2",
+            "label_position": "right"
           }
         },
         {
@@ -130757,7 +130767,7 @@
           "component_type": "BUS",
           "position": {
             "x": 980.0,
-            "y": 330.0
+            "y": 350.0
           },
           "pins": [
             {
@@ -130790,7 +130800,9 @@
             "bus_name": "B-Register",
             "start_pin": 6,
             "number_of_pins": 2,
-            "pin_spacing": 4
+            "pin_spacing": 4,
+            "label": "B7-B6",
+            "label_position": "right"
           }
         },
         {
@@ -130891,7 +130903,7 @@
             "label": "",
             "label_position": "top",
             "color": "blue",
-            "body_color": "#CCCCCC",
+            "body_color": "#8080C0",
             "flip_horizontal": false,
             "flip_vertical": false,
             "on_color": [
@@ -131004,7 +131016,7 @@
             "label": "",
             "label_position": "top",
             "color": "blue",
-            "body_color": "#CCCCCC",
+            "body_color": "#8080C0",
             "flip_horizontal": false,
             "flip_vertical": false,
             "on_color": [
@@ -131024,7 +131036,7 @@
           "component_type": "BUS",
           "position": {
             "x": 1180.0,
-            "y": 310.0
+            "y": 290.0
           },
           "pins": [
             {
@@ -131057,7 +131069,9 @@
             "bus_name": "C-Register",
             "start_pin": 4,
             "number_of_pins": 2,
-            "pin_spacing": 4
+            "pin_spacing": 4,
+            "label": "C5-C4",
+            "label_position": "right"
           }
         },
         {
@@ -131065,7 +131079,7 @@
           "component_type": "BUS",
           "position": {
             "x": 500,
-            "y": 330
+            "y": 350
           },
           "pins": [
             {
@@ -131098,7 +131112,9 @@
             "bus_name": "B-Register",
             "start_pin": 10,
             "number_of_pins": 2,
-            "pin_spacing": 4
+            "pin_spacing": 4,
+            "label": "B11-B10",
+            "label_position": "right"
           }
         },
         {
@@ -131199,7 +131215,7 @@
             "label": "",
             "label_position": "top",
             "color": "blue",
-            "body_color": "#CCCCCC",
+            "body_color": "#8080C0",
             "flip_horizontal": false,
             "flip_vertical": false,
             "on_color": [
@@ -131312,7 +131328,7 @@
             "label": "",
             "label_position": "top",
             "color": "blue",
-            "body_color": "#CCCCCC",
+            "body_color": "#8080C0",
             "flip_horizontal": false,
             "flip_vertical": false,
             "on_color": [
@@ -131365,7 +131381,9 @@
             "bus_name": "C-Register",
             "start_pin": 10,
             "number_of_pins": 2,
-            "pin_spacing": 4
+            "pin_spacing": 4,
+            "label": "C11-C10",
+            "label_position": "right"
           }
         },
         {
@@ -131373,7 +131391,7 @@
           "component_type": "BUS",
           "position": {
             "x": 1420.0,
-            "y": 300.0
+            "y": 290.0
           },
           "pins": [
             {
@@ -131406,7 +131424,9 @@
             "bus_name": "C-Register",
             "start_pin": 2,
             "number_of_pins": 2,
-            "pin_spacing": 4
+            "pin_spacing": 4,
+            "label": "C3-C2",
+            "label_position": "right"
           }
         },
         {
@@ -131414,7 +131434,7 @@
           "component_type": "BUS",
           "position": {
             "x": 1700.0,
-            "y": 340.0
+            "y": 350.0
           },
           "pins": [
             {
@@ -131447,7 +131467,9 @@
             "bus_name": "B-Register",
             "start_pin": 0,
             "number_of_pins": 2,
-            "pin_spacing": 4
+            "pin_spacing": 4,
+            "label": "B1-B0",
+            "label_position": "right"
           }
         },
         {
@@ -131548,7 +131570,7 @@
             "label": "",
             "label_position": "top",
             "color": "blue",
-            "body_color": "#CCCCCC",
+            "body_color": "#8080C0",
             "flip_horizontal": false,
             "flip_vertical": false,
             "on_color": [
@@ -131601,7 +131623,9 @@
             "bus_name": "C-Register",
             "start_pin": 6,
             "number_of_pins": 2,
-            "pin_spacing": 4
+            "pin_spacing": 4,
+            "label": "C7-C6",
+            "label_position": "right"
           }
         },
         {
@@ -131767,7 +131791,7 @@
             "label": "",
             "label_position": "top",
             "color": "blue",
-            "body_color": "#CCCCCC",
+            "body_color": "#80C080",
             "flip_horizontal": false,
             "flip_vertical": false,
             "on_color": [
@@ -131880,7 +131904,7 @@
             "label": "",
             "label_position": "top",
             "color": "blue",
-            "body_color": "#CCCCCC",
+            "body_color": "#80C080",
             "flip_horizontal": false,
             "flip_vertical": false,
             "on_color": [
@@ -131933,7 +131957,8 @@
             "bus_name": "Data",
             "start_pin": 6,
             "number_of_pins": 2,
-            "pin_spacing": 4
+            "pin_spacing": 4,
+            "label": "D7-D6"
           }
         },
         {
@@ -131941,7 +131966,7 @@
           "component_type": "BUS",
           "position": {
             "x": 1120.0,
-            "y": 890.0
+            "y": 880.0
           },
           "pins": [
             {
@@ -131974,7 +131999,8 @@
             "bus_name": "Data",
             "start_pin": 4,
             "number_of_pins": 2,
-            "pin_spacing": 4
+            "pin_spacing": 4,
+            "label": "D5-D4"
           }
         },
         {
@@ -132075,7 +132101,7 @@
             "label": "",
             "label_position": "top",
             "color": "blue",
-            "body_color": "#CCCCCC",
+            "body_color": "#80C080",
             "flip_horizontal": false,
             "flip_vertical": false,
             "on_color": [
@@ -132128,7 +132154,8 @@
             "bus_name": "Data",
             "start_pin": 10,
             "number_of_pins": 2,
-            "pin_spacing": 4
+            "pin_spacing": 4,
+            "label": "D11-D10"
           }
         },
         {
@@ -132169,7 +132196,8 @@
             "bus_name": "Data",
             "start_pin": 8,
             "number_of_pins": 2,
-            "pin_spacing": 4
+            "pin_spacing": 4,
+            "label": "D9-D8"
           }
         },
         {
@@ -132270,7 +132298,7 @@
             "label": "",
             "label_position": "top",
             "color": "blue",
-            "body_color": "#CCCCCC",
+            "body_color": "#80C080",
             "flip_horizontal": false,
             "flip_vertical": false,
             "on_color": [
@@ -132383,7 +132411,7 @@
             "label": "",
             "label_position": "top",
             "color": "blue",
-            "body_color": "#CCCCCC",
+            "body_color": "#80C080",
             "flip_horizontal": false,
             "flip_vertical": false,
             "on_color": [
@@ -132403,7 +132431,7 @@
           "component_type": "BUS",
           "position": {
             "x": 1360.0,
-            "y": 890.0
+            "y": 880.0
           },
           "pins": [
             {
@@ -132436,7 +132464,8 @@
             "bus_name": "Data",
             "start_pin": 2,
             "number_of_pins": 2,
-            "pin_spacing": 4
+            "pin_spacing": 4,
+            "label": "D3-D2"
           }
         },
         {
@@ -132444,7 +132473,7 @@
           "component_type": "BUS",
           "position": {
             "x": 1600.0,
-            "y": 890.0
+            "y": 880.0
           },
           "pins": [
             {
@@ -132477,7 +132506,8 @@
             "bus_name": "Data",
             "start_pin": 0,
             "number_of_pins": 2,
-            "pin_spacing": 4
+            "pin_spacing": 4,
+            "label": "D1-D0"
           }
         },
         {
@@ -132578,7 +132608,7 @@
             "label": "",
             "label_position": "top",
             "color": "blue",
-            "body_color": "#CCCCCC",
+            "body_color": "#80C080",
             "flip_horizontal": false,
             "flip_vertical": false,
             "on_color": [
@@ -132691,7 +132721,7 @@
             "label": "",
             "label_position": "top",
             "color": "blue",
-            "body_color": "#CCCCCC",
+            "body_color": "#D08080",
             "flip_horizontal": false,
             "flip_vertical": true,
             "on_color": [
@@ -132804,7 +132834,7 @@
             "label": "",
             "label_position": "top",
             "color": "blue",
-            "body_color": "#CCCCCC",
+            "body_color": "#D08080",
             "flip_horizontal": false,
             "flip_vertical": true,
             "on_color": [
@@ -132917,7 +132947,7 @@
             "label": "",
             "label_position": "top",
             "color": "blue",
-            "body_color": "#CCCCCC",
+            "body_color": "#D08080",
             "flip_horizontal": false,
             "flip_vertical": true,
             "on_color": [
@@ -133095,7 +133125,7 @@
             "label": "",
             "label_position": "top",
             "color": "blue",
-            "body_color": "#CCCCCC",
+            "body_color": "#D08080",
             "flip_horizontal": false,
             "flip_vertical": true,
             "on_color": [
@@ -133208,7 +133238,7 @@
             "label": "",
             "label_position": "top",
             "color": "blue",
-            "body_color": "#CCCCCC",
+            "body_color": "#D08080",
             "flip_horizontal": false,
             "flip_vertical": true,
             "on_color": [
@@ -133321,7 +133351,7 @@
             "label": "",
             "label_position": "top",
             "color": "blue",
-            "body_color": "#CCCCCC",
+            "body_color": "#D08080",
             "flip_horizontal": false,
             "flip_vertical": true,
             "on_color": [
@@ -133430,7 +133460,7 @@
             }
           ],
           "properties": {
-            "label": "",
+            "label": "Shift / Rotate",
             "label_position": "top",
             "color": "blue",
             "body_color": "#CCCCCC",
@@ -133610,7 +133640,7 @@
             "label": "",
             "label_position": "top",
             "color": "blue",
-            "body_color": "#CCCCCC",
+            "body_color": "#D0A070",
             "flip_horizontal": false,
             "flip_vertical": false,
             "on_color": [
@@ -133833,7 +133863,7 @@
             "label": "",
             "label_position": "top",
             "color": "blue",
-            "body_color": "#CCCCCC",
+            "body_color": "#D0A070",
             "flip_horizontal": false,
             "flip_vertical": false,
             "on_color": [
@@ -133910,7 +133940,9 @@
             "bus_name": "I-Register",
             "start_pin": 4,
             "number_of_pins": 4,
-            "pin_spacing": 14
+            "pin_spacing": 14,
+            "label": "Instruction Register I7-I4",
+            "label_position": "top"
           }
         },
         {
@@ -134010,7 +134042,7 @@
             "label": "",
             "label_position": "top",
             "color": "blue",
-            "body_color": "#CCCCCC",
+            "body_color": "#D0A070",
             "flip_horizontal": false,
             "flip_vertical": false,
             "on_color": [
@@ -134187,7 +134219,7 @@
             "label": "",
             "label_position": "top",
             "color": "blue",
-            "body_color": "#CCCCCC",
+            "body_color": "#D0A070",
             "flip_horizontal": false,
             "flip_vertical": false,
             "on_color": [
@@ -135311,27 +135343,6 @@
           ]
         },
         {
-          "wire_id": "4535c0d9",
-          "start_tab_id": "33a920ba.pin0.tab",
-          "end_tab_id": "1a8ee0e0.NC2.tab0",
-          "waypoints": [
-            {
-              "waypoint_id": "e6f020cc",
-              "position": {
-                "x": 1020,
-                "y": 330
-              }
-            },
-            {
-              "waypoint_id": "d5a146d2",
-              "position": {
-                "x": 1020,
-                "y": 420
-              }
-            }
-          ]
-        },
-        {
           "wire_id": "f0cf1821",
           "start_tab_id": "92bfff5a.pin1.tab3",
           "end_tab_id": "183fa0b0.COIL.tab0",
@@ -135580,6 +135591,11 @@
               }
             }
           ]
+        },
+        {
+          "wire_id": "bff9cdc2",
+          "start_tab_id": "33a920ba.pin0.tab",
+          "end_tab_id": "1a8ee0e0.NC2.tab0"
         }
       ],
       "junctions": [
