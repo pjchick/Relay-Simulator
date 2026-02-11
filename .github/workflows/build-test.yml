@@ -21,7 +21,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.14"
           cache: "pip"
 
       - name: Install dependencies
@@ -45,9 +45,52 @@ jobs:
           }
         shell: pwsh
 
+      - name: Create distribution package
+        run: |
+          # Create package directory
+          New-Item -ItemType Directory -Force -Path "package/RelaySimulator"
+
+          # Copy executable
+          Copy-Item "dist/RelaySimulator.exe" -Destination "package/RelaySimulator/"
+
+          # Copy examples
+          Copy-Item "examples" -Destination "package/RelaySimulator/examples" -Recurse
+
+          # Copy documentation
+          Copy-Item "README.md" -Destination "package/RelaySimulator/"
+          Copy-Item "LICENSE" -Destination "package/RelaySimulator/"
+
+          # Create a quick start guide
+          @"
+          # Relay Simulator - Quick Start
+
+          ## Running the Application
+          Double-click RelaySimulator.exe to launch the application.
+
+          ## Example Circuits
+          Open any .rsim file from the 'examples' folder:
+          - File → Open
+          - Navigate to the examples folder
+          - Select an example circuit
+
+          ## Documentation
+          See README.md for full documentation and usage instructions.
+
+          ## Support
+          For issues or questions, visit: https://github.com/pjchick/Relay-Simulator
+          "@ | Out-File -FilePath "package/RelaySimulator/QUICKSTART.txt" -Encoding UTF8
+
+          # Create ZIP archive
+          Compress-Archive -Path "package/RelaySimulator" -DestinationPath "RelaySimulator-test-build.zip" -Force
+
+          Write-Host "✓ Package created: RelaySimulator-test-build.zip"
+          $zipSize = (Get-Item "RelaySimulator-test-build.zip").Length / 1MB
+          Write-Host "  Package size: $([math]::Round($zipSize, 2)) MB"
+        shell: pwsh
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: RelaySimulator-test-build
-          path: dist/RelaySimulator.exe
+          path: RelaySimulator-test-build.zip
           retention-days: 7

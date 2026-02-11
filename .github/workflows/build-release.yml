@@ -20,7 +20,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.14"
           cache: "pip"
 
       - name: Install dependencies
@@ -56,6 +56,56 @@ jobs:
           echo "Version: $version"
         shell: pwsh
 
+      - name: Create distribution package
+        run: |
+          $version = "${{ steps.get_version.outputs.VERSION }}"
+
+          # Create package directory
+          New-Item -ItemType Directory -Force -Path "package/RelaySimulator"
+
+          # Copy executable
+          Copy-Item "dist/RelaySimulator.exe" -Destination "package/RelaySimulator/"
+
+          # Copy examples
+          Copy-Item "examples" -Destination "package/RelaySimulator/examples" -Recurse
+
+          # Copy documentation
+          Copy-Item "README.md" -Destination "package/RelaySimulator/"
+          Copy-Item "LICENSE" -Destination "package/RelaySimulator/"
+
+          # Create a quick start guide
+          @"
+          # Relay Simulator $version - Quick Start
+
+          ## Running the Application
+          Double-click RelaySimulator.exe to launch the application.
+
+          ## Example Circuits
+          Open any .rsim file from the 'examples' folder:
+          - File → Open
+          - Navigate to the examples folder
+          - Select an example circuit
+
+          ## Documentation
+          See README.md for full documentation and usage instructions.
+
+          ## Support
+          For issues or questions, visit: https://github.com/pjchick/Relay-Simulator
+          "@ | Out-File -FilePath "package/RelaySimulator/QUICKSTART.txt" -Encoding UTF8
+
+          # Create ZIP archive
+          $zipName = "RelaySimulator-$version-Windows.zip"
+          Compress-Archive -Path "package/RelaySimulator" -DestinationPath $zipName -Force
+
+          Write-Host "✓ Package created: $zipName"
+          $zipSize = (Get-Item $zipName).Length / 1MB
+          Write-Host "  Package size: $([math]::Round($zipSize, 2)) MB"
+
+          # Store zip name for later steps
+          echo "ZIP_NAME=$zipName" >> $env:GITHUB_OUTPUT
+        shell: pwsh
+        id: create_package
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -68,9 +118,20 @@ jobs:
             ## Relay Simulator ${{ steps.get_version.outputs.VERSION }}
 
             ### Downloads
-            - **Windows Executable**: RelaySimulator.exe (standalone, no installation required)
+            - **Complete Package**: RelaySimulator-${{ steps.get_version.outputs.VERSION }}-Windows.zip
+              - Includes executable, example circuits, and documentation
+              - Recommended for new users
+            - **Standalone Executable**: RelaySimulator.exe
+              - Just the executable, no examples
 
             ### Installation
+            **Option 1: Complete Package (Recommended)**
+            1. Download `RelaySimulator-${{ steps.get_version.outputs.VERSION }}-Windows.zip`
+            2. Extract the ZIP file
+            3. Run `RelaySimulator.exe` from the extracted folder
+            4. Open example circuits from the `examples` folder
+
+            **Option 2: Standalone Executable**
             1. Download `RelaySimulator.exe`
             2. Run the executable - no installation needed!
 
@@ -86,7 +147,17 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Upload Release Asset
+      - name: Upload Release Asset - Complete Package
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./${{ steps.create_package.outputs.ZIP_NAME }}
+          asset_name: ${{ steps.create_package.outputs.ZIP_NAME }}
+          asset_content_type: application/zip
+
+      - name: Upload Release Asset - Standalone Executable
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -101,5 +172,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: RelaySimulator-${{ steps.get_version.outputs.VERSION }}
-          path: dist/RelaySimulator.exe
+          path: ${{ steps.create_package.outputs.ZIP_NAME }}
           retention-days: 30
