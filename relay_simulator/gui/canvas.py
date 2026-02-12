@@ -781,6 +781,8 @@ class DesignCanvas:
             return False
         except Exception as e:
             print(f"Error checking wire powered state: {e}")
+            import traceback
+            traceback.print_exc()
             return False
     
     def _is_wire_grounded(self, wire, simulation_engine) -> bool:
@@ -1024,11 +1026,17 @@ class DesignCanvas:
                 for tab in pin.tabs.values():
                     # Use pre-built lookup table
                     vnet = self._tab_to_vnet.get(tab.tab_id)
-                    if vnet and vnet.is_powered():
-                        return True
+                    if vnet:
+                        if vnet.is_powered():
+                            return True
+                    else:
+                        # Fallback: tab not in lookup - shouldn't happen!
+                        print(f"WARNING: Tab {tab.tab_id} not in lookup table for component {component.component_type}")
             return False
         except Exception as e:
             print(f"Error checking component powered state: {e}")
+            import traceback
+            traceback.print_exc()
             return False
     
     def clear_junctions(self) -> None:

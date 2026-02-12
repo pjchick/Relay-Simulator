@@ -90,6 +90,7 @@ class MainWindow:
         self._min_frame_time = 1.0 / 10.0  # Start at 10 FPS for complex circuits
         self._last_render_duration = 0.0
         self._render_count = 0
+        self._force_next_visual_update = False  # Force next update to bypass throttling
         
         # Simulation update rate limiting (30 Hz max to prevent GUI saturation)
         # Note: Lower rate = better GUI responsiveness on complex circuits
@@ -1260,6 +1261,7 @@ class MainWindow:
         self._render_count = 0
         self._last_render_duration = 0.0
         self._min_frame_time = 1.0 / 10.0  # Reset to 10 FPS, will adapt
+        self._force_next_visual_update = False  # Reset force flag
         
         # Clear any active editing states
         self.placement_component = None
@@ -1350,6 +1352,8 @@ class MainWindow:
         This is called from the relay's timer thread, so we need to schedule
         the simulation restart on the GUI thread.
         """
+        # Force next visual update to bypass throttling (relay contacts switched)
+        self._force_next_visual_update = True
         # Schedule simulation restart on GUI thread (0ms = immediate)
         self.root.after(0, self._run_simulation_step)
     
@@ -1538,9 +1542,14 @@ class MainWindow:
         profiler = get_profiler()
         
         # Adaptive render throttling: Skip rendering if we're updating too frequently
+        # UNLESS a user interaction occurred (force update)
         now = time.perf_counter()
-        if now - self._last_render_time < self._min_frame_time:
+        if not self._force_next_visual_update and now - self._last_render_time < self._min_frame_time:
             return  # Skip this frame
+        
+        # Clear force flag if it was set
+        if self._force_next_visual_update:
+            self._force_next_visual_update = False
         
         # Get active page
         tab = self.file_tabs.get_active_tab()
@@ -1639,7 +1648,9 @@ class MainWindow:
                 )
 
                 self.simulation_engine.dirty_manager.mark_all_dirty()
-                self._update_simulation_visuals()
+                # Force next visual update to bypass throttling
+                self._force_next_visual_update = True
+                # Visual update will happen after simulation completes
                 self.root.after(0, self._run_simulation_step)
 
         except Exception as e:
@@ -1732,7 +1743,9 @@ class MainWindow:
                                             self.simulation_engine.dirty_manager.mark_all_dirty()
                                         except Exception:
                                             pass
-                                        self._update_simulation_visuals()
+                                        # Force next visual update to bypass throttling
+                                        self._force_next_visual_update = True
+                                        # Visual update will happen after simulation completes
                                         self.root.after(0, self._run_simulation_step)
                                     else:
                                         # Design mode: mark document modified and redraw.
@@ -1823,10 +1836,11 @@ class MainWindow:
                     # Force re-evaluation
                     self.simulation_engine.dirty_manager.mark_all_dirty()
 
-                    # Update visuals immediately
-                    self._update_simulation_visuals()
+                    # Force next visual update to bypass throttling
+                    self._force_next_visual_update = True
 
                     # Re-run simulation to propagate change
+                    # Visual update will happen after simulation completes in _on_simulation_run_complete
                     self.root.after(0, self._run_simulation_step)
         except Exception as e:
             print(f"Error interacting with switch: {e}")
@@ -1838,6 +1852,7 @@ class MainWindow:
         """Handle mouse release for pushbutton switches in simulation mode."""
         clicked_component = getattr(self, '_pressed_switch_component', None)
         self._pressed_switch_component = None
+        
         if not clicked_component:
             return
 
@@ -1855,7 +1870,11 @@ class MainWindow:
                     self.simulation_engine.bridge_manager
                 )
                 self.simulation_engine.dirty_manager.mark_all_dirty()
-                self._update_simulation_visuals()
+                
+                # Force next visual update to bypass throttling
+                self._force_next_visual_update = True
+                
+                # Visual update will happen after simulation completes
                 self.root.after(0, self._run_simulation_step)
         except Exception as e:
             print(f"Error releasing switch: {e}")
