@@ -24,6 +24,9 @@ args = [
     '--windowed',  # No console window (GUI app)
     '--clean',  # Clean PyInstaller cache
     
+    # Add version information to reduce false positives
+    '--version-file=' + os.path.join(script_dir, 'version_info.txt'),
+    
     # Add relay_simulator to Python path so imports work correctly
     '--paths=' + os.path.join(repo_dir, 'relay_simulator'),
     

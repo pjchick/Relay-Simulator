@@ -89,6 +89,13 @@ jobs:
           ## Documentation
           See README.md for full documentation and usage instructions.
 
+          ## Windows Defender Warning
+          Windows may flag this executable as suspicious (false positive). This is common
+          with PyInstaller-built applications. The executable is safe - you can verify by:
+          1. Checking the digital signature matches the release
+          2. Scanning with VirusTotal (link in README)
+          3. Building from source yourself
+
           ## Support
           For issues or questions, visit: https://github.com/pjchick/Relay-Simulator
           "@ | Out-File -FilePath "package/RelaySimulator/QUICKSTART.txt" -Encoding UTF8
@@ -138,6 +145,19 @@ jobs:
             ### Requirements
             - Windows 10 or later
             - No Python installation required
+
+            ### ⚠️ Windows Defender Warning
+            **Windows may flag this executable as a virus/malware. This is a FALSE POSITIVE.**
+
+            This is common with PyInstaller executables due to behavioral heuristics. The executable is safe:
+            - **No malicious code** - Build from source yourself to verify
+            - **Scan with VirusTotal**: [Check the hash](https://www.virustotal.com/)
+            - **Why it happens**: PyInstaller unpacks to temp directory (similar to malware behavior)
+
+            **To allow the app to run:**
+            1. Click "More info" when Windows Defender blocks it
+            2. Click "Run anyway"
+            3. Or add an exclusion in Windows Security for `RelaySimulator.exe`
 
             ### What's New
             See the commit history for details on changes in this release.
