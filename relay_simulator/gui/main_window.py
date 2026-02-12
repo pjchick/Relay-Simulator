@@ -84,6 +84,19 @@ class MainWindow:
         # Track simulation mode (False = Design Mode, True = Simulation Mode)
         self.simulation_mode = False
         self.simulation_engine = None  # Will hold SimulationEngine instance when running
+        
+        # Adaptive render throttling (adjusts based on render time)
+        self._last_render_time = 0.0
+        self._min_frame_time = 1.0 / 10.0  # Start at 10 FPS for complex circuits
+        self._last_render_duration = 0.0
+        self._render_count = 0
+        
+        # Simulation update rate limiting (30 Hz max to prevent GUI saturation)
+        # Note: Lower rate = better GUI responsiveness on complex circuits
+        self._last_sim_step_time = 0.0
+        self._min_sim_step_time = 1.0 / 30.0  # 30 Hz = 33.3ms between simulation steps
+        self._sim_step_count = 0
+        self._sim_step_time_total = 0.0
 
         # Simulation threading (prevents GUI "Not Responding" during long runs)
         self._simulation_stopping = False
@@ -177,6 +190,9 @@ class MainWindow:
         
         # Tools menu
         self.menu_bar.set_callback('logic_analyser', self._menu_logic_analyser)
+        self.menu_bar.set_callback('performance_report', self._menu_performance_report)
+        self.menu_bar.set_callback('reset_performance', self._menu_reset_performance)
+        self.menu_bar.set_callback('simulation_stats', self._menu_simulation_stats)
         
         # Help menu
         self.menu_bar.set_callback('about', self._menu_about)
@@ -1237,6 +1253,14 @@ class MainWindow:
         self._update_undo_redo_menu_state()
         self.set_status("Simulation Mode - Click switches to toggle. Press Shift+F5 to stop.")
         
+        # Reset simulation statistics
+        self._sim_step_count = 0
+        self._sim_step_time_total = 0.0
+        self._last_sim_step_time = time.perf_counter()
+        self._render_count = 0
+        self._last_render_duration = 0.0
+        self._min_frame_time = 1.0 / 10.0  # Reset to 10 FPS, will adapt
+        
         # Clear any active editing states
         self.placement_component = None
         self.wire_start_tab = None
@@ -1434,7 +1458,18 @@ class MainWindow:
             pass
 
         if run_again:
-            self.root.after(0, self._run_simulation_step)
+            # Adaptive simulation rate limiting: Calculate delay to maintain target update rate
+            now = time.perf_counter()
+            time_since_last = now - self._last_sim_step_time
+            delay_needed = max(0, self._min_sim_step_time - time_since_last)
+            delay_ms = int(delay_needed * 1000)  # Convert to milliseconds
+            
+            # Track simulation frequency for diagnostics
+            self._sim_step_count += 1
+            self._sim_step_time_total += time_since_last
+            
+            self._last_sim_step_time = now
+            self.root.after(delay_ms, self._run_simulation_step)
 
     def _poll_simulation_stopped(self) -> None:
         """Wait (without blocking the UI thread) for any in-flight simulation run to stop."""
@@ -1499,6 +1534,13 @@ class MainWindow:
     
     def _update_simulation_visuals(self):
         """Update visual feedback for powered components and wires."""
+        from performance_profiler import get_profiler
+        profiler = get_profiler()
+        
+        # Adaptive render throttling: Skip rendering if we're updating too frequently
+        now = time.perf_counter()
+        if now - self._last_render_time < self._min_frame_time:
+            return  # Skip this frame
         
         # Get active page
         tab = self.file_tabs.get_active_tab()
@@ -1508,15 +1550,33 @@ class MainWindow:
                 page = tab.document.get_page(active_page_id)
                 if page:
                     # Re-render the entire page with simulation engine
-                    start = time.perf_counter()
-                    self._set_canvas_page(page)
-                    elapsed = time.perf_counter() - start
-                    if elapsed >= 0.25:
+                    render_start = time.perf_counter()
+                    with profiler.measure("gui_update_simulation_visuals"):
+                        self._set_canvas_page(page)
+                    render_duration = time.perf_counter() - render_start
+                    
+                    # Update render timing for adaptive throttling
+                    self._last_render_time = now
+                    self._last_render_duration = render_duration
+                    self._render_count += 1
+                    
+                    # Adaptive throttling: Adjust frame time based on render performance
+                    # If renders are slow, increase the throttle interval
+                    if render_duration > 0.2:  # >200ms render
+                        self._min_frame_time = max(0.5, self._min_frame_time * 1.2)  # Slow down to 2 FPS max
+                    elif render_duration > 0.1:  # >100ms render
+                        self._min_frame_time = max(0.2, self._min_frame_time * 1.1)  # Slow down to 5 FPS
+                    elif render_duration < 0.033 and self._min_frame_time > 0.033:  # <33ms and throttled
+                        self._min_frame_time = max(0.033, self._min_frame_time * 0.9)  # Speed up toward 30 FPS
+                    
+                    if render_duration >= 0.01:  # Lowered threshold to 10ms to catch more slow renders
                         self._logger.warning(
-                            "Slow simulation render: page=%s elapsed=%.3fs components=%s",
+                            "Slow simulation render: page=%s elapsed=%.3fs throttle=%.0fms components=%s wires=%s",
                             getattr(page, 'name', None),
-                            elapsed,
+                            render_duration,
+                            self._min_frame_time * 1000,
                             len(page.get_all_components()) if hasattr(page, 'get_all_components') else None,
+                            len(page.wires) if hasattr(page, 'wires') else None,
                         )
     
     def _handle_switch_toggle(self, canvas_x: float, canvas_y: float):
@@ -1835,6 +1895,101 @@ class MainWindow:
         else:
             # Window exists, just bring it to front
             self._logic_analyser_window.show()
+    
+    def _menu_performance_report(self) -> None:
+        """Show performance profiling report."""
+        from performance_profiler import get_profiler
+        import tkinter as tk
+        from tkinter import scrolledtext
+        
+        profiler = get_profiler()
+        report = profiler.get_report(sort_by='total')
+        
+        # Create dialog window  
+        dialog = tk.Toplevel(self.root)
+        dialog.title("Performance Report")
+        dialog.geometry("1000x600")
+        
+        # Text widget with scrollbar
+        text = scrolledtext.ScrolledText(dialog, wrap=tk.NONE, font=('Courier', 9))
+        text.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+        
+        # Insert report
+        text.insert('1.0', report)
+        text.config(state=tk.DISABLED)
+        
+        # Button frame
+        button_frame = tk.Frame(dialog)
+        button_frame.pack(fill=tk.X, padx=5, pady=5)
+        
+        # Refresh button
+        def refresh_report():
+            text.config(state=tk.NORMAL)
+            text.delete('1.0', tk.END)
+            new_report = profiler.get_report(sort_by='total')
+            text.insert('1.0', new_report)
+            text.config(state=tk.DISABLED)
+        
+        tk.Button(button_frame, text="Refresh", command=refresh_report).pack(side=tk.LEFT, padx=2)
+        tk.Button(button_frame, text="Close", command=dialog.destroy).pack(side=tk.RIGHT, padx=2)
+        
+        # Center dialog
+        dialog.transient(self.root)
+        dialog.grab_set()
+    
+    def _menu_reset_performance(self) -> None:
+        """Reset performance profiling metrics."""
+        from performance_profiler import reset_profiler
+        reset_profiler()
+        self.set_status("Performance metrics reset")
+    
+    def _menu_simulation_stats(self) -> None:
+        """Handle Tools > Simulation Statistics."""
+        if not self.simulation_mode:
+            messagebox.showinfo(
+                "Simulation Statistics",
+                "No simulation is currently running.\\n\\n"
+                "Start a simulation to view statistics."
+            )
+            return
+        
+        # Calculate statistics
+        if self._sim_step_count > 0:
+            avg_step_time = self._sim_step_time_total / self._sim_step_count
+            actual_rate = 1.0 / avg_step_time if avg_step_time > 0 else 0
+        else:
+            avg_step_time = 0
+            actual_rate = 0
+        
+        target_rate = 1.0 / self._min_sim_step_time
+        
+        # Get engine statistics if available
+        engine_info = ""
+        if self.simulation_engine:
+            try:
+                vnet_count = len(self.simulation_engine.vnets) if hasattr(self.simulation_engine, 'vnets') else 0
+                component_count = len(self.simulation_engine.components) if hasattr(self.simulation_engine, 'components') else 0
+                engine_info = f"\\nVNETs: {vnet_count}\\nComponents: {component_count}"
+            except:
+                pass
+        
+        message = (
+            f"Simulation Loop Statistics:\\n\\n"
+            f"Target Rate: {target_rate:.1f} Hz ({self._min_sim_step_time*1000:.1f} ms/step)\\n"
+            f"Actual Rate: {actual_rate:.1f} Hz ({avg_step_time*1000:.1f} ms/step)\\n"
+            f"Total Steps: {self._sim_step_count}\\n"
+            f"Total Time: {self._sim_step_time_total:.2f}s"
+            f"{engine_info}\\n\\n"
+            f"Rendering Statistics:\\n"
+            f"Render Throttle: {1.0/self._min_frame_time:.1f} FPS max ({self._min_frame_time*1000:.0f} ms/frame)\\n"
+            f"Total Renders: {self._render_count}\\n"
+            f"Last Render Time: {self._last_render_duration*1000:.1f} ms\\n"
+            f"Render Skip Rate: {(1 - self._render_count/max(1, self._sim_step_count))*100:.0f}%\\n\\n"
+            f"Note: Render throttle adapts automatically. Slow renders (>200ms)\\n"
+            f"will reduce frame rate to improve GUI responsiveness."
+        )
+        
+        messagebox.showinfo("Simulation Statistics", message)
     
     def _menu_about(self) -> None:
         """Handle Help > About."""

@@ -56,6 +56,10 @@ class VNET:
         self._state = PinState.FLOAT
         self._dirty = True  # Start dirty to force initial evaluation
         
+        # Powered state cache (for GUI rendering optimization)
+        self._powered_cache: Optional[bool] = None
+        self._powered_cache_dirty = True
+        
         # Thread safety
         self._lock = threading.RLock()  # Reentrant lock for nested calls
     
@@ -82,6 +86,23 @@ class VNET:
             if self._state != value:
                 self._state = value
                 self._dirty = True
+                self._powered_cache_dirty = True  # Invalidate powered cache
+    
+    def is_powered(self) -> bool:
+        """
+        Check if this VNET is powered (state is HIGH).
+        
+        Uses caching to avoid repeated state checks during GUI rendering.
+        The cache is invalidated whenever the VNET state changes.
+        
+        Returns:
+            True if VNET state is HIGH, False otherwise
+        """
+        with self._lock:
+            if self._powered_cache_dirty:
+                self._powered_cache = (self._state == PinState.HIGH)
+                self._powered_cache_dirty = False
+            return self._powered_cache
     
     def add_tab(self, tab_id: str) -> bool:
         """

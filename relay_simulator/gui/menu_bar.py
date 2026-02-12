@@ -67,6 +67,9 @@ class MenuBar:
             'reset_zoom': None,
             'toggle_properties': None,
             'logic_analyser': None,
+            'performance_report': None,
+            'reset_performance': None,
+            'simulation_stats': None,
             'about': None,
         }
         
@@ -284,9 +287,38 @@ class MenuBar:
             command=self._on_logic_analyser
         )
         
+        self.tools_menu.add_separator()
+        
+        self.tools_menu.add_command(
+            label="Performance Report...",
+            accelerator="Ctrl+Shift+P",
+            command=self._on_performance_report
+        )
+        
+        self.tools_menu.add_command(
+            label="Reset Performance Metrics",
+            command=self._on_reset_performance
+        )
+        
+        self.tools_menu.add_separator()
+        
+        self.tools_menu.add_command(
+            label="Simulation Statistics...",
+            accelerator="Ctrl+Shift+I",
+            command=self._on_simulation_stats
+        )
+        
         # Bind keyboard shortcut
         self.parent.bind('<Control-l>', lambda e: self._on_logic_analyser())
         self.parent.bind('<Control-L>', lambda e: self._on_logic_analyser())
+        
+        # Bind performance report shortcut
+        self.parent.bind('<Control-Shift-P>', lambda e: self._on_performance_report())
+        self.parent.bind('<Control-Shift-p>', lambda e: self._on_performance_report())
+        
+        # Bind simulation stats shortcut (Ctrl+Shift+S conflicts with Save As, use Ctrl+Shift+I for Info)
+        self.parent.bind('<Control-Shift-I>', lambda e: self._on_simulation_stats())
+        self.parent.bind('<Control-Shift-i>', lambda e: self._on_simulation_stats())
     
     def _create_help_menu(self) -> None:
         """Create the Help menu."""
@@ -406,6 +438,21 @@ class MenuBar:
         """Handle Toggle Properties Panel command."""
         if self.callbacks['toggle_properties']:
             self.callbacks['toggle_properties'](self.properties_visible.get())
+    
+    def _on_performance_report(self) -> None:
+        """Handle Performance Report command."""
+        if self.callbacks['performance_report']:
+            self.callbacks['performance_report']()
+    
+    def _on_reset_performance(self) -> None:
+        """Handle Reset Performance Metrics command."""
+        if self.callbacks['reset_performance']:
+            self.callbacks['reset_performance']()
+    
+    def _on_simulation_stats(self) -> None:
+        """Handle Simulation Statistics command."""
+        if self.callbacks['simulation_stats']:
+            self.callbacks['simulation_stats']()
     
     def _on_about(self) -> None:
         """Handle About command."""

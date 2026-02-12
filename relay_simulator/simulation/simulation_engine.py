@@ -35,6 +35,7 @@ from simulation.dirty_flag_manager import DirtyFlagManager
 from simulation.component_update_coordinator import ComponentUpdateCoordinator
 from simulation.vnet_manager import VnetManager
 from simulation.bridge_manager import BridgeManager
+from performance_profiler import get_profiler
 
 
 class SimulationState(Enum):
@@ -337,6 +338,8 @@ class SimulationEngine:
         Returns:
             SimulationStatistics object with results
         """
+        profiler = get_profiler()
+        
         with self._state_lock:
             if self.state not in (SimulationState.STOPPED, SimulationState.STABLE):
                 return self.statistics
@@ -428,7 +431,8 @@ class SimulationEngine:
                     self.statistics.iterations = iteration
                 
                 # Get dirty VNETs
-                dirty_vnets = self.dirty_manager.get_dirty_vnets()
+                with profiler.measure("sim_get_dirty_vnets"):
+                    dirty_vnets = self.dirty_manager.get_dirty_vnets()
 
                 self._debug_dump_vnets(iteration=iteration, phase="loop_start", dirty_vnets=dirty_vnets)
                 
@@ -459,52 +463,54 @@ class SimulationEngine:
                 # Deterministic recompute: build full connectivity groups (bridges + links),
                 # compute group state from pin/tab drives only, then apply to all VNETs.
                 # Only queue components when a VNET's state actually changes.
-                groups = _union_find_groups()
+                with profiler.measure("sim_evaluate_vnets"):
+                    groups = _union_find_groups()
 
-                for group_ids in groups.values():
-                    group_state = PinState.FLOAT
-                    for vnet_id in group_ids:
-                        gvnet = self.vnets.get(vnet_id)
-                        if not gvnet:
-                            continue
-                        if evaluate_tabs_only(gvnet) == PinState.HIGH:
-                            group_state = PinState.HIGH
-                            break
+                    for group_ids in groups.values():
+                        group_state = PinState.FLOAT
+                        for vnet_id in group_ids:
+                            gvnet = self.vnets.get(vnet_id)
+                            if not gvnet:
+                                continue
+                            if evaluate_tabs_only(gvnet) == PinState.HIGH:
+                                group_state = PinState.HIGH
+                                break
 
-                    for vnet_id in group_ids:
-                        gvnet = self.vnets.get(vnet_id)
-                        if not gvnet:
-                            continue
+                        for vnet_id in group_ids:
+                            gvnet = self.vnets.get(vnet_id)
+                            if not gvnet:
+                                continue
 
-                        old_state = gvnet.state
-                        if old_state != group_state:
-                            gvnet.state = group_state
-                            self.coordinator.queue_components_for_vnet(gvnet)
-                        # Consider this VNET evaluated for this iteration.
-                        self.dirty_manager.clear_dirty(vnet_id)
+                            old_state = gvnet.state
+                            if old_state != group_state:
+                                gvnet.state = group_state
+                                self.coordinator.queue_components_for_vnet(gvnet)
+                            # Consider this VNET evaluated for this iteration.
+                            self.dirty_manager.clear_dirty(vnet_id)
 
                 # If nothing changed electrically, we can still have pending component updates
                 # from previous iteration; otherwise we are stable.
                 self._debug_dump_vnets(iteration=iteration, phase="after_vnet_processing")
                 
                 # Start component updates
-                num_pending = self.coordinator.start_updates()
-                
-                # Execute component logic
-                if num_pending > 0:
-                    pending_components = self.coordinator.get_pending_components()
+                with profiler.measure("sim_component_updates"):
+                    num_pending = self.coordinator.start_updates()
                     
-                    for component in pending_components:
-                        try:
-                            component.simulate_logic(self.vnet_manager, self.bridge_manager)
-                            with self._stats_lock:
-                                self.statistics.components_updated += 1
-                        except Exception as e:
-                            print(f"Error in simulate_logic for {component.component_id}: {e}")
-                            import traceback
-                            traceback.print_exc()
-                        finally:
-                            self.coordinator.mark_update_complete(component.component_id)
+                    # Execute component logic
+                    if num_pending > 0:
+                        pending_components = self.coordinator.get_pending_components()
+                        
+                        for component in pending_components:
+                            try:
+                                component.simulate_logic(self.vnet_manager, self.bridge_manager)
+                                with self._stats_lock:
+                                    self.statistics.components_updated += 1
+                            except Exception as e:
+                                print(f"Error in simulate_logic for {component.component_id}: {e}")
+                                import traceback
+                                traceback.print_exc()
+                            finally:
+                                self.coordinator.mark_update_complete(component.component_id)
                     
                     # No need to wait - components execute synchronously in single-threaded engine
                     # Components are responsible for marking affected VNETs dirty via VnetManager,

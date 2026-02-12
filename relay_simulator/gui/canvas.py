@@ -15,6 +15,7 @@ from components.base import Component
 from core.page import Page
 from core.wire import Wire
 from core.state import PinState
+from performance_profiler import get_profiler
 
 
 class DesignCanvas:
@@ -62,6 +63,8 @@ class DesignCanvas:
         self.current_page: Optional[Page] = None
         self.hovered_waypoint: Optional[Tuple[str, str]] = None  # (wire_id, waypoint_id)
         self.simulation_engine = None  # SimulationEngine for powered state visualization
+        self._tab_to_vnet = {}  # Fast lookup: tab_id -> VNET
+        self._grounded_vnets = set()  # Set of grounded VNET IDs
 
         # Optional selection state (populated by MainWindow)
         self.selected_wires: Optional[set] = None
@@ -524,63 +527,76 @@ class DesignCanvas:
         """
         self.current_page = page
         self.simulation_engine = simulation_engine
+        
+        # Build tab-to-VNET lookup table for fast wire rendering
+        if simulation_engine:
+            self._build_tab_vnet_lookup(simulation_engine)
+        else:
+            self._tab_to_vnet = {}
+        
         self.render_components()
     
     def render_components(self) -> None:
         """Render all components on the current page."""
-        # Clear existing renderers
-        self.clear_components()
+        profiler = get_profiler()
         
-        if not self.current_page:
-            return
-        
-        # Separate Box components from other components
-        # Boxes should be rendered first (bottom layer)
-        box_components = []
-        other_components = []
-        
-        for component in self.current_page.components.values():
-            if component.component_type == 'Box':
-                box_components.append(component)
-            else:
-                other_components.append(component)
-        
-        # Render Box components first (bottom layer)
-        for component in box_components:
-            try:
-                renderer = RendererFactory.create_renderer(self.canvas, component)
-                
-                # Set powered state if simulation is running
-                if self.simulation_engine:
-                    renderer.set_simulation_engine(self.simulation_engine)
-                    is_powered = self._is_component_powered(component, self.simulation_engine)
-                    renderer.set_powered(is_powered)
-                
-                self.renderers[component.component_id] = renderer
-                setattr(renderer, 'zoom', self.zoom_level)
-                renderer.render(self.zoom_level)
-            except Exception as e:
-                print(f"Error rendering component {component.component_id}: {e}")
-        
-        # Then render other components (top layer)
-        for component in other_components:
-            try:
-                renderer = RendererFactory.create_renderer(self.canvas, component)
-                
-                # Set powered state if simulation is running
-                if self.simulation_engine:
-                    renderer.set_simulation_engine(self.simulation_engine)
-                    is_powered = self._is_component_powered(component, self.simulation_engine)
-                    renderer.set_powered(is_powered)
-                
-                self.renderers[component.component_id] = renderer
-                setattr(renderer, 'zoom', self.zoom_level)
-                renderer.render(self.zoom_level)
-            except Exception as e:
-                print(f"Error rendering component {component.component_id}: {e}")
-        
-        # Render all wires with simulation engine for powered state
-        self.render_wires(self.simulation_engine)
+        with profiler.measure("gui_render_components_total"):
+            # Clear existing renderers
+            with profiler.measure("gui_clear_components"):
+                self.clear_components()
+            
+            if not self.current_page:
+                return
+            
+            # Separate Box components from other components
+            # Boxes should be rendered first (bottom layer)
+            box_components = []
+            other_components = []
+            
+            for component in self.current_page.components.values():
+                if component.component_type == 'Box':
+                    box_components.append(component)
+                else:
+                    other_components.append(component)
+            
+            # Render Box components first (bottom layer)
+            with profiler.measure("gui_render_boxes"):
+                for component in box_components:
+                    try:
+                        renderer = RendererFactory.create_renderer(self.canvas, component)
+                        
+                        # Set powered state if simulation is running
+                        if self.simulation_engine:
+                            renderer.set_simulation_engine(self.simulation_engine)
+                            is_powered = self._is_component_powered(component, self.simulation_engine)
+                            renderer.set_powered(is_powered)
+                        
+                        self.renderers[component.component_id] = renderer
+                        setattr(renderer, 'zoom', self.zoom_level)
+                        renderer.render(self.zoom_level)
+                    except Exception as e:
+                        print(f"Error rendering component {component.component_id}: {e}")
+            
+            # Then render other components (top layer)
+            with profiler.measure("gui_render_components"):
+                for component in other_components:
+                    try:
+                        renderer = RendererFactory.create_renderer(self.canvas, component)
+                        
+                        # Set powered state if simulation is running
+                        if self.simulation_engine:
+                            renderer.set_simulation_engine(self.simulation_engine)
+                            is_powered = self._is_component_powered(component, self.simulation_engine)
+                            renderer.set_powered(is_powered)
+                        
+                        self.renderers[component.component_id] = renderer
+                        setattr(renderer, 'zoom', self.zoom_level)
+                        renderer.render(self.zoom_level)
+                    except Exception as e:
+                        print(f"Error rendering component {component.component_id}: {e}")
+            
+            # Render all wires with simulation engine for powered state
+            self.render_wires(self.simulation_engine)
     
     def clear_components(self) -> None:
         """Clear all rendered components and wires."""
@@ -591,6 +607,37 @@ class DesignCanvas:
         for wire_renderer in self.wire_renderers.values():
             wire_renderer.clear()
         self.wire_renderers.clear()
+    
+    def _build_tab_vnet_lookup(self, simulation_engine) -> None:
+        """
+        Build lookup tables for fast wire rendering:
+        1. tab_id -> VNET
+        2. Set of grounded VNET IDs
+        
+        This eliminates O(N×M) searches during rendering.
+        
+        Args:
+            simulation_engine: SimulationEngine instance
+        """
+        self._tab_to_vnet = {}
+        self._grounded_vnets = set()
+        
+        if not simulation_engine or not hasattr(simulation_engine, 'vnets'):
+            return
+        
+        # Build tab -> VNET lookup
+        for vnet in simulation_engine.vnets.values():
+            if vnet and hasattr(vnet, 'tab_ids'):
+                for tab_id in vnet.tab_ids:
+                    self._tab_to_vnet[tab_id] = vnet
+        
+        # Build grounded VNETs set (VNETs connected to GND component)
+        # Use BFS once for all VNETs instead of once per wire
+        for vnet in simulation_engine.vnets.values():
+            if vnet and vnet.vnet_id not in self._grounded_vnets:
+                if self._vnet_is_grounded(vnet, simulation_engine):
+                    # Mark this entire connected component as grounded
+                    self._mark_connected_vnets_grounded(vnet, simulation_engine)
     
     def update_component(self, component_id: str) -> None:
         """
@@ -641,46 +688,59 @@ class DesignCanvas:
         Args:
             simulation_engine: Optional SimulationEngine for powered state
         """
-        # Clear existing wire renderers
-        self.clear_wires()
+        profiler = get_profiler()
         
-        if not self.current_page:
-            return
-        
-        # Create renderers for all wires
-        for wire in self.current_page.wires.values():
-            try:
-                renderer = WireRenderer(
-                    self.canvas,
-                    wire,
-                    self.current_page,
-                    self.hovered_waypoint,
-                    selected_waypoints=self.selected_waypoints,
-                )
+        try:
+            with profiler.measure("gui_render_wires_total"):
+                # Clear existing wire renderers
+                with profiler.measure("gui_clear_wires"):
+                    self.clear_wires()
+                
+                if not self.current_page:
+                    return
+                
+                # Create renderers for all wires
+                for wire in self.current_page.wires.values():
+                    try:
+                        renderer = WireRenderer(
+                            self.canvas,
+                            wire,
+                            self.current_page,
+                            self.hovered_waypoint,
+                            selected_waypoints=self.selected_waypoints,
+                        )
 
-                # Persist wire selection across redraws
-                if self.selected_wires and wire.wire_id in self.selected_wires:
-                    renderer.set_selected(True)
+                        # Persist wire selection across redraws
+                        if self.selected_wires and wire.wire_id in self.selected_wires:
+                            renderer.set_selected(True)
+                        
+                        # Set powered state if simulation running
+                        if simulation_engine:
+                            powered = self._is_wire_powered(wire, simulation_engine)
+                            renderer.set_powered(powered)
+                            
+                            # Use pre-computed grounded VNETs set
+                            vnet = self._tab_to_vnet.get(wire.start_tab_id)
+                            grounded = vnet and vnet.vnet_id in self._grounded_vnets
+                            renderer.set_grounded(grounded)
+                        
+                        self.wire_renderers[wire.wire_id] = renderer
+                        renderer.render(self.zoom_level)
+                    except Exception as e:
+                        print(f"Error rendering wire {wire.wire_id}: {e}")
                 
-                # Set powered state if simulation running
-                if simulation_engine:
-                    powered = self._is_wire_powered(wire, simulation_engine)
-                    renderer.set_powered(powered)
-                    
-                    grounded = self._is_wire_grounded(wire, simulation_engine)
-                    renderer.set_grounded(grounded)
-                
-                self.wire_renderers[wire.wire_id] = renderer
-                renderer.render(self.zoom_level)
-            except Exception as e:
-                print(f"Error rendering wire {wire.wire_id}: {e}")
-        
-        # Render page-level junctions
-        self.render_junctions(simulation_engine)
+                # Render page-level junctions
+                self.render_junctions(simulation_engine)
+        except Exception as e:
+            print(f"Error in render_wires: {e}")
+            import traceback
+            traceback.print_exc()
     
     def _is_wire_powered(self, wire, simulation_engine, visited_wires=None) -> bool:
         """
         Check if a wire is powered based on simulation state.
+        
+        Uses cached VNET powered state for performance optimization.
         
         Args:
             wire: Wire to check
@@ -713,13 +773,11 @@ class DesignCanvas:
             
             # Get the tab connected to the wire
             if wire.start_tab_id:
-                tab = simulation_engine.tabs.get(wire.start_tab_id)
-                if tab:
-                    # Get the VNET containing this tab
-                    for vnet in simulation_engine.vnets.values():
-                        if wire.start_tab_id in vnet.tab_ids:
-                            is_high = vnet.state == PinState.HIGH
-                            return is_high
+                # Use pre-built lookup table instead of searching all VNETs
+                vnet = self._tab_to_vnet.get(wire.start_tab_id)
+                if vnet:
+                    # Use cached powered state
+                    return vnet.is_powered()
             return False
         except Exception as e:
             print(f"Error checking wire powered state: {e}")
@@ -751,10 +809,8 @@ class DesignCanvas:
             # Get the starting VNET for this wire
             start_vnet = None
             if wire.start_tab_id:
-                for vnet in simulation_engine.vnets.values():
-                    if wire.start_tab_id in vnet.tab_ids:
-                        start_vnet = vnet
-                        break
+                # Use pre-built lookup table
+                start_vnet = self._tab_to_vnet.get(wire.start_tab_id)
             
             if not start_vnet:
                 return False
@@ -803,6 +859,74 @@ class DesignCanvas:
             print(f"Error checking wire grounded state: {e}")
             return False
     
+    def _vnet_is_grounded(self, vnet, simulation_engine) -> bool:
+        """
+        Check if a VNET has a direct GND component connection.
+        
+        Args:
+            vnet: VNET to check
+            simulation_engine: SimulationEngine instance
+            
+        Returns:
+            True if VNET contains a GND component
+        """
+        try:
+            # Check all tabs in this VNET for a GND component
+            for tab_id in vnet.tab_ids:
+                tab = simulation_engine.tabs.get(tab_id)
+                if tab and tab.parent_pin and tab.parent_pin.parent_component:
+                    component = tab.parent_pin.parent_component
+                    if hasattr(component, 'component_type') and component.component_type == "GND":
+                        return True
+            return False
+        except Exception as e:
+            print(f"Error checking VNET grounded state: {e}")
+            return False
+    
+    def _mark_connected_vnets_grounded(self, start_vnet, simulation_engine) -> None:
+        """
+        Mark a VNET and all connected VNETs (via bridges/links) as grounded.
+        
+        Uses BFS to traverse connections once for the entire connected component.
+        
+        Args:
+            start_vnet: Starting VNET
+            simulation_engine: SimulationEngine instance
+        """
+        try:
+            visited = set()
+            queue = [start_vnet.vnet_id]
+            
+            while queue:
+                current_vnet_id = queue.pop(0)
+                
+                if current_vnet_id in visited:
+                    continue
+                
+                visited.add(current_vnet_id)
+                self._grounded_vnets.add(current_vnet_id)
+                
+                current_vnet = simulation_engine.vnets.get(current_vnet_id)
+                if not current_vnet:
+                    continue
+                
+                # Follow bridges to connected VNETs
+                for bridge_id in current_vnet.bridge_ids:
+                    # Find other VNETs that share this bridge
+                    for other_vnet_id, other_vnet in simulation_engine.vnets.items():
+                        if other_vnet_id != current_vnet_id and bridge_id in other_vnet.bridge_ids:
+                            if other_vnet_id not in visited:
+                                queue.append(other_vnet_id)
+                
+                # Follow link names to connected VNETs
+                for link_name in current_vnet.link_names:
+                    for other_vnet_id, other_vnet in simulation_engine.vnets.items():
+                        if other_vnet_id != current_vnet_id and other_vnet.has_link(link_name):
+                            if other_vnet_id not in visited:
+                                queue.append(other_vnet_id)
+        except Exception as e:
+            print(f"Error marking connected VNETs grounded: {e}")
+    
     def clear_wires(self) -> None:
         """Clear all rendered wires."""
         for wire_renderer in self.wire_renderers.values():
@@ -817,40 +941,44 @@ class DesignCanvas:
         Args:
             simulation_engine: Optional SimulationEngine for powered state
         """
-        # Clear existing junction items
-        self.clear_junctions()
+        profiler = get_profiler()
         
-        if not self.current_page:
-            return
-        
-        # Draw each junction as a circle
-        for junction in self.current_page.junctions.values():
-            x, y = junction.position
-            x *= self.zoom_level
-            y *= self.zoom_level
-            radius = 5 * self.zoom_level
+        with profiler.measure("gui_render_junctions"):
+            # Clear existing junction items
+            self.clear_junctions()
             
-            # Determine junction color based on selection/powered state
-            fill_color = '#656565'  # Default: gray (unpowered)
+            if not self.current_page:
+                return
+        
+            # Draw each junction as a circle
+            for junction in self.current_page.junctions.values():
+                x, y = junction.position
+                x *= self.zoom_level
+                y *= self.zoom_level
+                radius = 5 * self.zoom_level
+                
+                # Determine junction color based on selection/powered state
+                fill_color = '#656565'  # Default: gray (unpowered)
 
-            if self.selected_junctions and junction.junction_id in self.selected_junctions:
-                fill_color = VSCodeTheme.WIRE_SELECTED
-            
-            if simulation_engine and junction.junction_id:
-                # Check if junction is powered by checking connected wires
-                powered = self._is_junction_powered(junction, simulation_engine)
-                if powered:
-                    fill_color = VSCodeTheme.ACCENT_GREEN  # Green when powered
-            
-            item = self.canvas.create_oval(
-                x - radius, y - radius,
-                x + radius, y + radius,
-                fill=fill_color,
-                outline='#505050',  # VSCodeTheme.COMPONENT_OUTLINE
-                width=2,
-                tags=(f"junction_{junction.junction_id}", "junction")
-            )
-            self.junction_items.append(item)
+                if self.selected_junctions and junction.junction_id in self.selected_junctions:
+                    fill_color = VSCodeTheme.WIRE_SELECTED
+                
+                if simulation_engine and junction.junction_id:
+                    # Check if junction is powered by checking connected wires
+                    with profiler.measure("gui_check_junction_powered"):
+                        powered = self._is_junction_powered(junction, simulation_engine)
+                    if powered:
+                        fill_color = VSCodeTheme.ACCENT_GREEN  # Green when powered
+                
+                item = self.canvas.create_oval(
+                    x - radius, y - radius,
+                    x + radius, y + radius,
+                    fill=fill_color,
+                    outline='#505050',  # VSCodeTheme.COMPONENT_OUTLINE
+                    width=2,
+                    tags=(f"junction_{junction.junction_id}", "junction")
+                )
+                self.junction_items.append(item)
     
     def _is_junction_powered(self, junction, simulation_engine, visited_wires=None) -> bool:
         """
@@ -894,11 +1022,10 @@ class DesignCanvas:
             # Check all pins on the component
             for pin in component.get_all_pins().values():
                 for tab in pin.tabs.values():
-                    # Get VNET for this tab
-                    for vnet in simulation_engine.vnets.values():
-                        if tab.tab_id in vnet.tab_ids:
-                            if vnet.state == PinState.HIGH:
-                                return True
+                    # Use pre-built lookup table
+                    vnet = self._tab_to_vnet.get(tab.tab_id)
+                    if vnet and vnet.is_powered():
+                        return True
             return False
         except Exception as e:
             print(f"Error checking component powered state: {e}")
