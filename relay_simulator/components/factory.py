@@ -11,6 +11,8 @@ from components.switch import Switch
 from components.indicator import Indicator
 from components.dpdt_relay import DPDTRelay
 from components.ground_dpdt_relay import GroundDPDTRelay
+from components.latching_relay import LatchingRelay
+from components.ground_latching_relay import GroundLatchingRelay
 from components.vcc import VCC
 from components.gnd import GND
 from components.bus import BUS
@@ -46,6 +48,8 @@ class ComponentFactory:
         self.register_component("Indicator", Indicator)
         self.register_component("DPDTRelay", DPDTRelay)
         self.register_component("GroundDPDTRelay", GroundDPDTRelay)
+        self.register_component("LatchingRelay", LatchingRelay)
+        self.register_component("GroundLatchingRelay", GroundLatchingRelay)
         self.register_component("VCC", VCC)
         self.register_component("GND", GND)
         self.register_component("BUS", BUS)

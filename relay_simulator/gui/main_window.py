@@ -4651,6 +4651,7 @@ class MainWindow:
                     f"  • Other Relay GND components\n"
                     f"  • DPDT Relay contacts (COM1, COM2, NC1, NC2, NO1, NO2)\n"
                     f"  • Ground DPDT Relay contacts (COM1, COM2, NC1, NC2, NO1, NO2, GND)\n"
+                    f"  • Ground Latching Relay contacts (COM1, COM2, NC1, NC2, NO1, NO2, GND_SET, GND_RESET)\n"
                     f"  • LINK components\n\n"
                     f"Note: COIL pins are NOT allowed on GND networks."
                 )
@@ -4709,6 +4710,11 @@ class MainWindow:
         # Ground DPDT Relay pins are compatible (except COIL)
         if comp_type == "GroundDPDTRelay":
             allowed_pins = ["COM1", "COM2", "NC1", "NC2", "NO1", "NO2", "GND"]
+            return pin_name in allowed_pins
+        
+        # Ground Latching Relay pins are compatible (except COIL_SET and COIL_RESET)
+        if comp_type == "GroundLatchingRelay":
+            allowed_pins = ["COM1", "COM2", "NC1", "NC2", "NO1", "NO2", "GND_SET", "GND_RESET"]
             return pin_name in allowed_pins
         
         # Regular DPDT Relay pins are also compatible (except COIL)
@@ -4849,6 +4855,7 @@ class MainWindow:
                             f"  • Other Relay GND components\n"
                             f"  • DPDT Relay contacts (COM1, COM2, NC1, NC2, NO1, NO2)\n"
                             f"  • Ground DPDT Relay contacts (COM1, COM2, NC1, NC2, NO1, NO2, GND)\n"
+                            f"  • Ground Latching Relay contacts (COM1, COM2, NC1, NC2, NO1, NO2, GND_SET, GND_RESET)\n"
                             f"  • LINK components\n\n"
                             f"Note: COIL pins are NOT allowed on GND networks.\n\n"
                             f"Please fix the wiring before starting simulation."
@@ -5531,7 +5538,9 @@ class MainWindow:
                 self.set_status(f"Selected {clicked_component.__class__.__name__} ({clicked_component.component_id})")
             elif len(self.selected_components) > 1:
                 # Get all selected component objects
-                page = self._get_active_file_page()
+                tab = self.file_tabs.get_active_tab()
+                active_page_id = self.page_tabs.get_active_page_id()
+                page = tab.document.get_page(active_page_id) if tab and tab.document and active_page_id else None
                 if page:
                     selected_comps = [page.components.get(cid) for cid in self.selected_components]
                     selected_comps = [c for c in selected_comps if c]  # Filter out None values

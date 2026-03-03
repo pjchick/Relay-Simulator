@@ -98,6 +98,8 @@ class ToolboxPanel(tk.Frame):
         ('Indicator', 'Indicator'),
         ('DPDTRelay', 'DPDT Relay'),
         ('GroundDPDTRelay', 'Ground DPDT Relay'),
+        ('LatchingRelay', 'Latching Relay'),
+        ('GroundLatchingRelay', 'Ground Latching Relay'),
         ('VCC', 'VCC Source'),
         ('GND', 'Relay GND'),
         ('Link', 'Link'),

@@ -6,6 +6,8 @@ from gui.renderers.base_renderer import ComponentRenderer
 from gui.renderers.switch_renderer import SwitchRenderer
 from gui.renderers.indicator_renderer import IndicatorRenderer
 from gui.renderers.relay_renderer import RelayRenderer
+from gui.renderers.latching_relay_renderer import LatchingRelayRenderer
+from gui.renderers.ground_latching_relay_renderer import GroundLatchingRelayRenderer
 from gui.renderers.vcc_renderer import VCCRenderer
 from gui.renderers.bus_renderer import BUSRenderer
 from gui.renderers.seven_segment_display_renderer import SevenSegmentDisplayRenderer
@@ -18,6 +20,8 @@ __all__ = [
     'SwitchRenderer',
     'IndicatorRenderer',
     'RelayRenderer',
+    'LatchingRelayRenderer',
+    'GroundLatchingRelayRenderer',
     'VCCRenderer',
     'BUSRenderer',
     'SevenSegmentDisplayRenderer',
