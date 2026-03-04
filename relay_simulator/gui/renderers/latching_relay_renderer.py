@@ -61,6 +61,35 @@ class LatchingRelayRenderer(ComponentRenderer):
         # Convert back to absolute coordinates
         return cx + offset_x, cy + offset_y
     
+    def _transform_local_point(self, local_x: float, local_y: float, cx: float, cy: float, zoom: float) -> tuple:
+        """
+        Transform a component-local coordinate to world coordinates with flip applied.
+        Does NOT apply rotation (that's handled by draw_line/draw_circle/etc).
+        
+        Args:
+            local_x, local_y: Offset from component center in component-local space (unzoomed)
+            cx, cy: Component center in world space
+            zoom: Current zoom level
+            
+        Returns:
+            (world_x, world_y) with flip applied but not rotation
+        """
+        # Get flip properties
+        flip_h = self.component.properties.get('flip_horizontal', False)
+        flip_v = self.component.properties.get('flip_vertical', False)
+        
+        # Apply flip in component-local space
+        if flip_h:
+            local_x = -local_x
+        if flip_v:
+            local_y = -local_y
+        
+        # Convert to world space (zoom and offset)
+        world_x = cx + local_x * zoom
+        world_y = cy + local_y * zoom
+        
+        return world_x, world_y
+    
     def render(self, zoom: float = 1.0) -> None:
         """
         Render the latching relay component.
@@ -231,10 +260,10 @@ class LatchingRelayRenderer(ComponentRenderer):
             return False
         
         # Pole 1: COM1 to NC1 (RESET state) or NO1 (SET state)
-        com1_x, com1_y = self._apply_flip(cx - 30 * zoom, cy - 40 * zoom, cx, cy)
         
         if is_set:
             # SET state: COM1 -> NO1
+            com1_x, com1_y = self._apply_flip(cx - 30 * zoom, cy - 40 * zoom, cx, cy)
             no1_x, no1_y = self._apply_flip(cx + 30 * zoom, cy - 60 * zoom, cx, cy)
             # Check if either COM1 or NO1 pin is HIGH via VNET state
             com1_high = is_pin_high(self.component._com1_pin) if hasattr(self.component, '_com1_pin') else False
@@ -248,6 +277,7 @@ class LatchingRelayRenderer(ComponentRenderer):
             )
         else:
             # RESET state: COM1 -> NC1
+            com1_x, com1_y = self._apply_flip(cx - 30 * zoom, cy - 40 * zoom, cx, cy)
             nc1_x, nc1_y = self._apply_flip(cx + 30 * zoom, cy - 20 * zoom, cx, cy)
             # Check if either COM1 or NC1 pin is HIGH via VNET state
             com1_high = is_pin_high(self.component._com1_pin) if hasattr(self.component, '_com1_pin') else False
@@ -261,10 +291,10 @@ class LatchingRelayRenderer(ComponentRenderer):
             )
         
         # Pole 2: COM2 to NC2 (RESET state) or NO2 (SET state)
-        com2_x, com2_y = self._apply_flip(cx - 30 * zoom, cy + 40 * zoom, cx, cy)
         
         if is_set:
             # SET state: COM2 -> NO2
+            com2_x, com2_y = self._apply_flip(cx - 30 * zoom, cy + 40 * zoom, cx, cy)
             no2_x, no2_y = self._apply_flip(cx + 30 * zoom, cy + 20 * zoom, cx, cy)
             # Check if either COM2 or NO2 pin is HIGH via VNET state
             com2_high = is_pin_high(self.component._com2_pin) if hasattr(self.component, '_com2_pin') else False
@@ -278,6 +308,7 @@ class LatchingRelayRenderer(ComponentRenderer):
             )
         else:
             # RESET state: COM2 -> NC2
+            com2_x, com2_y = self._apply_flip(cx - 30 * zoom, cy + 40 * zoom, cx, cy)
             nc2_x, nc2_y = self._apply_flip(cx + 30 * zoom, cy + 60 * zoom, cx, cy)
             # Check if either COM2 or NC2 pin is HIGH via VNET state
             com2_high = is_pin_high(self.component._com2_pin) if hasattr(self.component, '_com2_pin') else False

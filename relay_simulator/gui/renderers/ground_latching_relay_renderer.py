@@ -61,6 +61,35 @@ class GroundLatchingRelayRenderer(ComponentRenderer):
         # Convert back to absolute coordinates
         return cx + offset_x, cy + offset_y
     
+    def _transform_local_point(self, local_x: float, local_y: float, cx: float, cy: float, zoom: float) -> tuple:
+        """
+        Transform a component-local coordinate to world coordinates with flip applied.
+        Does NOT apply rotation (that's handled by draw_line/draw_circle/etc).
+        
+        Args:
+            local_x, local_y: Offset from component center in component-local space (unzoomed)
+            cx, cy: Component center in world space
+            zoom: Current zoom level
+            
+        Returns:
+            (world_x, world_y) with flip applied but not rotation
+        """
+        # Get flip properties
+        flip_h = self.component.properties.get('flip_horizontal', False)
+        flip_v = self.component.properties.get('flip_vertical', False)
+        
+        # Apply flip in component-local space
+        if flip_h:
+            local_x = -local_x
+        if flip_v:
+            local_y = -local_y
+        
+        # Convert to world space (zoom and offset)
+        world_x = cx + local_x * zoom
+        world_y = cy + local_y * zoom
+        
+        return world_x, world_y
+    
     def render(self, zoom: float = 1.0) -> None:
         """
         Render the ground latching relay component.
@@ -143,12 +172,11 @@ class GroundLatchingRelayRenderer(ComponentRenderer):
             tags=('coil', f'coil_set_{self.component.component_id}')
         )
         
-        # Get rotation for label positioning
+        # Get rotation for label positioning (text needs manual rotation)
         rotation = self.get_rotation()
         
         # Draw 'S' label inside SET coil (left side)
         set_label_x, set_label_y = self._apply_flip(cx - 12 * zoom, cy - 100 * zoom, cx, cy)
-        # Apply rotation to label position
         if rotation != 0:
             set_label_x, set_label_y = self.rotate_point(set_label_x, set_label_y, cx, cy, rotation)
         self.draw_text(
@@ -162,7 +190,6 @@ class GroundLatchingRelayRenderer(ComponentRenderer):
         
         # Draw 'G' label inside SET coil (right side for GND_SET)
         gnd_set_label_x, gnd_set_label_y = self._apply_flip(cx + 12 * zoom, cy - 100 * zoom, cx, cy)
-        # Apply rotation to label position
         if rotation != 0:
             gnd_set_label_x, gnd_set_label_y = self.rotate_point(gnd_set_label_x, gnd_set_label_y, cx, cy, rotation)
         self.draw_text(
@@ -201,7 +228,6 @@ class GroundLatchingRelayRenderer(ComponentRenderer):
         
         # Draw 'R' label inside RESET coil (left side)
         reset_label_x, reset_label_y = self._apply_flip(cx - 12 * zoom, cy + 100 * zoom, cx, cy)
-        # Apply rotation to label position
         if rotation != 0:
             reset_label_x, reset_label_y = self.rotate_point(reset_label_x, reset_label_y, cx, cy, rotation)
         self.draw_text(
@@ -215,7 +241,6 @@ class GroundLatchingRelayRenderer(ComponentRenderer):
         
         # Draw 'G' label inside RESET coil (right side for GND_RESET)
         gnd_reset_label_x, gnd_reset_label_y = self._apply_flip(cx + 12 * zoom, cy + 100 * zoom, cx, cy)
-        # Apply rotation to label position
         if rotation != 0:
             gnd_reset_label_x, gnd_reset_label_y = self.rotate_point(gnd_reset_label_x, gnd_reset_label_y, cx, cy, rotation)
         self.draw_text(
@@ -239,10 +264,6 @@ class GroundLatchingRelayRenderer(ComponentRenderer):
             com1_x, com1_y = self._apply_flip(cx - 30 * zoom, cy - 40 * zoom, cx, cy)
             no1_x, no1_y = self._apply_flip(cx + 30 * zoom, cy - 60 * zoom, cx, cy)
             
-            if rotation != 0:
-                com1_x, com1_y = self.rotate_point(com1_x, com1_y, cx, cy, rotation)
-                no1_x, no1_y = self.rotate_point(no1_x, no1_y, cx, cy, rotation)
-            
             self.draw_line(
                 com1_x, com1_y, no1_x, no1_y,
                 fill='#00ff00',  # Green for active
@@ -252,11 +273,7 @@ class GroundLatchingRelayRenderer(ComponentRenderer):
             
             # COM2 -> NO2 connection
             com2_x, com2_y = self._apply_flip(cx - 30 * zoom, cy + 40 * zoom, cx, cy)
-            no2_x, no2_y = self._apply_flip(cx + 30 * zoom, cy + 20 * zoom, cx, cy)
-            
-            if rotation != 0:
-                com2_x, com2_y = self.rotate_point(com2_x, com2_y, cx, cy, rotation)
-                no2_x, no2_y = self.rotate_point(no2_x, no2_y, cx, cy, rotation)
+            no2_x, no2_y = self._apply_flip(cx + 30 * zoom, cy + 20 *zoom, cx, cy)
             
             self.draw_line(
                 com2_x, com2_y, no2_x, no2_y,
@@ -269,10 +286,6 @@ class GroundLatchingRelayRenderer(ComponentRenderer):
             com1_x, com1_y = self._apply_flip(cx - 30 * zoom, cy - 40 * zoom, cx, cy)
             nc1_x, nc1_y = self._apply_flip(cx + 30 * zoom, cy - 20 * zoom, cx, cy)
             
-            if rotation != 0:
-                com1_x, com1_y = self.rotate_point(com1_x, com1_y, cx, cy, rotation)
-                nc1_x, nc1_y = self.rotate_point(nc1_x, nc1_y, cx, cy, rotation)
-            
             self.draw_line(
                 com1_x, com1_y, nc1_x, nc1_y,
                 fill='#00ff00',  # Green for active
@@ -283,10 +296,6 @@ class GroundLatchingRelayRenderer(ComponentRenderer):
             # COM2 -> NC2 connection
             com2_x, com2_y = self._apply_flip(cx - 30 * zoom, cy + 40 * zoom, cx, cy)
             nc2_x, nc2_y = self._apply_flip(cx + 30 * zoom, cy + 60 * zoom, cx, cy)
-            
-            if rotation != 0:
-                com2_x, com2_y = self.rotate_point(com2_x, com2_y, cx, cy, rotation)
-                nc2_x, nc2_y = self.rotate_point(nc2_x, nc2_y, cx, cy, rotation)
             
             self.draw_line(
                 com2_x, com2_y, nc2_x, nc2_y,
@@ -335,3 +344,42 @@ class GroundLatchingRelayRenderer(ComponentRenderer):
                 anchor=anchor,
                 tags=('label', f'label_{self.component.component_id}')
             )
+        
+        # Draw tabs for all pins
+        self.draw_tabs(zoom)
+    
+    def draw_tabs(self, zoom: float = 1.0) -> None:
+        """
+        Draw tabs for all component pins with flip and rotation transformations applied.
+        
+        Args:
+            zoom: Current zoom level
+        """
+        cx, cy = self.get_position()
+        
+        for pin in self.component.pins.values():
+            for tab in pin.tabs.values():
+                # Get tab position relative to component
+                tx_offset, ty_offset = tab.relative_position
+                
+                # Calculate absolute position (before flip)
+                tx_base = cx + tx_offset * zoom
+                ty_base = cy + ty_offset * zoom
+                
+                # Apply flip transformations
+                tx_flipped, ty_flipped = self._apply_flip(tx_base, ty_base, cx, cy)
+                
+                # Apply rotation manually (draw_circle doesn't auto-rotate center like draw_rectangle does)
+                rotation = self.get_rotation()
+                tx, ty = self.rotate_point(tx_flipped, ty_flipped, cx, cy, rotation)
+                
+                # Draw tab as small circle
+                tab_size = VSCodeTheme.TAB_SIZE * zoom
+                self.draw_circle(
+                    tx, ty,
+                    radius=tab_size / 2,
+                    fill='#00ff00',  # Bright green for visibility
+                    outline='#ffffff',  # White outline
+                    width_px=1,
+                    tags=('tab', f'tab_{tab.tab_id}')
+                )
