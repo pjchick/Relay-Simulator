@@ -43,10 +43,10 @@ class BridgeManager:
     
     def _get_connected_vnet_network(self, start_vnet_id: str) -> set:
         """
-        Get all VNETs transitively connected through bridges.
+        Get all VNETs transitively connected through bridges and links.
         
         Uses BFS to find all VNETs reachable from the starting VNET
-        through the bridge network.
+        through the bridge network and link names.
         
         Args:
             start_vnet_id: Starting VNET ID
@@ -76,6 +76,13 @@ class BridgeManager:
                     other_id = bridge.get_other_vnet(current_id)
                     if other_id and other_id not in connected:
                         queue.append(other_id)
+            
+            # Follow all link names from this VNET
+            for link_name in current_vnet.link_names:
+                for other_vnet_id, other_vnet in self.vnets.items():
+                    if other_vnet_id != current_id and other_vnet.has_link(link_name):
+                        if other_vnet_id not in connected:
+                            queue.append(other_vnet_id)
         
         return connected
     
@@ -173,15 +180,15 @@ class BridgeManager:
         Returns:
             List of Bridge instances
         """
-        return [b for b in self.bridges.values() if b.component_id == component_id]
+        return [b for b in self.bridges.values() if b.owner_component_id == component_id]
     
     def remove_bridges_for_component(self, component_id: str):
-        """remove_bridge(bridge_id)  # Use remove_bridge to trigger component queuing
+        """
         Remove all bridges created by a component.
         
         Args:
             component_id: Component ID
         """
-        bridge_ids = [bid for bid, b in self.bridges.items() if b.component_id == component_id]
+        bridge_ids = [bid for bid, b in self.bridges.items() if b.owner_component_id == component_id]
         for bridge_id in bridge_ids:
-            self.bridges.pop(bridge_id, None)
+            self.remove_bridge(bridge_id)  # Use remove_bridge to trigger component queuing
