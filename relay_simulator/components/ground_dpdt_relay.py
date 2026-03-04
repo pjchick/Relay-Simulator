@@ -202,13 +202,14 @@ class GroundDPDTRelay(Component):
         self._nc2_pin = create_pin_with_tab("NC2", right_x, 80)
         self.add_pin(self._nc2_pin)
     
-    def _is_gnd_connected(self, vnet_manager) -> bool:
+    def _is_gnd_connected(self, vnet_manager, bridge_manager) -> bool:
         """
         Check if the GND pin is connected to a GND component.
         Traverses bridges to find GND components through relay contacts.
         
         Args:
             vnet_manager: VnetManager instance
+            bridge_manager: BridgeManager instance
             
         Returns:
             True if GND pin is connected to a GND component, False otherwise
@@ -249,14 +250,12 @@ class GroundDPDTRelay(Component):
             
             # Follow bridges to connected VNETs
             for bridge_id in current_vnet.bridge_ids:
-                # Get the bridge to find the other VNET
-                # Bridges connect two VNETs, so we need to find the other one
-                # We can access this through the vnet_manager if it has a bridges dict
-                # or we can check other VNETs for this bridge_id
-                for other_vnet_id, other_vnet in vnet_manager.vnets.items():
-                    if other_vnet_id != current_vnet_id and bridge_id in other_vnet.bridge_ids:
-                        if other_vnet_id not in visited_vnets:
-                            queue.append(other_vnet_id)
+                # Get the bridge object to find the other VNET
+                bridge = bridge_manager.bridges.get(bridge_id)
+                if bridge:
+                    other_vnet_id = bridge.get_other_vnet(current_vnet_id)
+                    if other_vnet_id and other_vnet_id not in visited_vnets:
+                        queue.append(other_vnet_id)
             
             # Follow link names to connected VNETs (cross-page connections)
             for link_name in current_vnet.link_names:
@@ -301,7 +300,7 @@ class GroundDPDTRelay(Component):
         
         # Check both conditions for energization
         coil_is_high = (coil_state == PinState.HIGH)
-        gnd_is_connected = self._is_gnd_connected(vnet_manager)
+        gnd_is_connected = self._is_gnd_connected(vnet_manager, bridge_manager)
         
         # Only energize if both conditions are met
         target_energized = coil_is_high and gnd_is_connected

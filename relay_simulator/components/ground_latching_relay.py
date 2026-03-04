@@ -223,22 +223,23 @@ class GroundLatchingRelay(Component):
         self._gnd_reset_pin = create_pin_with_tab("GND_RESET", right_x, 100)
         self.add_pin(self._gnd_reset_pin)
     
-    def _is_gnd_connected(self, vnet_manager, gnd_pin: Pin) -> bool:
+    def _is_gnd_connected(self, vnet_manager, bridge_manager, gnd_pin: Pin) -> bool:
         """
-        Check if a GND pin is connected to a GND component.
+        Check if a ground pin is connected to a GND component.
         Traverses bridges to find GND components through relay contacts.
         
         Args:
             vnet_manager: VnetManager instance
-            gnd_pin: The GND pin to check (GND_SET or GND_RESET)
+            bridge_manager: BridgeManager instance
+            gnd_pin: The ground pin to check
             
         Returns:
-            True if GND pin is connected to a GND component, False otherwise
+            True if pin is connected to a GND component, False otherwise
         """
         if not gnd_pin or not gnd_pin.tabs:
             return False
         
-        # Get the VNET for the GND pin
+        # Get the VNET for the ground pin
         gnd_tab = next(iter(gnd_pin.tabs.values()))
         start_vnet = vnet_manager.get_vnet_for_tab(gnd_tab.tab_id)
         
@@ -271,12 +272,12 @@ class GroundLatchingRelay(Component):
             
             # Follow bridges to connected VNETs
             for bridge_id in current_vnet.bridge_ids:
-                # Get the bridge to find the other VNET
-                # Bridges connect two VNETs, so we need to find the other one
-                for other_vnet_id, other_vnet in vnet_manager.vnets.items():
-                    if other_vnet_id != current_vnet_id and bridge_id in other_vnet.bridge_ids:
-                        if other_vnet_id not in visited_vnets:
-                            queue.append(other_vnet_id)
+                # Get the bridge object to find the other VNET
+                bridge = bridge_manager.bridges.get(bridge_id)
+                if bridge:
+                    other_vnet_id = bridge.get_other_vnet(current_vnet_id)
+                    if other_vnet_id and other_vnet_id not in visited_vnets:
+                        queue.append(other_vnet_id)
             
             # Follow link names to connected VNETs (cross-page connections)
             for link_name in current_vnet.link_names:
@@ -328,19 +329,22 @@ class GroundLatchingRelay(Component):
         reset_coil_state = reset_vnet.state
         
         # Check ground connections
-        set_gnd_connected = self._is_gnd_connected(vnet_manager, self._gnd_set_pin)
-        reset_gnd_connected = self._is_gnd_connected(vnet_manager, self._gnd_reset_pin)
+        set_gnd_connected = self._is_gnd_connected(vnet_manager, bridge_manager, self._gnd_set_pin)
+        reset_gnd_connected = self._is_gnd_connected(vnet_manager, bridge_manager, self._gnd_reset_pin)
         
         # Determine if each coil is active (both signal HIGH and ground connected)
         set_active = (set_coil_state == PinState.HIGH) and set_gnd_connected
         reset_active = (reset_coil_state == PinState.HIGH) and reset_gnd_connected
         
         # Determine target state based on coil inputs
-        # RESET has priority when both coils are active (safer default state)
+        # If both coils are active, maintain current state (no change)
         target_set = None
         
-        if reset_active:
-            # RESET coil active - switch to RESET state (has priority)
+        if set_active and reset_active:
+            # Both coils active - maintain current state
+            target_set = None
+        elif reset_active:
+            # Only RESET coil active - switch to RESET state
             target_set = False
         elif set_active:
             # Only SET coil active - switch to SET state

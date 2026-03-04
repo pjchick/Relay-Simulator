@@ -1,0 +1,6862 @@
+{
+  "version": "1.0.0",
+  "pages": [
+    {
+      "page_id": "9aeb4015",
+      "name": "Ground Relays",
+      "canvas_x": 0.0,
+      "canvas_y": 4.0,
+      "canvas_zoom": 1.0,
+      "components": [
+        {
+          "component_id": "999f0f48",
+          "component_type": "GroundDPDTRelay",
+          "position": {
+            "x": 530,
+            "y": 330
+          },
+          "pins": [
+            {
+              "pin_id": "999f0f48.COIL",
+              "tabs": [
+                {
+                  "tab_id": "999f0f48.COIL.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "999f0f48.COM1",
+              "tabs": [
+                {
+                  "tab_id": "999f0f48.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "999f0f48.COM2",
+              "tabs": [
+                {
+                  "tab_id": "999f0f48.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "999f0f48.GND",
+              "tabs": [
+                {
+                  "tab_id": "999f0f48.GND.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "999f0f48.NO1",
+              "tabs": [
+                {
+                  "tab_id": "999f0f48.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "999f0f48.NC1",
+              "tabs": [
+                {
+                  "tab_id": "999f0f48.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "999f0f48.NO2",
+              "tabs": [
+                {
+                  "tab_id": "999f0f48.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "999f0f48.NC2",
+              "tabs": [
+                {
+                  "tab_id": "999f0f48.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 80
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "3ecb04b7",
+          "component_type": "Switch",
+          "position": {
+            "x": 410,
+            "y": 250
+          },
+          "pins": [
+            {
+              "pin_id": "3ecb04b7.pin1",
+              "tabs": [
+                {
+                  "tab_id": "3ecb04b7.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "3ecb04b7.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "3ecb04b7.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "3ecb04b7.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SW",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "afdc7651",
+          "component_type": "DPDTRelay",
+          "position": {
+            "x": 840,
+            "y": 330
+          },
+          "pins": [
+            {
+              "pin_id": "afdc7651.COIL",
+              "tabs": [
+                {
+                  "tab_id": "afdc7651.COIL.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "afdc7651.COM1",
+              "tabs": [
+                {
+                  "tab_id": "afdc7651.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "afdc7651.COM2",
+              "tabs": [
+                {
+                  "tab_id": "afdc7651.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "afdc7651.NO1",
+              "tabs": [
+                {
+                  "tab_id": "afdc7651.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "afdc7651.NC1",
+              "tabs": [
+                {
+                  "tab_id": "afdc7651.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "afdc7651.NO2",
+              "tabs": [
+                {
+                  "tab_id": "afdc7651.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "afdc7651.NC2",
+              "tabs": [
+                {
+                  "tab_id": "afdc7651.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 80
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "8a548d3f",
+          "component_type": "GND",
+          "page_id": "9aeb4015",
+          "position": {
+            "x": 990,
+            "y": 440
+          },
+          "rotation": 0,
+          "properties": {
+            "label": ""
+          },
+          "link_name": null
+        },
+        {
+          "component_id": "35c42b4b",
+          "component_type": "Switch",
+          "position": {
+            "x": 750,
+            "y": 160
+          },
+          "pins": [
+            {
+              "pin_id": "35c42b4b.pin1",
+              "tabs": [
+                {
+                  "tab_id": "35c42b4b.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "35c42b4b.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "35c42b4b.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "35c42b4b.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "Enable",
+            "label_position": "top",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "bed55fbd",
+          "component_type": "GroundDPDTRelay",
+          "position": {
+            "x": 530.0,
+            "y": 590.0
+          },
+          "pins": [
+            {
+              "pin_id": "bed55fbd.COIL",
+              "tabs": [
+                {
+                  "tab_id": "bed55fbd.COIL.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "bed55fbd.COM1",
+              "tabs": [
+                {
+                  "tab_id": "bed55fbd.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "bed55fbd.COM2",
+              "tabs": [
+                {
+                  "tab_id": "bed55fbd.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "bed55fbd.GND",
+              "tabs": [
+                {
+                  "tab_id": "bed55fbd.GND.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "bed55fbd.NO1",
+              "tabs": [
+                {
+                  "tab_id": "bed55fbd.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "bed55fbd.NC1",
+              "tabs": [
+                {
+                  "tab_id": "bed55fbd.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "bed55fbd.NO2",
+              "tabs": [
+                {
+                  "tab_id": "bed55fbd.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "bed55fbd.NC2",
+              "tabs": [
+                {
+                  "tab_id": "bed55fbd.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 80
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "ad3b0976",
+          "component_type": "Switch",
+          "position": {
+            "x": 410,
+            "y": 510
+          },
+          "pins": [
+            {
+              "pin_id": "ad3b0976.pin1",
+              "tabs": [
+                {
+                  "tab_id": "ad3b0976.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "ad3b0976.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "ad3b0976.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "ad3b0976.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SW",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        }
+      ],
+      "wires": [
+        {
+          "wire_id": "990a6c5a",
+          "start_tab_id": "3ecb04b7.pin1.tab3",
+          "end_tab_id": "999f0f48.COIL.tab0"
+        },
+        {
+          "wire_id": "8b259a03",
+          "start_tab_id": "999f0f48.GND.tab0",
+          "end_tab_id": "ca6a7666",
+          "waypoints": [
+            {
+              "waypoint_id": "b5a6026c",
+              "position": {
+                "x": 670,
+                "y": 250
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "2e7b3191",
+          "start_tab_id": "afdc7651.NO1.tab0",
+          "end_tab_id": "8a548d3f.pin1.tab1",
+          "waypoints": [
+            {
+              "waypoint_id": "7bc8573a",
+              "position": {
+                "x": 990,
+                "y": 290
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "c4a08bb0",
+          "start_tab_id": "35c42b4b.pin1.tab6",
+          "end_tab_id": "afdc7651.COIL.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "88efdbf6",
+              "position": {
+                "x": 750,
+                "y": 250
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "16cc8a9c",
+          "start_tab_id": "ad3b0976.pin1.tab3",
+          "end_tab_id": "bed55fbd.COIL.tab0"
+        },
+        {
+          "wire_id": "3493917f",
+          "start_tab_id": "ca6a7666",
+          "end_tab_id": "afdc7651.COM1.tab0"
+        },
+        {
+          "wire_id": "6a784a4d",
+          "start_tab_id": "bed55fbd.GND.tab0",
+          "end_tab_id": "ca6a7666",
+          "waypoints": [
+            {
+              "waypoint_id": "ea8540f0",
+              "position": {
+                "x": 670,
+                "y": 510
+              }
+            }
+          ]
+        }
+      ],
+      "junctions": [
+        {
+          "junction_id": "ca6a7666",
+          "position": {
+            "x": 670,
+            "y": 310
+          },
+          "child_wires": []
+        }
+      ]
+    },
+    {
+      "page_id": "e645912d",
+      "name": "Latching Relays",
+      "canvas_x": 0.0,
+      "canvas_y": 0.0,
+      "canvas_zoom": 1.0,
+      "components": [
+        {
+          "component_id": "e6730437",
+          "component_type": "LatchingRelay",
+          "position": {
+            "x": 460,
+            "y": 320
+          },
+          "pins": [
+            {
+              "pin_id": "e6730437.COIL_SET",
+              "tabs": [
+                {
+                  "tab_id": "e6730437.COIL_SET.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -100
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "e6730437.COM1",
+              "tabs": [
+                {
+                  "tab_id": "e6730437.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "e6730437.COM2",
+              "tabs": [
+                {
+                  "tab_id": "e6730437.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "e6730437.COIL_RESET",
+              "tabs": [
+                {
+                  "tab_id": "e6730437.COIL_RESET.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 100
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "e6730437.NO1",
+              "tabs": [
+                {
+                  "tab_id": "e6730437.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "e6730437.NC1",
+              "tabs": [
+                {
+                  "tab_id": "e6730437.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "e6730437.NO2",
+              "tabs": [
+                {
+                  "tab_id": "e6730437.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "e6730437.NC2",
+              "tabs": [
+                {
+                  "tab_id": "e6730437.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 60
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "87ae7616",
+          "component_type": "VCC",
+          "position": {
+            "x": 380,
+            "y": 280
+          },
+          "pins": [
+            {
+              "pin_id": "87ae7616.pin1",
+              "tabs": [
+                {
+                  "tab_id": "87ae7616.pin1.tab1",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "pin_position": "bottom"
+          }
+        },
+        {
+          "component_id": "5d6447be",
+          "component_type": "Switch",
+          "position": {
+            "x": 260,
+            "y": 220
+          },
+          "pins": [
+            {
+              "pin_id": "5d6447be.pin1",
+              "tabs": [
+                {
+                  "tab_id": "5d6447be.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "5d6447be.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "5d6447be.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "5d6447be.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SW",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "a3c6d044",
+          "component_type": "Switch",
+          "position": {
+            "x": 260,
+            "y": 420
+          },
+          "pins": [
+            {
+              "pin_id": "a3c6d044.pin1",
+              "tabs": [
+                {
+                  "tab_id": "a3c6d044.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "a3c6d044.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "a3c6d044.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "a3c6d044.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SW",
+            "label_position": "bottom",
+            "color": "green",
+            "on_color": [
+              0,
+              255,
+              0
+            ],
+            "dull_color": [
+              0,
+              128,
+              0
+            ],
+            "off_color": [
+              0,
+              64,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "102a3158",
+          "component_type": "Indicator",
+          "position": {
+            "x": 580,
+            "y": 260
+          },
+          "pins": [
+            {
+              "pin_id": "102a3158.pin1",
+              "tabs": [
+                {
+                  "tab_id": "102a3158.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "102a3158.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "102a3158.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "102a3158.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED A",
+            "label_position": "top",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "ea5d6b17",
+          "component_type": "Indicator",
+          "position": {
+            "x": 580,
+            "y": 300
+          },
+          "pins": [
+            {
+              "pin_id": "ea5d6b17.pin1",
+              "tabs": [
+                {
+                  "tab_id": "ea5d6b17.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "ea5d6b17.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "ea5d6b17.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "ea5d6b17.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED B",
+            "label_position": "bottom",
+            "color": "green",
+            "on_color": [
+              0,
+              255,
+              0
+            ],
+            "off_color": [
+              0,
+              64,
+              0
+            ]
+          }
+        }
+      ],
+      "wires": [
+        {
+          "wire_id": "5104f94c",
+          "start_tab_id": "87ae7616.pin1.tab1",
+          "end_tab_id": "e6730437.COM1.tab0"
+        },
+        {
+          "wire_id": "8d8b5ec5",
+          "start_tab_id": "5d6447be.pin1.tab3",
+          "end_tab_id": "e6730437.COIL_SET.tab0"
+        },
+        {
+          "wire_id": "aa213591",
+          "start_tab_id": "a3c6d044.pin1.tab3",
+          "end_tab_id": "e6730437.COIL_RESET.tab0"
+        },
+        {
+          "wire_id": "8c1f9276",
+          "start_tab_id": "e6730437.NO1.tab0",
+          "end_tab_id": "102a3158.pin1.tab9"
+        },
+        {
+          "wire_id": "0f610651",
+          "start_tab_id": "e6730437.NC1.tab0",
+          "end_tab_id": "ea5d6b17.pin1.tab9"
+        }
+      ]
+    },
+    {
+      "page_id": "e03995bd",
+      "name": "4-Bit Memory",
+      "canvas_x": 93.0,
+      "canvas_y": 143.0,
+      "canvas_zoom": 0.7140128912052458,
+      "components": [
+        {
+          "component_id": "5ee7126d",
+          "component_type": "GroundLatchingRelay",
+          "position": {
+            "x": 730,
+            "y": 500
+          },
+          "pins": [
+            {
+              "pin_id": "5ee7126d.COIL_SET",
+              "tabs": [
+                {
+                  "tab_id": "5ee7126d.COIL_SET.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -100
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "5ee7126d.COM1",
+              "tabs": [
+                {
+                  "tab_id": "5ee7126d.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "5ee7126d.COM2",
+              "tabs": [
+                {
+                  "tab_id": "5ee7126d.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "5ee7126d.COIL_RESET",
+              "tabs": [
+                {
+                  "tab_id": "5ee7126d.COIL_RESET.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 100
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "5ee7126d.GND_SET",
+              "tabs": [
+                {
+                  "tab_id": "5ee7126d.GND_SET.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -100
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "5ee7126d.NO1",
+              "tabs": [
+                {
+                  "tab_id": "5ee7126d.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "5ee7126d.NC1",
+              "tabs": [
+                {
+                  "tab_id": "5ee7126d.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "5ee7126d.NO2",
+              "tabs": [
+                {
+                  "tab_id": "5ee7126d.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "5ee7126d.NC2",
+              "tabs": [
+                {
+                  "tab_id": "5ee7126d.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "5ee7126d.GND_RESET",
+              "tabs": [
+                {
+                  "tab_id": "5ee7126d.GND_RESET.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 100
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "0beb8785",
+          "component_type": "GroundDPDTRelay",
+          "position": {
+            "x": 590,
+            "y": 480
+          },
+          "pins": [
+            {
+              "pin_id": "0beb8785.COIL",
+              "tabs": [
+                {
+                  "tab_id": "0beb8785.COIL.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "0beb8785.COM1",
+              "tabs": [
+                {
+                  "tab_id": "0beb8785.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "0beb8785.COM2",
+              "tabs": [
+                {
+                  "tab_id": "0beb8785.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "0beb8785.GND",
+              "tabs": [
+                {
+                  "tab_id": "0beb8785.GND.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "0beb8785.NO1",
+              "tabs": [
+                {
+                  "tab_id": "0beb8785.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "0beb8785.NC1",
+              "tabs": [
+                {
+                  "tab_id": "0beb8785.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "0beb8785.NO2",
+              "tabs": [
+                {
+                  "tab_id": "0beb8785.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "0beb8785.NC2",
+              "tabs": [
+                {
+                  "tab_id": "0beb8785.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 80
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "de56cdaf",
+          "component_type": "Switch",
+          "position": {
+            "x": 680,
+            "y": 300
+          },
+          "pins": [
+            {
+              "pin_id": "de56cdaf.pin1",
+              "tabs": [
+                {
+                  "tab_id": "de56cdaf.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "de56cdaf.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "de56cdaf.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "de56cdaf.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "D3",
+            "label_position": "top",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "1eb86e9c",
+          "component_type": "VCC",
+          "position": {
+            "x": 540,
+            "y": 460
+          },
+          "pins": [
+            {
+              "pin_id": "1eb86e9c.pin1",
+              "tabs": [
+                {
+                  "tab_id": "1eb86e9c.pin1.tab1",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "pin_position": "bottom"
+          }
+        },
+        {
+          "component_id": "c0487cb6",
+          "component_type": "GroundDPDTRelay",
+          "position": {
+            "x": 890.0,
+            "y": 480.0
+          },
+          "pins": [
+            {
+              "pin_id": "c0487cb6.COIL",
+              "tabs": [
+                {
+                  "tab_id": "c0487cb6.COIL.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "c0487cb6.COM1",
+              "tabs": [
+                {
+                  "tab_id": "c0487cb6.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "c0487cb6.COM2",
+              "tabs": [
+                {
+                  "tab_id": "c0487cb6.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "c0487cb6.GND",
+              "tabs": [
+                {
+                  "tab_id": "c0487cb6.GND.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "c0487cb6.NO1",
+              "tabs": [
+                {
+                  "tab_id": "c0487cb6.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "c0487cb6.NC1",
+              "tabs": [
+                {
+                  "tab_id": "c0487cb6.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "c0487cb6.NO2",
+              "tabs": [
+                {
+                  "tab_id": "c0487cb6.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "c0487cb6.NC2",
+              "tabs": [
+                {
+                  "tab_id": "c0487cb6.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 80
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "af9ebd04",
+          "component_type": "VCC",
+          "position": {
+            "x": 840.0,
+            "y": 460.0
+          },
+          "pins": [
+            {
+              "pin_id": "af9ebd04.pin1",
+              "tabs": [
+                {
+                  "tab_id": "af9ebd04.pin1.tab1",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "pin_position": "bottom"
+          }
+        },
+        {
+          "component_id": "af9247d1",
+          "component_type": "GroundLatchingRelay",
+          "position": {
+            "x": 1030.0,
+            "y": 500.0
+          },
+          "pins": [
+            {
+              "pin_id": "af9247d1.COIL_SET",
+              "tabs": [
+                {
+                  "tab_id": "af9247d1.COIL_SET.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -100
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "af9247d1.COM1",
+              "tabs": [
+                {
+                  "tab_id": "af9247d1.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "af9247d1.COM2",
+              "tabs": [
+                {
+                  "tab_id": "af9247d1.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "af9247d1.COIL_RESET",
+              "tabs": [
+                {
+                  "tab_id": "af9247d1.COIL_RESET.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 100
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "af9247d1.GND_SET",
+              "tabs": [
+                {
+                  "tab_id": "af9247d1.GND_SET.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -100
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "af9247d1.NO1",
+              "tabs": [
+                {
+                  "tab_id": "af9247d1.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "af9247d1.NC1",
+              "tabs": [
+                {
+                  "tab_id": "af9247d1.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "af9247d1.NO2",
+              "tabs": [
+                {
+                  "tab_id": "af9247d1.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "af9247d1.NC2",
+              "tabs": [
+                {
+                  "tab_id": "af9247d1.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "af9247d1.GND_RESET",
+              "tabs": [
+                {
+                  "tab_id": "af9247d1.GND_RESET.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 100
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "52a22279",
+          "component_type": "Switch",
+          "position": {
+            "x": 980.0,
+            "y": 300.0
+          },
+          "pins": [
+            {
+              "pin_id": "52a22279.pin1",
+              "tabs": [
+                {
+                  "tab_id": "52a22279.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "52a22279.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "52a22279.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "52a22279.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "D2",
+            "label_position": "top",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "687d663b",
+          "component_type": "VCC",
+          "position": {
+            "x": 1140.0,
+            "y": 460.0
+          },
+          "pins": [
+            {
+              "pin_id": "687d663b.pin1",
+              "tabs": [
+                {
+                  "tab_id": "687d663b.pin1.tab1",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "pin_position": "bottom"
+          }
+        },
+        {
+          "component_id": "24b22d33",
+          "component_type": "GroundLatchingRelay",
+          "position": {
+            "x": 1330.0,
+            "y": 500.0
+          },
+          "pins": [
+            {
+              "pin_id": "24b22d33.COIL_SET",
+              "tabs": [
+                {
+                  "tab_id": "24b22d33.COIL_SET.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -100
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "24b22d33.COM1",
+              "tabs": [
+                {
+                  "tab_id": "24b22d33.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "24b22d33.COM2",
+              "tabs": [
+                {
+                  "tab_id": "24b22d33.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "24b22d33.COIL_RESET",
+              "tabs": [
+                {
+                  "tab_id": "24b22d33.COIL_RESET.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 100
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "24b22d33.GND_SET",
+              "tabs": [
+                {
+                  "tab_id": "24b22d33.GND_SET.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -100
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "24b22d33.NO1",
+              "tabs": [
+                {
+                  "tab_id": "24b22d33.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "24b22d33.NC1",
+              "tabs": [
+                {
+                  "tab_id": "24b22d33.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "24b22d33.NO2",
+              "tabs": [
+                {
+                  "tab_id": "24b22d33.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "24b22d33.NC2",
+              "tabs": [
+                {
+                  "tab_id": "24b22d33.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "24b22d33.GND_RESET",
+              "tabs": [
+                {
+                  "tab_id": "24b22d33.GND_RESET.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 100
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "036760f7",
+          "component_type": "Switch",
+          "position": {
+            "x": 1280.0,
+            "y": 300.0
+          },
+          "pins": [
+            {
+              "pin_id": "036760f7.pin1",
+              "tabs": [
+                {
+                  "tab_id": "036760f7.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "036760f7.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "036760f7.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "036760f7.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "D1",
+            "label_position": "top",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "f56f0cda",
+          "component_type": "GroundDPDTRelay",
+          "position": {
+            "x": 1190.0,
+            "y": 480.0
+          },
+          "pins": [
+            {
+              "pin_id": "f56f0cda.COIL",
+              "tabs": [
+                {
+                  "tab_id": "f56f0cda.COIL.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f56f0cda.COM1",
+              "tabs": [
+                {
+                  "tab_id": "f56f0cda.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f56f0cda.COM2",
+              "tabs": [
+                {
+                  "tab_id": "f56f0cda.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f56f0cda.GND",
+              "tabs": [
+                {
+                  "tab_id": "f56f0cda.GND.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f56f0cda.NO1",
+              "tabs": [
+                {
+                  "tab_id": "f56f0cda.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f56f0cda.NC1",
+              "tabs": [
+                {
+                  "tab_id": "f56f0cda.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f56f0cda.NO2",
+              "tabs": [
+                {
+                  "tab_id": "f56f0cda.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f56f0cda.NC2",
+              "tabs": [
+                {
+                  "tab_id": "f56f0cda.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 80
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "94886448",
+          "component_type": "VCC",
+          "position": {
+            "x": 1440.0,
+            "y": 460.0
+          },
+          "pins": [
+            {
+              "pin_id": "94886448.pin1",
+              "tabs": [
+                {
+                  "tab_id": "94886448.pin1.tab1",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "pin_position": "bottom"
+          }
+        },
+        {
+          "component_id": "70477a5f",
+          "component_type": "GroundLatchingRelay",
+          "position": {
+            "x": 1630.0,
+            "y": 500.0
+          },
+          "pins": [
+            {
+              "pin_id": "70477a5f.COIL_SET",
+              "tabs": [
+                {
+                  "tab_id": "70477a5f.COIL_SET.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -100
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "70477a5f.COM1",
+              "tabs": [
+                {
+                  "tab_id": "70477a5f.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "70477a5f.COM2",
+              "tabs": [
+                {
+                  "tab_id": "70477a5f.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "70477a5f.COIL_RESET",
+              "tabs": [
+                {
+                  "tab_id": "70477a5f.COIL_RESET.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 100
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "70477a5f.GND_SET",
+              "tabs": [
+                {
+                  "tab_id": "70477a5f.GND_SET.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -100
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "70477a5f.NO1",
+              "tabs": [
+                {
+                  "tab_id": "70477a5f.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "70477a5f.NC1",
+              "tabs": [
+                {
+                  "tab_id": "70477a5f.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "70477a5f.NO2",
+              "tabs": [
+                {
+                  "tab_id": "70477a5f.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "70477a5f.NC2",
+              "tabs": [
+                {
+                  "tab_id": "70477a5f.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "70477a5f.GND_RESET",
+              "tabs": [
+                {
+                  "tab_id": "70477a5f.GND_RESET.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 100
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "282d8978",
+          "component_type": "Switch",
+          "position": {
+            "x": 1580.0,
+            "y": 300.0
+          },
+          "pins": [
+            {
+              "pin_id": "282d8978.pin1",
+              "tabs": [
+                {
+                  "tab_id": "282d8978.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "282d8978.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "282d8978.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "282d8978.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "D0",
+            "label_position": "top",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "62a27987",
+          "component_type": "GroundDPDTRelay",
+          "position": {
+            "x": 1490.0,
+            "y": 480.0
+          },
+          "pins": [
+            {
+              "pin_id": "62a27987.COIL",
+              "tabs": [
+                {
+                  "tab_id": "62a27987.COIL.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "62a27987.COM1",
+              "tabs": [
+                {
+                  "tab_id": "62a27987.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "62a27987.COM2",
+              "tabs": [
+                {
+                  "tab_id": "62a27987.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "62a27987.GND",
+              "tabs": [
+                {
+                  "tab_id": "62a27987.GND.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "62a27987.NO1",
+              "tabs": [
+                {
+                  "tab_id": "62a27987.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "62a27987.NC1",
+              "tabs": [
+                {
+                  "tab_id": "62a27987.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "62a27987.NO2",
+              "tabs": [
+                {
+                  "tab_id": "62a27987.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "62a27987.NC2",
+              "tabs": [
+                {
+                  "tab_id": "62a27987.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 80
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "20b35ee8",
+          "component_type": "DPDTRelay",
+          "position": {
+            "x": 390,
+            "y": 480
+          },
+          "pins": [
+            {
+              "pin_id": "20b35ee8.COIL",
+              "tabs": [
+                {
+                  "tab_id": "20b35ee8.COIL.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "20b35ee8.COM1",
+              "tabs": [
+                {
+                  "tab_id": "20b35ee8.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "20b35ee8.COM2",
+              "tabs": [
+                {
+                  "tab_id": "20b35ee8.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "20b35ee8.NO1",
+              "tabs": [
+                {
+                  "tab_id": "20b35ee8.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "20b35ee8.NC1",
+              "tabs": [
+                {
+                  "tab_id": "20b35ee8.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "20b35ee8.NO2",
+              "tabs": [
+                {
+                  "tab_id": "20b35ee8.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "20b35ee8.NC2",
+              "tabs": [
+                {
+                  "tab_id": "20b35ee8.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 80
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "0c2fec5d",
+          "component_type": "Switch",
+          "position": {
+            "x": 240,
+            "y": 400
+          },
+          "pins": [
+            {
+              "pin_id": "0c2fec5d.pin1",
+              "tabs": [
+                {
+                  "tab_id": "0c2fec5d.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "0c2fec5d.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "0c2fec5d.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "0c2fec5d.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "BYTE_0",
+            "label_position": "left",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "426e1743",
+          "component_type": "VCC",
+          "position": {
+            "x": 1140.0,
+            "y": 800.0
+          },
+          "pins": [
+            {
+              "pin_id": "426e1743.pin1",
+              "tabs": [
+                {
+                  "tab_id": "426e1743.pin1.tab1",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "pin_position": "bottom"
+          }
+        },
+        {
+          "component_id": "54bd0217",
+          "component_type": "GroundDPDTRelay",
+          "position": {
+            "x": 1190.0,
+            "y": 820.0
+          },
+          "pins": [
+            {
+              "pin_id": "54bd0217.COIL",
+              "tabs": [
+                {
+                  "tab_id": "54bd0217.COIL.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "54bd0217.COM1",
+              "tabs": [
+                {
+                  "tab_id": "54bd0217.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "54bd0217.COM2",
+              "tabs": [
+                {
+                  "tab_id": "54bd0217.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "54bd0217.GND",
+              "tabs": [
+                {
+                  "tab_id": "54bd0217.GND.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "54bd0217.NO1",
+              "tabs": [
+                {
+                  "tab_id": "54bd0217.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "54bd0217.NC1",
+              "tabs": [
+                {
+                  "tab_id": "54bd0217.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "54bd0217.NO2",
+              "tabs": [
+                {
+                  "tab_id": "54bd0217.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "54bd0217.NC2",
+              "tabs": [
+                {
+                  "tab_id": "54bd0217.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 80
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "cd563480",
+          "component_type": "GroundLatchingRelay",
+          "position": {
+            "x": 730.0,
+            "y": 840.0
+          },
+          "pins": [
+            {
+              "pin_id": "cd563480.COIL_SET",
+              "tabs": [
+                {
+                  "tab_id": "cd563480.COIL_SET.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -100
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "cd563480.COM1",
+              "tabs": [
+                {
+                  "tab_id": "cd563480.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "cd563480.COM2",
+              "tabs": [
+                {
+                  "tab_id": "cd563480.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "cd563480.COIL_RESET",
+              "tabs": [
+                {
+                  "tab_id": "cd563480.COIL_RESET.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 100
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "cd563480.GND_SET",
+              "tabs": [
+                {
+                  "tab_id": "cd563480.GND_SET.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -100
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "cd563480.NO1",
+              "tabs": [
+                {
+                  "tab_id": "cd563480.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "cd563480.NC1",
+              "tabs": [
+                {
+                  "tab_id": "cd563480.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "cd563480.NO2",
+              "tabs": [
+                {
+                  "tab_id": "cd563480.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "cd563480.NC2",
+              "tabs": [
+                {
+                  "tab_id": "cd563480.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "cd563480.GND_RESET",
+              "tabs": [
+                {
+                  "tab_id": "cd563480.GND_RESET.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 100
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "5e604d73",
+          "component_type": "GroundLatchingRelay",
+          "position": {
+            "x": 1630.0,
+            "y": 840.0
+          },
+          "pins": [
+            {
+              "pin_id": "5e604d73.COIL_SET",
+              "tabs": [
+                {
+                  "tab_id": "5e604d73.COIL_SET.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -100
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "5e604d73.COM1",
+              "tabs": [
+                {
+                  "tab_id": "5e604d73.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "5e604d73.COM2",
+              "tabs": [
+                {
+                  "tab_id": "5e604d73.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "5e604d73.COIL_RESET",
+              "tabs": [
+                {
+                  "tab_id": "5e604d73.COIL_RESET.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 100
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "5e604d73.GND_SET",
+              "tabs": [
+                {
+                  "tab_id": "5e604d73.GND_SET.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -100
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "5e604d73.NO1",
+              "tabs": [
+                {
+                  "tab_id": "5e604d73.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "5e604d73.NC1",
+              "tabs": [
+                {
+                  "tab_id": "5e604d73.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "5e604d73.NO2",
+              "tabs": [
+                {
+                  "tab_id": "5e604d73.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "5e604d73.NC2",
+              "tabs": [
+                {
+                  "tab_id": "5e604d73.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "5e604d73.GND_RESET",
+              "tabs": [
+                {
+                  "tab_id": "5e604d73.GND_RESET.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 100
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "136fb2d2",
+          "component_type": "VCC",
+          "position": {
+            "x": 840.0,
+            "y": 800.0
+          },
+          "pins": [
+            {
+              "pin_id": "136fb2d2.pin1",
+              "tabs": [
+                {
+                  "tab_id": "136fb2d2.pin1.tab1",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "pin_position": "bottom"
+          }
+        },
+        {
+          "component_id": "839c1d0d",
+          "component_type": "GroundDPDTRelay",
+          "position": {
+            "x": 590.0,
+            "y": 820.0
+          },
+          "pins": [
+            {
+              "pin_id": "839c1d0d.COIL",
+              "tabs": [
+                {
+                  "tab_id": "839c1d0d.COIL.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "839c1d0d.COM1",
+              "tabs": [
+                {
+                  "tab_id": "839c1d0d.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "839c1d0d.COM2",
+              "tabs": [
+                {
+                  "tab_id": "839c1d0d.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "839c1d0d.GND",
+              "tabs": [
+                {
+                  "tab_id": "839c1d0d.GND.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "839c1d0d.NO1",
+              "tabs": [
+                {
+                  "tab_id": "839c1d0d.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "839c1d0d.NC1",
+              "tabs": [
+                {
+                  "tab_id": "839c1d0d.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "839c1d0d.NO2",
+              "tabs": [
+                {
+                  "tab_id": "839c1d0d.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "839c1d0d.NC2",
+              "tabs": [
+                {
+                  "tab_id": "839c1d0d.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 80
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "699f34d1",
+          "component_type": "GroundLatchingRelay",
+          "position": {
+            "x": 1030.0,
+            "y": 840.0
+          },
+          "pins": [
+            {
+              "pin_id": "699f34d1.COIL_SET",
+              "tabs": [
+                {
+                  "tab_id": "699f34d1.COIL_SET.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -100
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "699f34d1.COM1",
+              "tabs": [
+                {
+                  "tab_id": "699f34d1.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "699f34d1.COM2",
+              "tabs": [
+                {
+                  "tab_id": "699f34d1.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "699f34d1.COIL_RESET",
+              "tabs": [
+                {
+                  "tab_id": "699f34d1.COIL_RESET.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 100
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "699f34d1.GND_SET",
+              "tabs": [
+                {
+                  "tab_id": "699f34d1.GND_SET.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -100
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "699f34d1.NO1",
+              "tabs": [
+                {
+                  "tab_id": "699f34d1.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "699f34d1.NC1",
+              "tabs": [
+                {
+                  "tab_id": "699f34d1.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "699f34d1.NO2",
+              "tabs": [
+                {
+                  "tab_id": "699f34d1.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "699f34d1.NC2",
+              "tabs": [
+                {
+                  "tab_id": "699f34d1.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "699f34d1.GND_RESET",
+              "tabs": [
+                {
+                  "tab_id": "699f34d1.GND_RESET.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 100
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "a0e3dd05",
+          "component_type": "GroundDPDTRelay",
+          "position": {
+            "x": 1490.0,
+            "y": 820.0
+          },
+          "pins": [
+            {
+              "pin_id": "a0e3dd05.COIL",
+              "tabs": [
+                {
+                  "tab_id": "a0e3dd05.COIL.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "a0e3dd05.COM1",
+              "tabs": [
+                {
+                  "tab_id": "a0e3dd05.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "a0e3dd05.COM2",
+              "tabs": [
+                {
+                  "tab_id": "a0e3dd05.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "a0e3dd05.GND",
+              "tabs": [
+                {
+                  "tab_id": "a0e3dd05.GND.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "a0e3dd05.NO1",
+              "tabs": [
+                {
+                  "tab_id": "a0e3dd05.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "a0e3dd05.NC1",
+              "tabs": [
+                {
+                  "tab_id": "a0e3dd05.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "a0e3dd05.NO2",
+              "tabs": [
+                {
+                  "tab_id": "a0e3dd05.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "a0e3dd05.NC2",
+              "tabs": [
+                {
+                  "tab_id": "a0e3dd05.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 80
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "f3277771",
+          "component_type": "GroundLatchingRelay",
+          "position": {
+            "x": 1330.0,
+            "y": 840.0
+          },
+          "pins": [
+            {
+              "pin_id": "f3277771.COIL_SET",
+              "tabs": [
+                {
+                  "tab_id": "f3277771.COIL_SET.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -100
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f3277771.COM1",
+              "tabs": [
+                {
+                  "tab_id": "f3277771.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f3277771.COM2",
+              "tabs": [
+                {
+                  "tab_id": "f3277771.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f3277771.COIL_RESET",
+              "tabs": [
+                {
+                  "tab_id": "f3277771.COIL_RESET.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 100
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f3277771.GND_SET",
+              "tabs": [
+                {
+                  "tab_id": "f3277771.GND_SET.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -100
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f3277771.NO1",
+              "tabs": [
+                {
+                  "tab_id": "f3277771.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f3277771.NC1",
+              "tabs": [
+                {
+                  "tab_id": "f3277771.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f3277771.NO2",
+              "tabs": [
+                {
+                  "tab_id": "f3277771.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f3277771.NC2",
+              "tabs": [
+                {
+                  "tab_id": "f3277771.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f3277771.GND_RESET",
+              "tabs": [
+                {
+                  "tab_id": "f3277771.GND_RESET.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 100
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "ccb8e6cf",
+          "component_type": "GroundDPDTRelay",
+          "position": {
+            "x": 890.0,
+            "y": 820.0
+          },
+          "pins": [
+            {
+              "pin_id": "ccb8e6cf.COIL",
+              "tabs": [
+                {
+                  "tab_id": "ccb8e6cf.COIL.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "ccb8e6cf.COM1",
+              "tabs": [
+                {
+                  "tab_id": "ccb8e6cf.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "ccb8e6cf.COM2",
+              "tabs": [
+                {
+                  "tab_id": "ccb8e6cf.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "ccb8e6cf.GND",
+              "tabs": [
+                {
+                  "tab_id": "ccb8e6cf.GND.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "ccb8e6cf.NO1",
+              "tabs": [
+                {
+                  "tab_id": "ccb8e6cf.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "ccb8e6cf.NC1",
+              "tabs": [
+                {
+                  "tab_id": "ccb8e6cf.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "ccb8e6cf.NO2",
+              "tabs": [
+                {
+                  "tab_id": "ccb8e6cf.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "ccb8e6cf.NC2",
+              "tabs": [
+                {
+                  "tab_id": "ccb8e6cf.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 80
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "23efb1ce",
+          "component_type": "DPDTRelay",
+          "position": {
+            "x": 390.0,
+            "y": 820.0
+          },
+          "pins": [
+            {
+              "pin_id": "23efb1ce.COIL",
+              "tabs": [
+                {
+                  "tab_id": "23efb1ce.COIL.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "23efb1ce.COM1",
+              "tabs": [
+                {
+                  "tab_id": "23efb1ce.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "23efb1ce.COM2",
+              "tabs": [
+                {
+                  "tab_id": "23efb1ce.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "23efb1ce.NO1",
+              "tabs": [
+                {
+                  "tab_id": "23efb1ce.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "23efb1ce.NC1",
+              "tabs": [
+                {
+                  "tab_id": "23efb1ce.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "23efb1ce.NO2",
+              "tabs": [
+                {
+                  "tab_id": "23efb1ce.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "23efb1ce.NC2",
+              "tabs": [
+                {
+                  "tab_id": "23efb1ce.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 80
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "fc7257c4",
+          "component_type": "Switch",
+          "position": {
+            "x": 240.0,
+            "y": 740.0
+          },
+          "pins": [
+            {
+              "pin_id": "fc7257c4.pin1",
+              "tabs": [
+                {
+                  "tab_id": "fc7257c4.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "fc7257c4.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "fc7257c4.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "fc7257c4.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "BYTE_1",
+            "label_position": "left",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "43993c2f",
+          "component_type": "VCC",
+          "position": {
+            "x": 1440.0,
+            "y": 800.0
+          },
+          "pins": [
+            {
+              "pin_id": "43993c2f.pin1",
+              "tabs": [
+                {
+                  "tab_id": "43993c2f.pin1.tab1",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "pin_position": "bottom"
+          }
+        },
+        {
+          "component_id": "3f8a4456",
+          "component_type": "VCC",
+          "position": {
+            "x": 540.0,
+            "y": 800.0
+          },
+          "pins": [
+            {
+              "pin_id": "3f8a4456.pin1",
+              "tabs": [
+                {
+                  "tab_id": "3f8a4456.pin1.tab1",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "pin_position": "bottom"
+          }
+        },
+        {
+          "component_id": "f5324bff",
+          "component_type": "DPDTRelay",
+          "position": {
+            "x": 590,
+            "y": 1180
+          },
+          "pins": [
+            {
+              "pin_id": "f5324bff.COIL",
+              "tabs": [
+                {
+                  "tab_id": "f5324bff.COIL.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f5324bff.COM1",
+              "tabs": [
+                {
+                  "tab_id": "f5324bff.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f5324bff.COM2",
+              "tabs": [
+                {
+                  "tab_id": "f5324bff.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f5324bff.NO1",
+              "tabs": [
+                {
+                  "tab_id": "f5324bff.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f5324bff.NC1",
+              "tabs": [
+                {
+                  "tab_id": "f5324bff.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f5324bff.NO2",
+              "tabs": [
+                {
+                  "tab_id": "f5324bff.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f5324bff.NC2",
+              "tabs": [
+                {
+                  "tab_id": "f5324bff.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 80
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "0948706a",
+          "component_type": "Switch",
+          "position": {
+            "x": 460,
+            "y": 1100
+          },
+          "pins": [
+            {
+              "pin_id": "0948706a.pin1",
+              "tabs": [
+                {
+                  "tab_id": "0948706a.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "0948706a.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "0948706a.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "0948706a.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "READ",
+            "label_position": "left",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "b0587191",
+          "component_type": "VCC",
+          "position": {
+            "x": 540,
+            "y": 1160
+          },
+          "pins": [
+            {
+              "pin_id": "b0587191.pin1",
+              "tabs": [
+                {
+                  "tab_id": "b0587191.pin1.tab1",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "pin_position": "bottom"
+          }
+        },
+        {
+          "component_id": "3f20fe39",
+          "component_type": "DPDTRelay",
+          "position": {
+            "x": 1030,
+            "y": 1180
+          },
+          "pins": [
+            {
+              "pin_id": "3f20fe39.COIL",
+              "tabs": [
+                {
+                  "tab_id": "3f20fe39.COIL.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "3f20fe39.COM1",
+              "tabs": [
+                {
+                  "tab_id": "3f20fe39.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "3f20fe39.COM2",
+              "tabs": [
+                {
+                  "tab_id": "3f20fe39.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "3f20fe39.NO1",
+              "tabs": [
+                {
+                  "tab_id": "3f20fe39.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "3f20fe39.NC1",
+              "tabs": [
+                {
+                  "tab_id": "3f20fe39.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "3f20fe39.NO2",
+              "tabs": [
+                {
+                  "tab_id": "3f20fe39.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "3f20fe39.NC2",
+              "tabs": [
+                {
+                  "tab_id": "3f20fe39.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 80
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "08234865",
+          "component_type": "Switch",
+          "position": {
+            "x": 900,
+            "y": 1100
+          },
+          "pins": [
+            {
+              "pin_id": "08234865.pin1",
+              "tabs": [
+                {
+                  "tab_id": "08234865.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -20
+                  }
+                },
+                {
+                  "tab_id": "08234865.pin1.tab3",
+                  "position": {
+                    "x": 20,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "08234865.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 20
+                  }
+                },
+                {
+                  "tab_id": "08234865.pin1.tab9",
+                  "position": {
+                    "x": -20,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "WRITE",
+            "label_position": "left",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "dull_color": [
+              128,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "435a1b7a",
+          "component_type": "GND",
+          "page_id": "e03995bd",
+          "position": {
+            "x": 1100,
+            "y": 1300
+          },
+          "rotation": 0,
+          "properties": {
+            "label": ""
+          },
+          "link_name": null
+        },
+        {
+          "component_id": "19c217d4",
+          "component_type": "Diode",
+          "position": {
+            "x": 800,
+            "y": 890
+          },
+          "pins": [
+            {
+              "pin_id": "19c217d4.A",
+              "tabs": [
+                {
+                  "tab_id": "19c217d4.A.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "19c217d4.K",
+              "tabs": [
+                {
+                  "tab_id": "19c217d4.K.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 270,
+          "properties": {
+            "label": "",
+            "label_position": "bottom"
+          }
+        },
+        {
+          "component_id": "990f0523",
+          "component_type": "Diode",
+          "position": {
+            "x": 1100.0,
+            "y": 890.0
+          },
+          "pins": [
+            {
+              "pin_id": "990f0523.A",
+              "tabs": [
+                {
+                  "tab_id": "990f0523.A.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "990f0523.K",
+              "tabs": [
+                {
+                  "tab_id": "990f0523.K.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 270,
+          "properties": {
+            "label": "",
+            "label_position": "bottom"
+          }
+        },
+        {
+          "component_id": "f1621d43",
+          "component_type": "Diode",
+          "position": {
+            "x": 1400.0,
+            "y": 890.0
+          },
+          "pins": [
+            {
+              "pin_id": "f1621d43.A",
+              "tabs": [
+                {
+                  "tab_id": "f1621d43.A.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f1621d43.K",
+              "tabs": [
+                {
+                  "tab_id": "f1621d43.K.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 270,
+          "properties": {
+            "label": "",
+            "label_position": "bottom"
+          }
+        },
+        {
+          "component_id": "1252a115",
+          "component_type": "Diode",
+          "position": {
+            "x": 1700.0,
+            "y": 890.0
+          },
+          "pins": [
+            {
+              "pin_id": "1252a115.A",
+              "tabs": [
+                {
+                  "tab_id": "1252a115.A.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "1252a115.K",
+              "tabs": [
+                {
+                  "tab_id": "1252a115.K.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 270,
+          "properties": {
+            "label": "",
+            "label_position": "bottom"
+          }
+        },
+        {
+          "component_id": "4f9d699c",
+          "component_type": "Diode",
+          "position": {
+            "x": 1700.0,
+            "y": 550.0
+          },
+          "pins": [
+            {
+              "pin_id": "4f9d699c.A",
+              "tabs": [
+                {
+                  "tab_id": "4f9d699c.A.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "4f9d699c.K",
+              "tabs": [
+                {
+                  "tab_id": "4f9d699c.K.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 270,
+          "properties": {
+            "label": "",
+            "label_position": "bottom"
+          }
+        },
+        {
+          "component_id": "dccd1f7d",
+          "component_type": "Diode",
+          "position": {
+            "x": 1400.0,
+            "y": 550.0
+          },
+          "pins": [
+            {
+              "pin_id": "dccd1f7d.A",
+              "tabs": [
+                {
+                  "tab_id": "dccd1f7d.A.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "dccd1f7d.K",
+              "tabs": [
+                {
+                  "tab_id": "dccd1f7d.K.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 270,
+          "properties": {
+            "label": "",
+            "label_position": "bottom"
+          }
+        },
+        {
+          "component_id": "713d59be",
+          "component_type": "Diode",
+          "position": {
+            "x": 1100.0,
+            "y": 550.0
+          },
+          "pins": [
+            {
+              "pin_id": "713d59be.A",
+              "tabs": [
+                {
+                  "tab_id": "713d59be.A.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "713d59be.K",
+              "tabs": [
+                {
+                  "tab_id": "713d59be.K.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 270,
+          "properties": {
+            "label": "",
+            "label_position": "bottom"
+          }
+        },
+        {
+          "component_id": "6cfbc5bb",
+          "component_type": "Diode",
+          "position": {
+            "x": 800.0,
+            "y": 550.0
+          },
+          "pins": [
+            {
+              "pin_id": "6cfbc5bb.A",
+              "tabs": [
+                {
+                  "tab_id": "6cfbc5bb.A.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "6cfbc5bb.K",
+              "tabs": [
+                {
+                  "tab_id": "6cfbc5bb.K.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 270,
+          "properties": {
+            "label": "",
+            "label_position": "bottom"
+          }
+        }
+      ],
+      "wires": [
+        {
+          "wire_id": "5af76118",
+          "start_tab_id": "5ee7126d.COM1.tab0",
+          "end_tab_id": "b7b59bab"
+        },
+        {
+          "wire_id": "9f39ab1f",
+          "start_tab_id": "de56cdaf.pin1.tab6",
+          "end_tab_id": "206b87a5"
+        },
+        {
+          "wire_id": "cba72c24",
+          "start_tab_id": "206b87a5",
+          "end_tab_id": "0beb8785.COIL.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "2aefeb97",
+              "position": {
+                "x": 540,
+                "y": 360
+              }
+            },
+            {
+              "waypoint_id": "3f312991",
+              "position": {
+                "x": 540,
+                "y": 400
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "ad3c1eae",
+          "start_tab_id": "1eb86e9c.pin1.tab1",
+          "end_tab_id": "0beb8785.COM1.tab0"
+        },
+        {
+          "wire_id": "237f762b",
+          "start_tab_id": "0beb8785.NO1.tab0",
+          "end_tab_id": "5ee7126d.COIL_SET.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "18e63c7d",
+              "position": {
+                "x": 640,
+                "y": 440
+              }
+            },
+            {
+              "waypoint_id": "4b5e069c",
+              "position": {
+                "x": 660,
+                "y": 440
+              }
+            },
+            {
+              "waypoint_id": "3e7a1bdc",
+              "position": {
+                "x": 660,
+                "y": 400
+              }
+            },
+            {
+              "waypoint_id": "e57a37cf",
+              "position": {
+                "x": 690,
+                "y": 400
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "b579ff99",
+          "start_tab_id": "0beb8785.NC1.tab0",
+          "end_tab_id": "5ee7126d.COIL_RESET.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "e2aaafcf",
+              "position": {
+                "x": 660,
+                "y": 480
+              }
+            },
+            {
+              "waypoint_id": "ddf8dd9a",
+              "position": {
+                "x": 660,
+                "y": 600
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "c33a7d50",
+          "start_tab_id": "d7900270",
+          "end_tab_id": "5ee7126d.GND_RESET.tab0"
+        },
+        {
+          "wire_id": "1f407795",
+          "start_tab_id": "5ee7126d.GND_SET.tab0",
+          "end_tab_id": "d7900270",
+          "waypoints": [
+            {
+              "waypoint_id": "81b94c04",
+              "position": {
+                "x": 780,
+                "y": 400
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "e6f2404b",
+          "start_tab_id": "d72bf298",
+          "end_tab_id": "c0487cb6.COIL.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "b042cdc1",
+              "position": {
+                "x": 840.0,
+                "y": 360.0
+              }
+            },
+            {
+              "waypoint_id": "36c4dc7a",
+              "position": {
+                "x": 840.0,
+                "y": 400.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "5b97e3e3",
+          "start_tab_id": "c0487cb6.NO1.tab0",
+          "end_tab_id": "af9247d1.COIL_SET.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "cb2cdcc2",
+              "position": {
+                "x": 940.0,
+                "y": 440.0
+              }
+            },
+            {
+              "waypoint_id": "f4afb1ee",
+              "position": {
+                "x": 960.0,
+                "y": 440.0
+              }
+            },
+            {
+              "waypoint_id": "8a8d9bd1",
+              "position": {
+                "x": 960.0,
+                "y": 400.0
+              }
+            },
+            {
+              "waypoint_id": "7eeea025",
+              "position": {
+                "x": 990.0,
+                "y": 400.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "dfbc4667",
+          "start_tab_id": "52a22279.pin1.tab6",
+          "end_tab_id": "d72bf298"
+        },
+        {
+          "wire_id": "6c8f77cd",
+          "start_tab_id": "af9ebd04.pin1.tab1",
+          "end_tab_id": "c0487cb6.COM1.tab0"
+        },
+        {
+          "wire_id": "ec17c393",
+          "start_tab_id": "af9247d1.COM1.tab0",
+          "end_tab_id": "8d9d7ab4"
+        },
+        {
+          "wire_id": "7f6dc58d",
+          "start_tab_id": "c0487cb6.NC1.tab0",
+          "end_tab_id": "af9247d1.COIL_RESET.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "a0b7dddd",
+              "position": {
+                "x": 960.0,
+                "y": 480.0
+              }
+            },
+            {
+              "waypoint_id": "f08464f2",
+              "position": {
+                "x": 960.0,
+                "y": 600.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "63b80772",
+          "start_tab_id": "036760f7.pin1.tab6",
+          "end_tab_id": "9dd2b80e"
+        },
+        {
+          "wire_id": "6f661a4c",
+          "start_tab_id": "24b22d33.COM1.tab0",
+          "end_tab_id": "7e7c25c5"
+        },
+        {
+          "wire_id": "ee628ff6",
+          "start_tab_id": "687d663b.pin1.tab1",
+          "end_tab_id": "f56f0cda.COM1.tab0"
+        },
+        {
+          "wire_id": "6b2d013e",
+          "start_tab_id": "9dd2b80e",
+          "end_tab_id": "f56f0cda.COIL.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "88f0ef16",
+              "position": {
+                "x": 1140.0,
+                "y": 360.0
+              }
+            },
+            {
+              "waypoint_id": "87db4408",
+              "position": {
+                "x": 1140.0,
+                "y": 400.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "4ade0f90",
+          "start_tab_id": "f56f0cda.NO1.tab0",
+          "end_tab_id": "24b22d33.COIL_SET.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "27adde16",
+              "position": {
+                "x": 1240.0,
+                "y": 440.0
+              }
+            },
+            {
+              "waypoint_id": "9a6dcd9c",
+              "position": {
+                "x": 1260.0,
+                "y": 440.0
+              }
+            },
+            {
+              "waypoint_id": "787ff14d",
+              "position": {
+                "x": 1260.0,
+                "y": 400.0
+              }
+            },
+            {
+              "waypoint_id": "03e1b505",
+              "position": {
+                "x": 1290.0,
+                "y": 400.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "39f1e9f0",
+          "start_tab_id": "f56f0cda.NC1.tab0",
+          "end_tab_id": "24b22d33.COIL_RESET.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "5448807d",
+              "position": {
+                "x": 1260.0,
+                "y": 480.0
+              }
+            },
+            {
+              "waypoint_id": "82caf6cd",
+              "position": {
+                "x": 1260.0,
+                "y": 600.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "fc538b88",
+          "start_tab_id": "282d8978.pin1.tab6",
+          "end_tab_id": "994e4235"
+        },
+        {
+          "wire_id": "94a02e60",
+          "start_tab_id": "70477a5f.COM1.tab0",
+          "end_tab_id": "8ecc84be"
+        },
+        {
+          "wire_id": "4b9cd376",
+          "start_tab_id": "94886448.pin1.tab1",
+          "end_tab_id": "62a27987.COM1.tab0"
+        },
+        {
+          "wire_id": "587d44ce",
+          "start_tab_id": "994e4235",
+          "end_tab_id": "62a27987.COIL.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "8ab2ef15",
+              "position": {
+                "x": 1440.0,
+                "y": 360.0
+              }
+            },
+            {
+              "waypoint_id": "4ba14c0a",
+              "position": {
+                "x": 1440.0,
+                "y": 400.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "ea2d488c",
+          "start_tab_id": "62a27987.NO1.tab0",
+          "end_tab_id": "70477a5f.COIL_SET.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "8abce696",
+              "position": {
+                "x": 1540.0,
+                "y": 440.0
+              }
+            },
+            {
+              "waypoint_id": "e69b4fc5",
+              "position": {
+                "x": 1560.0,
+                "y": 440.0
+              }
+            },
+            {
+              "waypoint_id": "d9b14888",
+              "position": {
+                "x": 1560.0,
+                "y": 400.0
+              }
+            },
+            {
+              "waypoint_id": "b73e932e",
+              "position": {
+                "x": 1590.0,
+                "y": 400.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "9f48f0b1",
+          "start_tab_id": "62a27987.NC1.tab0",
+          "end_tab_id": "70477a5f.COIL_RESET.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "76382d94",
+              "position": {
+                "x": 1560.0,
+                "y": 480.0
+              }
+            },
+            {
+              "waypoint_id": "f0047056",
+              "position": {
+                "x": 1560.0,
+                "y": 600.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "31f4b172",
+          "start_tab_id": "d7900270",
+          "end_tab_id": "d7900270"
+        },
+        {
+          "wire_id": "031f42f0",
+          "start_tab_id": "d7900270",
+          "end_tab_id": "d7900270"
+        },
+        {
+          "wire_id": "0853a4b1",
+          "start_tab_id": "af9247d1.GND_SET.tab0",
+          "end_tab_id": "2e59ce23",
+          "waypoints": [
+            {
+              "waypoint_id": "c1900f0d",
+              "position": {
+                "x": 1080,
+                "y": 400
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "8099b75c",
+          "start_tab_id": "24b22d33.GND_RESET.tab0",
+          "end_tab_id": "49617b8b"
+        },
+        {
+          "wire_id": "71f278a0",
+          "start_tab_id": "70477a5f.GND_RESET.tab0",
+          "end_tab_id": "788b25df"
+        },
+        {
+          "wire_id": "153dc9b9",
+          "start_tab_id": "788b25df",
+          "end_tab_id": "70477a5f.GND_SET.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "1c37b9e8",
+              "position": {
+                "x": 1680,
+                "y": 400
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "61efdbc8",
+          "start_tab_id": "62a27987.GND.tab0",
+          "end_tab_id": "6ec673ac",
+          "waypoints": [
+            {
+              "waypoint_id": "7a56ffa1",
+              "position": {
+                "x": 1540,
+                "y": 400
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "b45585b3",
+          "start_tab_id": "6ec673ac",
+          "end_tab_id": "788b25df",
+          "waypoints": [
+            {
+              "waypoint_id": "568e2065",
+              "position": {
+                "x": 1680,
+                "y": 640
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "5810bb59",
+          "start_tab_id": "f56f0cda.GND.tab0",
+          "end_tab_id": "3f2e434d",
+          "waypoints": [
+            {
+              "waypoint_id": "d57bc160",
+              "position": {
+                "x": 1240,
+                "y": 400
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "879d511f",
+          "start_tab_id": "3f2e434d",
+          "end_tab_id": "c6def01e"
+        },
+        {
+          "wire_id": "28730b89",
+          "start_tab_id": "c0487cb6.GND.tab0",
+          "end_tab_id": "63baa8e0",
+          "waypoints": [
+            {
+              "waypoint_id": "f372c53b",
+              "position": {
+                "x": 940,
+                "y": 400
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "3f82715d",
+          "start_tab_id": "63baa8e0",
+          "end_tab_id": "4c95eeeb"
+        },
+        {
+          "wire_id": "10a5b4d8",
+          "start_tab_id": "d7900270",
+          "end_tab_id": "05bc337a"
+        },
+        {
+          "wire_id": "5332d47b",
+          "start_tab_id": "05bc337a",
+          "end_tab_id": "63baa8e0"
+        },
+        {
+          "wire_id": "491c984c",
+          "start_tab_id": "2e59ce23",
+          "end_tab_id": "af9247d1.GND_RESET.tab0"
+        },
+        {
+          "wire_id": "6e6dd7c7",
+          "start_tab_id": "af9247d1.GND_RESET.tab0",
+          "end_tab_id": "2e59ce23"
+        },
+        {
+          "wire_id": "489288b8",
+          "start_tab_id": "2e59ce23",
+          "end_tab_id": "4c95eeeb"
+        },
+        {
+          "wire_id": "0b2cf705",
+          "start_tab_id": "4c95eeeb",
+          "end_tab_id": "3f2e434d"
+        },
+        {
+          "wire_id": "cd0ddff7",
+          "start_tab_id": "49617b8b",
+          "end_tab_id": "24b22d33.GND_SET.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "56d3d41c",
+              "position": {
+                "x": 1380,
+                "y": 400
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "a1c988bd",
+          "start_tab_id": "24b22d33.GND_RESET.tab0",
+          "end_tab_id": "49617b8b"
+        },
+        {
+          "wire_id": "2cd9453f",
+          "start_tab_id": "49617b8b",
+          "end_tab_id": "c6def01e"
+        },
+        {
+          "wire_id": "8d6c5712",
+          "start_tab_id": "c6def01e",
+          "end_tab_id": "6ec673ac"
+        },
+        {
+          "wire_id": "302d9ef9",
+          "start_tab_id": "0beb8785.GND.tab0",
+          "end_tab_id": "cbc0605a",
+          "waypoints": [
+            {
+              "waypoint_id": "bb733d9d",
+              "position": {
+                "x": 640,
+                "y": 400
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "b3d91677",
+          "start_tab_id": "cbc0605a",
+          "end_tab_id": "05bc337a"
+        },
+        {
+          "wire_id": "f3d61dfc",
+          "start_tab_id": "20b35ee8.NO1.tab0",
+          "end_tab_id": "cbc0605a",
+          "waypoints": [
+            {
+              "waypoint_id": "0225dce9",
+              "position": {
+                "x": 500,
+                "y": 440
+              }
+            },
+            {
+              "waypoint_id": "d6afe36b",
+              "position": {
+                "x": 500,
+                "y": 640
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "8c50465d",
+          "start_tab_id": "0c2fec5d.pin1.tab3",
+          "end_tab_id": "20b35ee8.COIL.tab0"
+        },
+        {
+          "wire_id": "bc4f4335",
+          "start_tab_id": "5e604d73.GND_RESET.tab0",
+          "end_tab_id": "f2c2a596"
+        },
+        {
+          "wire_id": "26bc978a",
+          "start_tab_id": "23efb1ce.NO1.tab0",
+          "end_tab_id": "3677ec17",
+          "waypoints": [
+            {
+              "waypoint_id": "98efdd2d",
+              "position": {
+                "x": 500.0,
+                "y": 780.0
+              }
+            },
+            {
+              "waypoint_id": "4b738157",
+              "position": {
+                "x": 500.0,
+                "y": 980.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "aacd8df8",
+          "start_tab_id": "fc7257c4.pin1.tab3",
+          "end_tab_id": "23efb1ce.COIL.tab0"
+        },
+        {
+          "wire_id": "102d97fc",
+          "start_tab_id": "136fb2d2.pin1.tab1",
+          "end_tab_id": "ccb8e6cf.COM1.tab0"
+        },
+        {
+          "wire_id": "e84c4df3",
+          "start_tab_id": "3677ec17",
+          "end_tab_id": "a1e4fcff"
+        },
+        {
+          "wire_id": "ae66c8cf",
+          "start_tab_id": "ccb8e6cf.GND.tab0",
+          "end_tab_id": "bbbec262",
+          "waypoints": [
+            {
+              "waypoint_id": "8834b13b",
+              "position": {
+                "x": 940.0,
+                "y": 740.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "f52f882f",
+          "start_tab_id": "5dd9c65a",
+          "end_tab_id": "7011859d"
+        },
+        {
+          "wire_id": "dcd51595",
+          "start_tab_id": "54bd0217.NC1.tab0",
+          "end_tab_id": "f3277771.COIL_RESET.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "edf0f328",
+              "position": {
+                "x": 1260.0,
+                "y": 820.0
+              }
+            },
+            {
+              "waypoint_id": "55b7f956",
+              "position": {
+                "x": 1260.0,
+                "y": 940.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "a2549df1",
+          "start_tab_id": "8c09f3bc",
+          "end_tab_id": "f3277771.GND_SET.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "9a55a8d7",
+              "position": {
+                "x": 1380.0,
+                "y": 740.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "a82f23e7",
+          "start_tab_id": "d2cee775",
+          "end_tab_id": "cd563480.GND_RESET.tab0"
+        },
+        {
+          "wire_id": "216a011a",
+          "start_tab_id": "f3277771.GND_RESET.tab0",
+          "end_tab_id": "8c09f3bc"
+        },
+        {
+          "wire_id": "2e26181e",
+          "start_tab_id": "d2cee775",
+          "end_tab_id": "d2cee775"
+        },
+        {
+          "wire_id": "c96dbba0",
+          "start_tab_id": "426e1743.pin1.tab1",
+          "end_tab_id": "54bd0217.COM1.tab0"
+        },
+        {
+          "wire_id": "34812c2c",
+          "start_tab_id": "699f34d1.GND_RESET.tab0",
+          "end_tab_id": "e0e97f52"
+        },
+        {
+          "wire_id": "e7779b13",
+          "start_tab_id": "d2cee775",
+          "end_tab_id": "a1e4fcff"
+        },
+        {
+          "wire_id": "cae319c1",
+          "start_tab_id": "3f8a4456.pin1.tab1",
+          "end_tab_id": "839c1d0d.COM1.tab0"
+        },
+        {
+          "wire_id": "48c207e9",
+          "start_tab_id": "79665f09",
+          "end_tab_id": "6c8950e2"
+        },
+        {
+          "wire_id": "74839da9",
+          "start_tab_id": "839c1d0d.NC1.tab0",
+          "end_tab_id": "cd563480.COIL_RESET.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "732afa89",
+              "position": {
+                "x": 660.0,
+                "y": 820.0
+              }
+            },
+            {
+              "waypoint_id": "ab5d525d",
+              "position": {
+                "x": 660.0,
+                "y": 940.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "b2f0a847",
+          "start_tab_id": "f3277771.GND_RESET.tab0",
+          "end_tab_id": "8c09f3bc"
+        },
+        {
+          "wire_id": "a6520023",
+          "start_tab_id": "7011859d",
+          "end_tab_id": "f2c2a596",
+          "waypoints": [
+            {
+              "waypoint_id": "ef2425f7",
+              "position": {
+                "x": 1680.0,
+                "y": 980.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "a95ea502",
+          "start_tab_id": "a0e3dd05.GND.tab0",
+          "end_tab_id": "7011859d",
+          "waypoints": [
+            {
+              "waypoint_id": "8095d849",
+              "position": {
+                "x": 1540.0,
+                "y": 740.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "2bb799d5",
+          "start_tab_id": "d2cee775",
+          "end_tab_id": "d2cee775"
+        },
+        {
+          "wire_id": "1e284048",
+          "start_tab_id": "8c09f3bc",
+          "end_tab_id": "5dd9c65a"
+        },
+        {
+          "wire_id": "018812c7",
+          "start_tab_id": "a0e3dd05.NO1.tab0",
+          "end_tab_id": "5e604d73.COIL_SET.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "3cbd73b2",
+              "position": {
+                "x": 1540.0,
+                "y": 780.0
+              }
+            },
+            {
+              "waypoint_id": "6c29a0e2",
+              "position": {
+                "x": 1560.0,
+                "y": 780.0
+              }
+            },
+            {
+              "waypoint_id": "348dcd39",
+              "position": {
+                "x": 1560.0,
+                "y": 740.0
+              }
+            },
+            {
+              "waypoint_id": "7d4e3150",
+              "position": {
+                "x": 1590.0,
+                "y": 740.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "84781537",
+          "start_tab_id": "bbbec262",
+          "end_tab_id": "79665f09"
+        },
+        {
+          "wire_id": "19868071",
+          "start_tab_id": "839c1d0d.GND.tab0",
+          "end_tab_id": "3677ec17",
+          "waypoints": [
+            {
+              "waypoint_id": "ea5d701f",
+              "position": {
+                "x": 640.0,
+                "y": 740.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "55b75eb3",
+          "start_tab_id": "a0e3dd05.NC1.tab0",
+          "end_tab_id": "5e604d73.COIL_RESET.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "792fec26",
+              "position": {
+                "x": 1560.0,
+                "y": 820.0
+              }
+            },
+            {
+              "waypoint_id": "05d724c5",
+              "position": {
+                "x": 1560.0,
+                "y": 940.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "86f2d53d",
+          "start_tab_id": "839c1d0d.NO1.tab0",
+          "end_tab_id": "cd563480.COIL_SET.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "95c646aa",
+              "position": {
+                "x": 640.0,
+                "y": 780.0
+              }
+            },
+            {
+              "waypoint_id": "0b72e2fa",
+              "position": {
+                "x": 660.0,
+                "y": 780.0
+              }
+            },
+            {
+              "waypoint_id": "7420b503",
+              "position": {
+                "x": 660.0,
+                "y": 740.0
+              }
+            },
+            {
+              "waypoint_id": "cd5f5f9e",
+              "position": {
+                "x": 690.0,
+                "y": 740.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "1cc10073",
+          "start_tab_id": "a1e4fcff",
+          "end_tab_id": "bbbec262"
+        },
+        {
+          "wire_id": "af52eb02",
+          "start_tab_id": "e0e97f52",
+          "end_tab_id": "699f34d1.GND_RESET.tab0"
+        },
+        {
+          "wire_id": "621b3cdf",
+          "start_tab_id": "cd563480.GND_SET.tab0",
+          "end_tab_id": "d2cee775",
+          "waypoints": [
+            {
+              "waypoint_id": "051403dc",
+              "position": {
+                "x": 780.0,
+                "y": 740.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "946bb46d",
+          "start_tab_id": "699f34d1.GND_SET.tab0",
+          "end_tab_id": "e0e97f52",
+          "waypoints": [
+            {
+              "waypoint_id": "455d18e5",
+              "position": {
+                "x": 1080.0,
+                "y": 740.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "c466ee78",
+          "start_tab_id": "e0e97f52",
+          "end_tab_id": "79665f09"
+        },
+        {
+          "wire_id": "ebfd3637",
+          "start_tab_id": "54bd0217.GND.tab0",
+          "end_tab_id": "6c8950e2",
+          "waypoints": [
+            {
+              "waypoint_id": "a2693026",
+              "position": {
+                "x": 1240.0,
+                "y": 740.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "f1b7d909",
+          "start_tab_id": "6c8950e2",
+          "end_tab_id": "5dd9c65a"
+        },
+        {
+          "wire_id": "e1a0b0f4",
+          "start_tab_id": "ccb8e6cf.NO1.tab0",
+          "end_tab_id": "699f34d1.COIL_SET.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "8b03b7b3",
+              "position": {
+                "x": 940.0,
+                "y": 780.0
+              }
+            },
+            {
+              "waypoint_id": "e24f2e2c",
+              "position": {
+                "x": 960.0,
+                "y": 780.0
+              }
+            },
+            {
+              "waypoint_id": "ab2d28e1",
+              "position": {
+                "x": 960.0,
+                "y": 740.0
+              }
+            },
+            {
+              "waypoint_id": "00456d18",
+              "position": {
+                "x": 990.0,
+                "y": 740.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "be8e14ea",
+          "start_tab_id": "ccb8e6cf.NC1.tab0",
+          "end_tab_id": "699f34d1.COIL_RESET.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "e07a0d68",
+              "position": {
+                "x": 960.0,
+                "y": 820.0
+              }
+            },
+            {
+              "waypoint_id": "27a0a2e4",
+              "position": {
+                "x": 960.0,
+                "y": 940.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "2e37418b",
+          "start_tab_id": "f2c2a596",
+          "end_tab_id": "5e604d73.GND_SET.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "12b0ad72",
+              "position": {
+                "x": 1680.0,
+                "y": 740.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "355ea508",
+          "start_tab_id": "54bd0217.NO1.tab0",
+          "end_tab_id": "f3277771.COIL_SET.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "674ccd44",
+              "position": {
+                "x": 1240.0,
+                "y": 780.0
+              }
+            },
+            {
+              "waypoint_id": "1281d9aa",
+              "position": {
+                "x": 1260.0,
+                "y": 780.0
+              }
+            },
+            {
+              "waypoint_id": "cddb747d",
+              "position": {
+                "x": 1260.0,
+                "y": 740.0
+              }
+            },
+            {
+              "waypoint_id": "19e4fa7a",
+              "position": {
+                "x": 1290.0,
+                "y": 740.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "54b855bd",
+          "start_tab_id": "43993c2f.pin1.tab1",
+          "end_tab_id": "a0e3dd05.COM1.tab0"
+        },
+        {
+          "wire_id": "e59fc473",
+          "start_tab_id": "5e604d73.COM1.tab0",
+          "end_tab_id": "dcb841d8",
+          "waypoints": [
+            {
+              "waypoint_id": "3f1f5ccd",
+              "position": {
+                "x": 1580,
+                "y": 800
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "55d552a9",
+          "start_tab_id": "699f34d1.COM1.tab0",
+          "end_tab_id": "1bf2f4ee",
+          "waypoints": [
+            {
+              "waypoint_id": "83e20796",
+              "position": {
+                "x": 980,
+                "y": 800
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "8828e215",
+          "start_tab_id": "cd563480.COM1.tab0",
+          "end_tab_id": "6fe621d7",
+          "waypoints": [
+            {
+              "waypoint_id": "81c0bc30",
+              "position": {
+                "x": 680,
+                "y": 800
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "24810e42",
+          "start_tab_id": "54bd0217.COIL.tab0",
+          "end_tab_id": "aa7d29d1",
+          "waypoints": [
+            {
+              "waypoint_id": "f7da0d6d",
+              "position": {
+                "x": 1140,
+                "y": 740
+              }
+            },
+            {
+              "waypoint_id": "2e9ce34f",
+              "position": {
+                "x": 1140,
+                "y": 700
+              }
+            },
+            {
+              "waypoint_id": "ca7d9695",
+              "position": {
+                "x": 1240,
+                "y": 700
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "b61bd100",
+          "start_tab_id": "8ecc84be",
+          "end_tab_id": "994e4235",
+          "waypoints": [
+            {
+              "waypoint_id": "e5dbc72e",
+              "position": {
+                "x": 1580.0,
+                "y": 360.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "ef38ede3",
+          "start_tab_id": "70477a5f.COM1.tab0",
+          "end_tab_id": "8ecc84be"
+        },
+        {
+          "wire_id": "aa3d24b3",
+          "start_tab_id": "dcb841d8",
+          "end_tab_id": "a0e3dd05.COIL.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "11cbd5b0",
+              "position": {
+                "x": 1540,
+                "y": 700
+              }
+            },
+            {
+              "waypoint_id": "1b954500",
+              "position": {
+                "x": 1440,
+                "y": 700
+              }
+            },
+            {
+              "waypoint_id": "270d17f5",
+              "position": {
+                "x": 1440,
+                "y": 740
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "dae1fed8",
+          "start_tab_id": "8ecc84be",
+          "end_tab_id": "dcb841d8"
+        },
+        {
+          "wire_id": "944a9993",
+          "start_tab_id": "7e7c25c5",
+          "end_tab_id": "9dd2b80e",
+          "waypoints": [
+            {
+              "waypoint_id": "8d6d0e6b",
+              "position": {
+                "x": 1280.0,
+                "y": 360.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "b7bdf4b7",
+          "start_tab_id": "24b22d33.COM1.tab0",
+          "end_tab_id": "7e7c25c5"
+        },
+        {
+          "wire_id": "470cdd61",
+          "start_tab_id": "aa7d29d1",
+          "end_tab_id": "f3277771.COM1.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "e22cad49",
+              "position": {
+                "x": 1280,
+                "y": 800
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "4c23fac5",
+          "start_tab_id": "7e7c25c5",
+          "end_tab_id": "aa7d29d1"
+        },
+        {
+          "wire_id": "8b328273",
+          "start_tab_id": "8d9d7ab4",
+          "end_tab_id": "d72bf298",
+          "waypoints": [
+            {
+              "waypoint_id": "248a007b",
+              "position": {
+                "x": 980.0,
+                "y": 360.0
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "e628032d",
+          "start_tab_id": "af9247d1.COM1.tab0",
+          "end_tab_id": "8d9d7ab4"
+        },
+        {
+          "wire_id": "685214d2",
+          "start_tab_id": "1bf2f4ee",
+          "end_tab_id": "ccb8e6cf.COIL.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "58c74820",
+              "position": {
+                "x": 940,
+                "y": 700
+              }
+            },
+            {
+              "waypoint_id": "4292add0",
+              "position": {
+                "x": 840,
+                "y": 700
+              }
+            },
+            {
+              "waypoint_id": "e24dd869",
+              "position": {
+                "x": 840,
+                "y": 740
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "b75c7306",
+          "start_tab_id": "8d9d7ab4",
+          "end_tab_id": "1bf2f4ee"
+        },
+        {
+          "wire_id": "9008f93f",
+          "start_tab_id": "b7b59bab",
+          "end_tab_id": "206b87a5",
+          "waypoints": [
+            {
+              "waypoint_id": "630d3108",
+              "position": {
+                "x": 680,
+                "y": 360
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "744fdccf",
+          "start_tab_id": "5ee7126d.COM1.tab0",
+          "end_tab_id": "b7b59bab"
+        },
+        {
+          "wire_id": "1611d857",
+          "start_tab_id": "6fe621d7",
+          "end_tab_id": "839c1d0d.COIL.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "12ea19f6",
+              "position": {
+                "x": 640,
+                "y": 700
+              }
+            },
+            {
+              "waypoint_id": "5371d5f4",
+              "position": {
+                "x": 540,
+                "y": 700
+              }
+            },
+            {
+              "waypoint_id": "c513096b",
+              "position": {
+                "x": 540,
+                "y": 740
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "79a46b4e",
+          "start_tab_id": "b7b59bab",
+          "end_tab_id": "6fe621d7"
+        },
+        {
+          "wire_id": "a53dacda",
+          "start_tab_id": "0948706a.pin1.tab3",
+          "end_tab_id": "f5324bff.COIL.tab0"
+        },
+        {
+          "wire_id": "63cb9f9b",
+          "start_tab_id": "b0587191.pin1.tab1",
+          "end_tab_id": "f5324bff.COM1.tab0"
+        },
+        {
+          "wire_id": "19950ef3",
+          "start_tab_id": "08234865.pin1.tab3",
+          "end_tab_id": "3f20fe39.COIL.tab0"
+        },
+        {
+          "wire_id": "f41bb080",
+          "start_tab_id": "3f20fe39.NO1.tab0",
+          "end_tab_id": "435a1b7a.pin1.tab1",
+          "waypoints": [
+            {
+              "waypoint_id": "97270e3e",
+              "position": {
+                "x": 1100,
+                "y": 1140
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "68db339f",
+          "start_tab_id": "3f20fe39.COM1.tab0",
+          "end_tab_id": "3a3d1141",
+          "waypoints": [
+            {
+              "waypoint_id": "e233b811",
+              "position": {
+                "x": 800,
+                "y": 1160
+              }
+            },
+            {
+              "waypoint_id": "37c71f0f",
+              "position": {
+                "x": 800,
+                "y": 1040
+              }
+            },
+            {
+              "waypoint_id": "a25716c2",
+              "position": {
+                "x": 320,
+                "y": 1040
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "2463c8e6",
+          "start_tab_id": "3a3d1141",
+          "end_tab_id": "23efb1ce.COM1.tab0"
+        },
+        {
+          "wire_id": "ad0c2d30",
+          "start_tab_id": "20b35ee8.COM1.tab0",
+          "end_tab_id": "3a3d1141",
+          "waypoints": [
+            {
+              "waypoint_id": "06807500",
+              "position": {
+                "x": 320,
+                "y": 460
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "aa91187f",
+          "start_tab_id": "20b35ee8.COM2.tab0",
+          "end_tab_id": "94bc9255",
+          "waypoints": [
+            {
+              "waypoint_id": "93e1c36c",
+              "position": {
+                "x": 300,
+                "y": 540
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "c9d3406a",
+          "start_tab_id": "23efb1ce.COM2.tab0",
+          "end_tab_id": "94bc9255"
+        },
+        {
+          "wire_id": "c872c667",
+          "start_tab_id": "94bc9255",
+          "end_tab_id": "f5324bff.NO1.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "c02bd799",
+              "position": {
+                "x": 300,
+                "y": 1060
+              }
+            },
+            {
+              "waypoint_id": "e6878623",
+              "position": {
+                "x": 640,
+                "y": 1060
+              }
+            },
+            {
+              "waypoint_id": "7f662763",
+              "position": {
+                "x": 640,
+                "y": 1140
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "02e6d50b",
+          "start_tab_id": "9dd2b80e",
+          "end_tab_id": "9dd2b80e"
+        },
+        {
+          "wire_id": "382bd2ee",
+          "start_tab_id": "cd563480.NO1.tab0",
+          "end_tab_id": "19c217d4.K.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "c5792863",
+              "position": {
+                "x": 800,
+                "y": 780
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "70a8a976",
+          "start_tab_id": "d01591a1",
+          "end_tab_id": "23efb1ce.NO2.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "55f7b2f6",
+              "position": {
+                "x": 460,
+                "y": 1000
+              }
+            },
+            {
+              "waypoint_id": "fdfc4e61",
+              "position": {
+                "x": 460,
+                "y": 860
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "58c89976",
+          "start_tab_id": "19c217d4.A.tab0",
+          "end_tab_id": "d01591a1"
+        },
+        {
+          "wire_id": "0c1a596e",
+          "start_tab_id": "699f34d1.NO1.tab0",
+          "end_tab_id": "990f0523.K.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "e7f21f0a",
+              "position": {
+                "x": 1100,
+                "y": 780
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "e626d444",
+          "start_tab_id": "2a33a61a",
+          "end_tab_id": "d01591a1"
+        },
+        {
+          "wire_id": "6b74c530",
+          "start_tab_id": "990f0523.A.tab0",
+          "end_tab_id": "2a33a61a"
+        },
+        {
+          "wire_id": "7c740865",
+          "start_tab_id": "f3277771.NO1.tab0",
+          "end_tab_id": "f1621d43.K.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "9eb3eccb",
+              "position": {
+                "x": 1400,
+                "y": 780
+              }
+            },
+            {
+              "waypoint_id": "10e19782",
+              "position": {
+                "x": 1400,
+                "y": 850
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "924b2aa6",
+          "start_tab_id": "2a33a61a",
+          "end_tab_id": "d639fdc0"
+        },
+        {
+          "wire_id": "7f559398",
+          "start_tab_id": "5e604d73.NO1.tab0",
+          "end_tab_id": "1252a115.K.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "7385d3a5",
+              "position": {
+                "x": 1700,
+                "y": 780
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "f9f618f6",
+          "start_tab_id": "d639fdc0",
+          "end_tab_id": "f1621d43.A.tab0"
+        },
+        {
+          "wire_id": "0a878e97",
+          "start_tab_id": "1252a115.A.tab0",
+          "end_tab_id": "d639fdc0",
+          "waypoints": [
+            {
+              "waypoint_id": "a8f9513a",
+              "position": {
+                "x": 1700,
+                "y": 1000
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "c9f3fcc4",
+          "start_tab_id": "70477a5f.NO1.tab0",
+          "end_tab_id": "4f9d699c.K.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "2421e9af",
+              "position": {
+                "x": 1700,
+                "y": 440
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "54b2f150",
+          "start_tab_id": "24b22d33.NO1.tab0",
+          "end_tab_id": "dccd1f7d.K.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "5d32cca6",
+              "position": {
+                "x": 1400,
+                "y": 440
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "b2ceb9d0",
+          "start_tab_id": "61c436f1",
+          "end_tab_id": "4f9d699c.A.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "c2c3ba94",
+              "position": {
+                "x": 1700,
+                "y": 660
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "d7eaf6e7",
+          "start_tab_id": "dccd1f7d.A.tab0",
+          "end_tab_id": "61c436f1"
+        },
+        {
+          "wire_id": "d078eda5",
+          "start_tab_id": "af9247d1.NO1.tab0",
+          "end_tab_id": "713d59be.K.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "fa4b75ad",
+              "position": {
+                "x": 1100,
+                "y": 440
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "a27be636",
+          "start_tab_id": "e357155b",
+          "end_tab_id": "61c436f1"
+        },
+        {
+          "wire_id": "ed292c66",
+          "start_tab_id": "713d59be.A.tab0",
+          "end_tab_id": "e357155b"
+        },
+        {
+          "wire_id": "731207a3",
+          "start_tab_id": "20b35ee8.NO2.tab0",
+          "end_tab_id": "2240f7bc",
+          "waypoints": [
+            {
+              "waypoint_id": "06b63364",
+              "position": {
+                "x": 460,
+                "y": 520
+              }
+            },
+            {
+              "waypoint_id": "e1ce1dd0",
+              "position": {
+                "x": 460,
+                "y": 660
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "e60fba26",
+          "start_tab_id": "5ee7126d.NO1.tab0",
+          "end_tab_id": "6cfbc5bb.K.tab0",
+          "waypoints": [
+            {
+              "waypoint_id": "fc8be416",
+              "position": {
+                "x": 800,
+                "y": 440
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "43256902",
+          "start_tab_id": "2240f7bc",
+          "end_tab_id": "e357155b"
+        },
+        {
+          "wire_id": "25234f74",
+          "start_tab_id": "6cfbc5bb.A.tab0",
+          "end_tab_id": "2240f7bc"
+        }
+      ],
+      "junctions": [
+        {
+          "junction_id": "206b87a5",
+          "position": {
+            "x": 680,
+            "y": 360
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "d7900270",
+          "position": {
+            "x": 780,
+            "y": 600
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "d72bf298",
+          "position": {
+            "x": 980,
+            "y": 360
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "9dd2b80e",
+          "position": {
+            "x": 1280,
+            "y": 360
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "994e4235",
+          "position": {
+            "x": 1580,
+            "y": 360
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "788b25df",
+          "position": {
+            "x": 1680,
+            "y": 600
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "6ec673ac",
+          "position": {
+            "x": 1540,
+            "y": 640
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "3f2e434d",
+          "position": {
+            "x": 1240,
+            "y": 640
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "63baa8e0",
+          "position": {
+            "x": 940,
+            "y": 640
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "05bc337a",
+          "position": {
+            "x": 780,
+            "y": 640
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "2e59ce23",
+          "position": {
+            "x": 1080,
+            "y": 600
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "4c95eeeb",
+          "position": {
+            "x": 1080,
+            "y": 640
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "49617b8b",
+          "position": {
+            "x": 1380,
+            "y": 600
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "c6def01e",
+          "position": {
+            "x": 1380,
+            "y": 640
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "cbc0605a",
+          "position": {
+            "x": 640,
+            "y": 640
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "79665f09",
+          "position": {
+            "x": 1080,
+            "y": 980
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "bbbec262",
+          "position": {
+            "x": 940,
+            "y": 980
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "a1e4fcff",
+          "position": {
+            "x": 780,
+            "y": 980
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "3677ec17",
+          "position": {
+            "x": 640,
+            "y": 980
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "f2c2a596",
+          "position": {
+            "x": 1680,
+            "y": 940
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "6c8950e2",
+          "position": {
+            "x": 1240,
+            "y": 980
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "d2cee775",
+          "position": {
+            "x": 780,
+            "y": 940
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "5dd9c65a",
+          "position": {
+            "x": 1380,
+            "y": 980
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "8c09f3bc",
+          "position": {
+            "x": 1380,
+            "y": 940
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "7011859d",
+          "position": {
+            "x": 1540,
+            "y": 980
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "e0e97f52",
+          "position": {
+            "x": 1080,
+            "y": 940
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "8ecc84be",
+          "position": {
+            "x": 1580,
+            "y": 460
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "dcb841d8",
+          "position": {
+            "x": 1580,
+            "y": 700
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "7e7c25c5",
+          "position": {
+            "x": 1280,
+            "y": 460
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "aa7d29d1",
+          "position": {
+            "x": 1280,
+            "y": 700
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "8d9d7ab4",
+          "position": {
+            "x": 980,
+            "y": 460
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "1bf2f4ee",
+          "position": {
+            "x": 980,
+            "y": 700
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "b7b59bab",
+          "position": {
+            "x": 680,
+            "y": 460
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "6fe621d7",
+          "position": {
+            "x": 680,
+            "y": 700
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "3a3d1141",
+          "position": {
+            "x": 320,
+            "y": 800
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "94bc9255",
+          "position": {
+            "x": 300,
+            "y": 880
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "d01591a1",
+          "position": {
+            "x": 800,
+            "y": 1000
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "2a33a61a",
+          "position": {
+            "x": 1100,
+            "y": 1000
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "d639fdc0",
+          "position": {
+            "x": 1400,
+            "y": 1000
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "61c436f1",
+          "position": {
+            "x": 1400,
+            "y": 660
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "e357155b",
+          "position": {
+            "x": 1100,
+            "y": 660
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "2240f7bc",
+          "position": {
+            "x": 800,
+            "y": 660
+          },
+          "child_wires": []
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "author": "",
+    "created": "",
+    "modified": "",
+    "description": ""
+  }
+}

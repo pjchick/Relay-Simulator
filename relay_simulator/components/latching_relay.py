@@ -244,13 +244,16 @@ class LatchingRelay(Component):
         reset_coil_state = reset_vnet.state
         
         # Determine target state based on coil inputs
-        # RESET has priority when both coils are HIGH (safer default state)
+        # If both coils are HIGH, maintain current state (no change)
         target_set = None
         set_high = (set_coil_state == PinState.HIGH)
         reset_high = (reset_coil_state == PinState.HIGH)
         
-        if reset_high:
-            # RESET coil HIGH - switch to RESET state (has priority)
+        if set_high and reset_high:
+            # Both coils HIGH - maintain current state
+            target_set = None
+        elif reset_high:
+            # Only RESET coil HIGH - switch to RESET state
             target_set = False
         elif set_high:
             # Only SET coil HIGH - switch to SET state
