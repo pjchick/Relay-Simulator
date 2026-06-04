@@ -1,0 +1,233 @@
+{
+  "version": "1.0.0",
+  "pages": [
+    {
+      "page_id": "ad85ffef",
+      "name": "Page 1",
+      "canvas_x": 0.0,
+      "canvas_y": 0.0,
+      "canvas_zoom": 1.0,
+      "components": [
+        {
+          "component_id": "15833d78",
+          "component_type": "SPDTSwitch",
+          "position": {
+            "x": 210,
+            "y": 180
+          },
+          "pins": [
+            {
+              "pin_id": "15833d78.common",
+              "tabs": [
+                {
+                  "tab_id": "15833d78.common.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "15833d78.terminal1",
+              "tabs": [
+                {
+                  "tab_id": "15833d78.terminal1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "15833d78.terminal2",
+              "tabs": [
+                {
+                  "tab_id": "15833d78.terminal2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 20
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SW",
+            "label_position": "bottom",
+            "flip_horizontal": false,
+            "flip_vertical": false
+          }
+        },
+        {
+          "component_id": "0a770bd4",
+          "component_type": "VCC",
+          "position": {
+            "x": 110,
+            "y": 180
+          },
+          "pins": [
+            {
+              "pin_id": "0a770bd4.pin1",
+              "tabs": [
+                {
+                  "tab_id": "0a770bd4.pin1.tab1",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "pin_position": "bottom"
+          }
+        },
+        {
+          "component_id": "26c7ba59",
+          "component_type": "Indicator",
+          "position": {
+            "x": 240,
+            "y": 90
+          },
+          "pins": [
+            {
+              "pin_id": "26c7ba59.pin1",
+              "tabs": [
+                {
+                  "tab_id": "26c7ba59.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "26c7ba59.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "26c7ba59.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "26c7ba59.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED1",
+            "label_position": "top",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "7c115625",
+          "component_type": "Indicator",
+          "position": {
+            "x": 240,
+            "y": 270
+          },
+          "pins": [
+            {
+              "pin_id": "7c115625.pin1",
+              "tabs": [
+                {
+                  "tab_id": "7c115625.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "7c115625.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "7c115625.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "7c115625.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED2",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        }
+      ],
+      "wires": [
+        {
+          "wire_id": "4fe6957f",
+          "start_tab_id": "0a770bd4.pin1.tab1",
+          "end_tab_id": "15833d78.common.tab0"
+        },
+        {
+          "wire_id": "4abb9d8f",
+          "start_tab_id": "15833d78.terminal2.tab0",
+          "end_tab_id": "7c115625.pin1.tab12"
+        },
+        {
+          "wire_id": "9d9948f1",
+          "start_tab_id": "15833d78.terminal1.tab0",
+          "end_tab_id": "26c7ba59.pin1.tab6"
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "author": "",
+    "created": "",
+    "modified": "",
+    "description": ""
+  }
+}

@@ -95,6 +95,7 @@ class ToolboxPanel(tk.Frame):
     COMPONENTS = [
         ('Switch', 'Switch'),
         ('SPSTSwitch', 'SPST Switch'),
+        ('SPDTSwitch', 'SPDT Switch'),
         ('Clock', 'Clock'),
         ('Indicator', 'Indicator'),
         ('DPDTRelay', 'DPDT Relay'),

@@ -1799,8 +1799,8 @@ class MainWindow:
         if not clicked_component:
             return
         
-        # Check if it's an interactive simulation component (Switch/SPSTSwitch/Clock)
-        if clicked_component.component_type not in ("Switch", "SPSTSwitch", "Clock"):
+        # Check if it's an interactive simulation component (Switch/SPSTSwitch/SPDTSwitch/Clock)
+        if clicked_component.component_type not in ("Switch", "SPSTSwitch", "SPDTSwitch", "Clock"):
             return
 
         # Remember the pressed component so we can release it for pushbutton switches.
@@ -1856,7 +1856,7 @@ class MainWindow:
         if not clicked_component:
             return
 
-        if getattr(clicked_component, 'component_type', None) not in ("Switch", "SPSTSwitch"):
+        if getattr(clicked_component, 'component_type', None) not in ("Switch", "SPSTSwitch", "SPDTSwitch"):
             return
 
         try:
@@ -4726,6 +4726,11 @@ class MainWindow:
         # SPST Switch pins are compatible (both terminals can switch GND)
         if comp_type == "SPSTSwitch":
             allowed_pins = ["terminal1", "terminal2"]
+            return pin_name in allowed_pins
+        
+        # SPDT Switch pins are compatible (all three terminals can switch GND)
+        if comp_type == "SPDTSwitch":
+            allowed_pins = ["common", "terminal1", "terminal2"]
             return pin_name in allowed_pins
         
         # All other components are not compatible

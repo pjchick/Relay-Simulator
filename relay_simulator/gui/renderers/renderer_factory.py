@@ -25,6 +25,7 @@ from gui.renderers.link_renderer import LinkRenderer
 from gui.renderers.text_renderer import TextRenderer
 from gui.renderers.box_renderer import BoxRenderer
 from gui.renderers.spst_switch_renderer import SPSTSwitchRenderer
+from gui.renderers.spdt_switch_renderer import SPDTSwitchRenderer
 
 
 class RendererFactory:
@@ -55,6 +56,7 @@ class RendererFactory:
         'Text': TextRenderer,
         'Box': BoxRenderer,
         'SPSTSwitch': SPSTSwitchRenderer,
+        'SPDTSwitch': SPDTSwitchRenderer,
     }
     
     @classmethod
