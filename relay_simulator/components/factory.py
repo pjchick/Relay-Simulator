@@ -25,6 +25,7 @@ from components.clock import Clock
 from components.link import Link
 from components.text import Text
 from components.box import Box
+from components.spst_switch import SPSTSwitch
 
 
 class ComponentFactory:
@@ -62,6 +63,7 @@ class ComponentFactory:
         self.register_component("Link", Link)
         self.register_component("Text", Text)
         self.register_component("Box", Box)
+        self.register_component("SPSTSwitch", SPSTSwitch)
     
     def register_component(self, type_name: str, component_class: Type[Component]):
         """

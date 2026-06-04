@@ -24,6 +24,7 @@ from gui.renderers.clock_renderer import ClockRenderer
 from gui.renderers.link_renderer import LinkRenderer
 from gui.renderers.text_renderer import TextRenderer
 from gui.renderers.box_renderer import BoxRenderer
+from gui.renderers.spst_switch_renderer import SPSTSwitchRenderer
 
 
 class RendererFactory:
@@ -53,6 +54,7 @@ class RendererFactory:
         'Link': LinkRenderer,
         'Text': TextRenderer,
         'Box': BoxRenderer,
+        'SPSTSwitch': SPSTSwitchRenderer,
     }
     
     @classmethod

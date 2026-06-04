@@ -1799,8 +1799,8 @@ class MainWindow:
         if not clicked_component:
             return
         
-        # Check if it's an interactive simulation component (Switch/Clock)
-        if clicked_component.component_type not in ("Switch", "Clock"):
+        # Check if it's an interactive simulation component (Switch/SPSTSwitch/Clock)
+        if clicked_component.component_type not in ("Switch", "SPSTSwitch", "Clock"):
             return
 
         # Remember the pressed component so we can release it for pushbutton switches.
@@ -1856,7 +1856,7 @@ class MainWindow:
         if not clicked_component:
             return
 
-        if getattr(clicked_component, 'component_type', None) != "Switch":
+        if getattr(clicked_component, 'component_type', None) not in ("Switch", "SPSTSwitch"):
             return
 
         try:
@@ -4652,6 +4652,7 @@ class MainWindow:
                     f"  • DPDT Relay contacts (COM1, COM2, NC1, NC2, NO1, NO2)\n"
                     f"  • Ground DPDT Relay contacts (COM1, COM2, NC1, NC2, NO1, NO2, GND)\n"
                     f"  • Ground Latching Relay contacts (COM1, COM2, NC1, NC2, NO1, NO2, GND_SET, GND_RESET)\n"
+                    f"  • SPST Switch terminals (terminal1, terminal2)\n"
                     f"  • LINK components\n\n"
                     f"Note: COIL pins are NOT allowed on GND networks."
                 )
@@ -4720,6 +4721,11 @@ class MainWindow:
         # Regular DPDT Relay pins are also compatible (except COIL)
         if comp_type == "DPDTRelay":
             allowed_pins = ["COM1", "COM2", "NC1", "NC2", "NO1", "NO2"]
+            return pin_name in allowed_pins
+        
+        # SPST Switch pins are compatible (both terminals can switch GND)
+        if comp_type == "SPSTSwitch":
+            allowed_pins = ["terminal1", "terminal2"]
             return pin_name in allowed_pins
         
         # All other components are not compatible
@@ -4856,6 +4862,7 @@ class MainWindow:
                             f"  • DPDT Relay contacts (COM1, COM2, NC1, NC2, NO1, NO2)\n"
                             f"  • Ground DPDT Relay contacts (COM1, COM2, NC1, NC2, NO1, NO2, GND)\n"
                             f"  • Ground Latching Relay contacts (COM1, COM2, NC1, NC2, NO1, NO2, GND_SET, GND_RESET)\n"
+                            f"  • SPST Switch terminals (terminal1, terminal2)\n"
                             f"  • LINK components\n\n"
                             f"Note: COIL pins are NOT allowed on GND networks.\n\n"
                             f"Please fix the wiring before starting simulation."

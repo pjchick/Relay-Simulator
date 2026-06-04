@@ -1,0 +1,802 @@
+{
+  "version": "1.0.0",
+  "pages": [
+    {
+      "page_id": "ad0e0bec",
+      "name": "Page 1",
+      "canvas_x": 235.0,
+      "canvas_y": 28.0,
+      "canvas_zoom": 1.0,
+      "components": [
+        {
+          "component_id": "f057bc80",
+          "component_type": "SPSTSwitch",
+          "position": {
+            "x": 590,
+            "y": 240
+          },
+          "pins": [
+            {
+              "pin_id": "f057bc80.terminal1",
+              "tabs": [
+                {
+                  "tab_id": "f057bc80.terminal1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "f057bc80.terminal2",
+              "tabs": [
+                {
+                  "tab_id": "f057bc80.terminal2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "pushbutton",
+            "label": "SW",
+            "label_position": "bottom"
+          }
+        },
+        {
+          "component_id": "dff9e081",
+          "component_type": "VCC",
+          "position": {
+            "x": 360,
+            "y": 240
+          },
+          "pins": [
+            {
+              "pin_id": "dff9e081.pin1",
+              "tabs": [
+                {
+                  "tab_id": "dff9e081.pin1.tab1",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "pin_position": "bottom"
+          }
+        },
+        {
+          "component_id": "c2bc1a10",
+          "component_type": "Indicator",
+          "position": {
+            "x": 900,
+            "y": 240
+          },
+          "pins": [
+            {
+              "pin_id": "c2bc1a10.pin1",
+              "tabs": [
+                {
+                  "tab_id": "c2bc1a10.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "c2bc1a10.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "c2bc1a10.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "c2bc1a10.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "db438645",
+          "component_type": "SPSTSwitch",
+          "position": {
+            "x": 470,
+            "y": 240
+          },
+          "pins": [
+            {
+              "pin_id": "db438645.terminal1",
+              "tabs": [
+                {
+                  "tab_id": "db438645.terminal1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "db438645.terminal2",
+              "tabs": [
+                {
+                  "tab_id": "db438645.terminal2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SW",
+            "label_position": "bottom"
+          }
+        },
+        {
+          "component_id": "3871003a",
+          "component_type": "Indicator",
+          "position": {
+            "x": 360,
+            "y": 160
+          },
+          "pins": [
+            {
+              "pin_id": "3871003a.pin1",
+              "tabs": [
+                {
+                  "tab_id": "3871003a.pin1.tab12",
+                  "position": {
+                    "x": 0,
+                    "y": -15.0
+                  }
+                },
+                {
+                  "tab_id": "3871003a.pin1.tab3",
+                  "position": {
+                    "x": 15.0,
+                    "y": 0
+                  }
+                },
+                {
+                  "tab_id": "3871003a.pin1.tab6",
+                  "position": {
+                    "x": 0,
+                    "y": 15.0
+                  }
+                },
+                {
+                  "tab_id": "3871003a.pin1.tab9",
+                  "position": {
+                    "x": -15.0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "LED",
+            "label_position": "bottom",
+            "color": "red",
+            "on_color": [
+              255,
+              0,
+              0
+            ],
+            "off_color": [
+              64,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "component_id": "2a0a2a9b",
+          "component_type": "SPSTSwitch",
+          "position": {
+            "x": 710,
+            "y": 240
+          },
+          "pins": [
+            {
+              "pin_id": "2a0a2a9b.terminal1",
+              "tabs": [
+                {
+                  "tab_id": "2a0a2a9b.terminal1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "2a0a2a9b.terminal2",
+              "tabs": [
+                {
+                  "tab_id": "2a0a2a9b.terminal2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SW",
+            "label_position": "bottom"
+          }
+        },
+        {
+          "component_id": "95400984",
+          "component_type": "VCC",
+          "position": {
+            "x": 900,
+            "y": 160
+          },
+          "pins": [
+            {
+              "pin_id": "95400984.pin1",
+              "tabs": [
+                {
+                  "tab_id": "95400984.pin1.tab1",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "pin_position": "bottom"
+          }
+        },
+        {
+          "component_id": "7846bb31",
+          "component_type": "GroundDPDTRelay",
+          "position": {
+            "x": 420,
+            "y": 610
+          },
+          "pins": [
+            {
+              "pin_id": "7846bb31.COIL",
+              "tabs": [
+                {
+                  "tab_id": "7846bb31.COIL.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "7846bb31.COM1",
+              "tabs": [
+                {
+                  "tab_id": "7846bb31.COM1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": -20
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "7846bb31.COM2",
+              "tabs": [
+                {
+                  "tab_id": "7846bb31.COM2.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 60
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "7846bb31.GND",
+              "tabs": [
+                {
+                  "tab_id": "7846bb31.GND.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -80
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "7846bb31.NO1",
+              "tabs": [
+                {
+                  "tab_id": "7846bb31.NO1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": -40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "7846bb31.NC1",
+              "tabs": [
+                {
+                  "tab_id": "7846bb31.NC1.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "7846bb31.NO2",
+              "tabs": [
+                {
+                  "tab_id": "7846bb31.NO2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 40
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "7846bb31.NC2",
+              "tabs": [
+                {
+                  "tab_id": "7846bb31.NC2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 80
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "label_position": "top",
+            "color": "blue",
+            "body_color": "#CCCCCC",
+            "flip_horizontal": false,
+            "flip_vertical": false,
+            "on_color": [
+              0,
+              0,
+              255
+            ],
+            "off_color": [
+              0,
+              0,
+              128
+            ]
+          }
+        },
+        {
+          "component_id": "1e6c3220",
+          "component_type": "VCC",
+          "position": {
+            "x": 340,
+            "y": 530
+          },
+          "pins": [
+            {
+              "pin_id": "1e6c3220.pin1",
+              "tabs": [
+                {
+                  "tab_id": "1e6c3220.pin1.tab1",
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "label": "",
+            "pin_position": "bottom"
+          }
+        },
+        {
+          "component_id": "0e9b28ca",
+          "component_type": "SPSTSwitch",
+          "position": {
+            "x": 580,
+            "y": 530
+          },
+          "pins": [
+            {
+              "pin_id": "0e9b28ca.terminal1",
+              "tabs": [
+                {
+                  "tab_id": "0e9b28ca.terminal1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "0e9b28ca.terminal2",
+              "tabs": [
+                {
+                  "tab_id": "0e9b28ca.terminal2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SW",
+            "label_position": "bottom"
+          }
+        },
+        {
+          "component_id": "c59038c4",
+          "component_type": "GND",
+          "page_id": "ad0e0bec",
+          "position": {
+            "x": 720,
+            "y": 600
+          },
+          "rotation": 0,
+          "properties": {
+            "label": ""
+          },
+          "link_name": null
+        },
+        {
+          "component_id": "67e2e46f",
+          "component_type": "SPSTSwitch",
+          "position": {
+            "x": 580,
+            "y": 450
+          },
+          "pins": [
+            {
+              "pin_id": "67e2e46f.terminal1",
+              "tabs": [
+                {
+                  "tab_id": "67e2e46f.terminal1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "67e2e46f.terminal2",
+              "tabs": [
+                {
+                  "tab_id": "67e2e46f.terminal2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "rotation": 180,
+          "properties": {
+            "mode": "toggle",
+            "label": "SW",
+            "label_position": "bottom"
+          }
+        },
+        {
+          "component_id": "a5fd8cba",
+          "component_type": "SPSTSwitch",
+          "position": {
+            "x": 710,
+            "y": 160
+          },
+          "pins": [
+            {
+              "pin_id": "a5fd8cba.terminal1",
+              "tabs": [
+                {
+                  "tab_id": "a5fd8cba.terminal1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "a5fd8cba.terminal2",
+              "tabs": [
+                {
+                  "tab_id": "a5fd8cba.terminal2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SW",
+            "label_position": "bottom"
+          }
+        },
+        {
+          "component_id": "ebef11a7",
+          "component_type": "SPSTSwitch",
+          "position": {
+            "x": 470,
+            "y": 160
+          },
+          "pins": [
+            {
+              "pin_id": "ebef11a7.terminal1",
+              "tabs": [
+                {
+                  "tab_id": "ebef11a7.terminal1.tab0",
+                  "position": {
+                    "x": -30,
+                    "y": 0
+                  }
+                }
+              ]
+            },
+            {
+              "pin_id": "ebef11a7.terminal2",
+              "tabs": [
+                {
+                  "tab_id": "ebef11a7.terminal2.tab0",
+                  "position": {
+                    "x": 30,
+                    "y": 0
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "mode": "toggle",
+            "label": "SW",
+            "label_position": "bottom"
+          }
+        }
+      ],
+      "wires": [
+        {
+          "wire_id": "8df8f8d8",
+          "start_tab_id": "dff9e081.pin1.tab1",
+          "end_tab_id": "db438645.terminal1.tab0"
+        },
+        {
+          "wire_id": "6577858f",
+          "start_tab_id": "2a0a2a9b.terminal2.tab0",
+          "end_tab_id": "c2bc1a10.pin1.tab9",
+          "waypoints": [
+            {
+              "waypoint_id": "d735f5e3",
+              "position": {
+                "x": 880,
+                "y": 240
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "8e0e8e15",
+          "start_tab_id": "1e6c3220.pin1.tab1",
+          "end_tab_id": "7846bb31.COIL.tab0"
+        },
+        {
+          "wire_id": "40babeee",
+          "start_tab_id": "7846bb31.GND.tab0",
+          "end_tab_id": "88349338"
+        },
+        {
+          "wire_id": "02be7c34",
+          "start_tab_id": "0e9b28ca.terminal2.tab0",
+          "end_tab_id": "a9294d43"
+        },
+        {
+          "wire_id": "5515bc7d",
+          "start_tab_id": "67e2e46f.terminal2.tab0",
+          "end_tab_id": "88349338",
+          "waypoints": [
+            {
+              "waypoint_id": "e132f3fd",
+              "position": {
+                "x": 500,
+                "y": 450
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "e7a8a721",
+          "start_tab_id": "88349338",
+          "end_tab_id": "0e9b28ca.terminal1.tab0"
+        },
+        {
+          "wire_id": "92b46905",
+          "start_tab_id": "a9294d43",
+          "end_tab_id": "c59038c4.pin1.tab1"
+        },
+        {
+          "wire_id": "d6b5c983",
+          "start_tab_id": "67e2e46f.terminal1.tab0",
+          "end_tab_id": "a9294d43",
+          "waypoints": [
+            {
+              "waypoint_id": "4fb39d2c",
+              "position": {
+                "x": 720,
+                "y": 450
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "96dfc79d",
+          "start_tab_id": "f057bc80.terminal2.tab0",
+          "end_tab_id": "1b0064ba"
+        },
+        {
+          "wire_id": "015640de",
+          "start_tab_id": "a5fd8cba.terminal2.tab0",
+          "end_tab_id": "95400984.pin1.tab1"
+        },
+        {
+          "wire_id": "88481498",
+          "start_tab_id": "1b0064ba",
+          "end_tab_id": "2a0a2a9b.terminal1.tab0"
+        },
+        {
+          "wire_id": "7287b703",
+          "start_tab_id": "a5fd8cba.terminal1.tab0",
+          "end_tab_id": "1b0064ba",
+          "waypoints": [
+            {
+              "waypoint_id": "d456f448",
+              "position": {
+                "x": 640,
+                "y": 160
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "af9f4fd5",
+          "start_tab_id": "db438645.terminal2.tab0",
+          "end_tab_id": "b0856500",
+          "waypoints": [
+            {
+              "waypoint_id": "8500461b",
+              "position": {
+                "x": 520,
+                "y": 240
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "931ee686",
+          "start_tab_id": "ebef11a7.terminal2.tab0",
+          "end_tab_id": "b0856500",
+          "waypoints": [
+            {
+              "waypoint_id": "c6f2e55d",
+              "position": {
+                "x": 540,
+                "y": 160
+              }
+            }
+          ]
+        },
+        {
+          "wire_id": "00d89051",
+          "start_tab_id": "b0856500",
+          "end_tab_id": "f057bc80.terminal1.tab0"
+        },
+        {
+          "wire_id": "5eb409ed",
+          "start_tab_id": "3871003a.pin1.tab3",
+          "end_tab_id": "ebef11a7.terminal1.tab0"
+        }
+      ],
+      "junctions": [
+        {
+          "junction_id": "88349338",
+          "position": {
+            "x": 500,
+            "y": 530
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "a9294d43",
+          "position": {
+            "x": 720,
+            "y": 530
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "1b0064ba",
+          "position": {
+            "x": 640,
+            "y": 240
+          },
+          "child_wires": []
+        },
+        {
+          "junction_id": "b0856500",
+          "position": {
+            "x": 540,
+            "y": 240
+          },
+          "child_wires": []
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "author": "",
+    "created": "",
+    "modified": "",
+    "description": ""
+  }
+}
