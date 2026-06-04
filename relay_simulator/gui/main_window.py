@@ -2259,7 +2259,7 @@ class MainWindow:
             self.content_frame,
             on_component_select=self._on_component_selected
         )
-        self.toolbox.pack(side=tk.LEFT, fill=tk.Y, padx=(0, 1))
+        self.toolbox.pack(side=tk.LEFT, fill=tk.Y)
         
         # Create design canvas
         canvas_width = self.settings.get('default_canvas_width', 3000)

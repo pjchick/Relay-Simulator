@@ -86,7 +86,7 @@ class VSCodeTheme:
     BUTTON_HEIGHT = 24              # Standard button height
     TOOLBAR_HEIGHT = 32             # Toolbar height
     STATUSBAR_HEIGHT = 24           # Status bar height
-    TOOLBOX_WIDTH = 200             # Toolbox panel width
+    TOOLBOX_WIDTH = 156             # Toolbox panel width
     PROPERTIES_WIDTH = 250          # Properties panel width
     
     # Button Colors
